@@ -19,7 +19,7 @@ You can install the development version of ggmapcn from
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("Rimagination/ggmapcn")
+devtools::install_github("Rimagination/ggmapcn", force = TRUE)
 ```
 
 ## Usage
