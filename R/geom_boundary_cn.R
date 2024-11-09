@@ -33,7 +33,7 @@ geom_boundary_cn <- function(mainland_color = "black", mainland_size = 0.5,
                              coastline_color = "skyblue", coastline_size = 0.5,
                              crs = "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs", ...) {
   # Load the boundary data
-  boundary <- system.file("extdata", "boundary.geojson", package = "ggmapcn")
+  file_path <- system.file("extdata", "boundary.geojson", package = "ggmapcn")
   boundary <- st_read(file_path, quiet = TRUE)
 
   # Apply the specified projection
