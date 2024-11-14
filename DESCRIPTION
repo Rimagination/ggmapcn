@@ -15,6 +15,7 @@ Depends:
 LazyData: true
 Imports: 
     sf (>= 1.0.0),
-    ggrepel (>= 0.9.2)
+    terra (>= 1.7),
+    tidyterra (>= 0.6.0)
 URL: https://rimagination.github.io/ggmapcn/
 BugReports: https://github.com/yourusername/yourrepository/issues
