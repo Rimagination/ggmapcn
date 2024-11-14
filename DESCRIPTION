@@ -1,6 +1,6 @@
 Package: ggmapcn
 Title: Customizable China Map Visualizations
-Version: 0.0.0.9001
+Version: 0.0.1
 Authors@R: 
       person("Liang", "Ren", , "rl23@mails.tsinghua.edu.cn", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
@@ -16,4 +16,4 @@ LazyData: true
 Imports: 
     sf (>= 1.0.0),
     ggrepel (>= 0.9.2)
-    
+URL: https://rimagination.github.io/ggmapcn/
