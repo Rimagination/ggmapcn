@@ -20,14 +20,13 @@ geom_mapcn(
 \arguments{
 \item{data}{\code{sf} object with China's map data, or \code{NULL} to load the package's default map.}
 
-\item{mapping}{Aesthetic mappings from ggplot2.}
-
 \item{color}{Border color for provinces. Default is "black".}
 
 \item{fill}{Fill color for provinces. Default is "#ffff99".}
 
-\item{crs}{Coordinate reference system (CRS) for the projection. Default is
-"+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs". Use other CRS strings to customize.}
+\item{crs}{The coordinate reference system (CRS) for the projection.
+Defaults to "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs".
+Users can specify other CRS strings (e.g., "+proj=merc" for Mercator) or use EPSG codes (e.g., "epsg:4326") to customize the projection.}
 
 \item{size}{Numeric. The width of the border lines for provinces. Default is \code{0.5}.}
 
@@ -41,12 +40,12 @@ A ggplot2 layer to plot China's provincial map with a customizable projection.
 }
 \examples{
 \dontrun{
-# Default China map
-ggplot2::ggplot() + geom_mapcn()
+# Default map
+ggplot() + geom_mapcn()
 
 # Load package data explicitly and use custom projection
 china_path <- system.file("extdata", "China_sheng.geojson", package = "ggmapcn")
 china_data <- st_read(china_path, quiet = TRUE)
-ggplot2::ggplot() + geom_mapcn(data = china_data, crs = "+proj=merc", size = 0.7)
+ggplot() + geom_mapcn(data = china_data, crs = "+proj=merc", size = 0.7)
 }
 }

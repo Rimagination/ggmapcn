@@ -82,7 +82,6 @@ The `geom_buffer_cn()` function adds buffer zones around China’s borders. You 
 ggplot() +
     geom_buffer_cn(mainland_dist = 40000) +
     geom_buffer_cn(mainland_dist = 20000, fill = "#BBB3D8") +
-    geom_buffer_cn(mainland_dist = 0, fill = "black") +
     theme_minimal()
 ```
 

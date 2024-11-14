@@ -1,63 +1,79 @@
-#' Plot Buffered Layers for China's Border
+#' Plot Buffered Layers for China's Boundary
 #'
-#' A ggplot2 layer for creating buffered areas around China's border, including
-#' both the mainland border and the ten-dash line. Generates a buffer with a specified distance
-#' around the border.
+#' This function creates a ggplot2 layer for displaying buffered areas around China's boundaries,
+#' including both the mainland boundary and the ten-segment line. Buffers with user-defined distances
+#' are generated around each boundary, providing flexibility in projection and appearance.
 #'
-#' @param mainland_dist Numeric. The buffer distance (in meters) for the mainland border.
-#'   The buffer distance for the ten-dash line will be half of this value.
+#' @param mainland_dist Numeric. The buffer distance (in meters) for the mainland boundary.
+#' @param ten_line_dist Numeric. The buffer distance (in meters) for each segment of the ten-segment line.
+#'   If not specified, it defaults to the same value as `mainland_dist`.
 #' @param crs Character. The coordinate reference system (CRS) for the projection.
 #'   Defaults to "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs".
 #'   Users can specify other CRS strings to customize the projection (e.g., "+proj=merc" for Mercator).
-#' @param color Character. The color for the border of the buffer area. Default is `NA` (transparent).
+#' @param color Character. The border color for the buffer area. Default is `NA` (transparent).
 #' @param fill Character. The fill color for the buffer area. Default is `"#D2D5EB"`.
 #' @param ... Additional parameters passed to `geom_sf`.
 #'
-#' @return A ggplot2 layer displaying buffered areas around China's border,
-#'   with the ten-dash line buffer at half the mainland buffer distance,
+#' @return A ggplot2 layer displaying buffered areas around China's boundaries,
+#'   with customizable buffer distances for the mainland boundary and the ten-segment line,
 #'   using the specified projection.
 #'
 #' @examples
 #' \dontrun{
-#' # Plot buffers using geom_buffer_cn with default data and projection
-#' ggplot2::ggplot() +
+#' # Plot buffers with specified distances for mainland and ten-segment line
+#' ggplot() +
 #'   geom_buffer_cn(
-#'     mainland_dist = 10000
+#'     mainland_dist = 10000,
+#'     ten_line_dist = 5000
 #'   ) +
 #'   theme_minimal()
 #'
-#' # Plot with a custom projection (Mercator)
-#' ggplot2::ggplot() +
-#'   geom_buffer_cn(
-#'     mainland_dist = 10000,
-#'     fill="#BBB3D8",
-#'     crs = "+proj=merc"
-#'   ) +
-#'   theme_minimal()
 #' }
 #' @import ggplot2
 #' @importFrom sf st_read st_transform
 #' @export
-geom_buffer_cn <- function(mainland_dist = 20000, crs = "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs", color = NA, fill = "#D2D5EB", ...) {
+geom_buffer_cn <- function(mainland_dist = 20000,
+                           ten_line_dist = NULL,
+                           crs = "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs",
+                           color = NA,
+                           fill = "#D2D5EB",
+                           ...) {
   library(sf)
+  # Direction vector: alternate directions for each ten-segment line
+  ten_line_direction <- c(1, -1, -1, -1, -1, -1, 1, 1, 1, 1)
 
-  # Load the default buffer data
+  # If ten_line_dist is NULL, set it equal to mainland_dist
+  if (is.null(ten_line_dist)) {
+    ten_line_dist <- mainland_dist
+  }
+
+  # Load the boundary data
   file_path <- system.file("extdata", "buffer_line.geojson", package = "ggmapcn")
   data <- st_read(file_path, quiet = TRUE)
 
-  # Apply the specified or default projection
+  # Apply specified or default projection
   data <- st_transform(data, crs = crs)
 
-  # Create buffers for mainland border and ten-dash line
-  mainland_buffer <- st_buffer(data[data$name == "mainland_line", ], dist = mainland_dist)
-  dashline_buffer <- st_buffer(data[data$name == "10_dashline", ], dist = mainland_dist / 2)
+  # Create buffer for mainland boundary
+  mainland_buffer <- st_buffer(data[data$name == "mainland", ], dist = mainland_dist)
 
-  # Convert to sf objects and add geometry column
+  # Apply buffer to each segment of the ten-segment line using specified distances and directions
+  ten_segment_buffers <- mapply(function(line, dir) {
+    st_buffer(line, dist = ten_line_dist * dir, singleSide = TRUE)
+  }, split(data[data$name == "ten_segment_line", ], seq_len(nrow(data[data$name == "ten_segment_line", ]))),
+  ten_line_direction, SIMPLIFY = FALSE)
+
+  # Combine ten-segment line buffers into an sf object
+  ten_segment_buffers <- do.call(rbind, ten_segment_buffers)
+
+  # Set name attribute for ten-segment buffers
+  ten_segment_buffers$name <- "ten_segment_buffer"
+
+  # Convert mainland buffer to sf with name attribute
   mainland_buffer <- st_as_sf(data.frame(name = "mainland_buffer", geometry = st_geometry(mainland_buffer)))
-  dashline_buffer <- st_as_sf(data.frame(name = "dashline_buffer", geometry = st_geometry(dashline_buffer)))
 
-  # Combine buffers
-  buffer_data <- rbind(mainland_buffer, dashline_buffer)
+  # Combine mainland and ten-segment buffers
+  buffer_data <- rbind(mainland_buffer, ten_segment_buffers)
 
   # Return ggplot2 layer
   geom_sf(data = buffer_data, color = color, fill = fill, ...)

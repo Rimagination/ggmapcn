@@ -88,12 +88,7 @@ example below shows buffer zones with varying distances:
 ggplot() +
     geom_buffer_cn(mainland_dist = 40000) +
     geom_buffer_cn(mainland_dist = 20000, fill = "#BBB3D8") +
-    geom_buffer_cn(mainland_dist = 0, fill = "black") +
     theme_minimal()
-#> Warning in min(bb[, 1L], na.rm = TRUE): min里所有的参数都不存在; 回覆Inf
-#> Warning in min(bb[, 2L], na.rm = TRUE): min里所有的参数都不存在; 回覆Inf
-#> Warning in max(bb[, 3L], na.rm = TRUE): max里所有的参数都不存在；回覆-Inf
-#> Warning in max(bb[, 4L], na.rm = TRUE): max里所有的参数都不存在；回覆-Inf
 ```
 
 <img src="man/figures/README-example5-1.png" width="100%" />

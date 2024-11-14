@@ -2,10 +2,11 @@
 % Please edit documentation in R/geom_buffer_cn.R
 \name{geom_buffer_cn}
 \alias{geom_buffer_cn}
-\title{Plot Buffered Layers for China's Border}
+\title{Plot Buffered Layers for China's Boundary}
 \usage{
 geom_buffer_cn(
   mainland_dist = 20000,
+  ten_line_dist = NULL,
   crs = "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs",
   color = NA,
   fill = "#D2D5EB",
@@ -13,45 +14,40 @@ geom_buffer_cn(
 )
 }
 \arguments{
-\item{mainland_dist}{Numeric. The buffer distance (in meters) for the mainland border.
-The buffer distance for the ten-dash line will be half of this value.}
+\item{mainland_dist}{Numeric. The buffer distance (in meters) for the mainland boundary.}
+
+\item{ten_line_dist}{Numeric. The buffer distance (in meters) for each segment of the ten-segment line.
+If not specified, it defaults to the same value as \code{mainland_dist}.}
 
 \item{crs}{Character. The coordinate reference system (CRS) for the projection.
 Defaults to "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs".
 Users can specify other CRS strings to customize the projection (e.g., "+proj=merc" for Mercator).}
 
-\item{color}{Character. The color for the border of the buffer area. Default is \code{NA} (transparent).}
+\item{color}{Character. The border color for the buffer area. Default is \code{NA} (transparent).}
 
 \item{fill}{Character. The fill color for the buffer area. Default is \code{"#D2D5EB"}.}
 
 \item{...}{Additional parameters passed to \code{geom_sf}.}
 }
 \value{
-A ggplot2 layer displaying buffered areas around China's border,
-with the ten-dash line buffer at half the mainland buffer distance,
+A ggplot2 layer displaying buffered areas around China's boundaries,
+with customizable buffer distances for the mainland boundary and the ten-segment line,
 using the specified projection.
 }
 \description{
-A ggplot2 layer for creating buffered areas around China's border, including
-both the mainland border and the ten-dash line. Generates a buffer with a specified distance
-around the border.
+This function creates a ggplot2 layer for displaying buffered areas around China's boundaries,
+including both the mainland boundary and the ten-segment line. Buffers with user-defined distances
+are generated around each boundary, providing flexibility in projection and appearance.
 }
 \examples{
 \dontrun{
-# Plot buffers using geom_buffer_cn with default data and projection
-ggplot2::ggplot() +
+# Plot buffers with specified distances for mainland and ten-segment line
+ggplot() +
   geom_buffer_cn(
-    mainland_dist = 10000
+    mainland_dist = 10000,
+    ten_line_dist = 5000
   ) +
   theme_minimal()
 
-# Plot with a custom projection (Mercator)
-ggplot2::ggplot() +
-  geom_buffer_cn(
-    mainland_dist = 10000,
-    fill="#BBB3D8",
-    crs = "+proj=merc"
-  ) +
-  theme_minimal()
 }
 }

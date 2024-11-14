@@ -2,48 +2,76 @@
 % Please edit documentation in R/geom_boundary_cn.R
 \name{geom_boundary_cn}
 \alias{geom_boundary_cn}
-\title{Plot Mainland Boundary and Coastline for China}
+\title{Plot Boundaries of China}
 \usage{
 geom_boundary_cn(
+  crs = "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs",
   mainland_color = "black",
   mainland_size = 0.5,
-  coastline_color = "skyblue",
-  coastline_size = 0.5,
-  crs = "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs",
+  mainland_linetype = "solid",
+  coastline_color = "blue",
+  coastline_size = 0.3,
+  coastline_linetype = "solid",
+  ten_segment_line_color = "black",
+  ten_segment_line_size = 0.5,
+  ten_segment_line_linetype = "solid",
+  SAR_boundary_color = "grey",
+  SAR_boundary_size = 0.5,
+  SAR_boundary_linetype = "dashed",
+  undefined_boundary_color = "black",
+  undefined_boundary_size = 0.5,
+  undefined_boundary_linetype = "longdash",
   ...
 )
 }
 \arguments{
-\item{mainland_color}{Character. The color for the mainland boundary. Default is "black".}
-
-\item{mainland_size}{Numeric. The line width for the mainland boundary. Default is \code{0.5}.}
-
-\item{coastline_color}{Character. The color for the coastline. Default is "skyblue".}
-
-\item{coastline_size}{Numeric. The line width for the coastline. Default is \code{0.5}.}
-
-\item{crs}{Character. The coordinate reference system (CRS) for the projection.
+\item{crs}{Character. Coordinate reference system (CRS) for the projection.
 Defaults to "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs".
 Users can specify other CRS strings to customize the projection (e.g., "+proj=merc" for Mercator).}
+
+\item{mainland_color}{Character. Color for the mainland boundary. Default is "black".}
+
+\item{mainland_size}{Numeric. Line width for the mainland boundary. Default is \code{0.5}.}
+
+\item{mainland_linetype}{Character. Line type for the mainland boundary. Default is \code{"solid"}.}
+
+\item{coastline_color}{Character. Color for the coastline. Default is "blue".}
+
+\item{coastline_size}{Numeric. Line width for the coastline. Default is \code{0.3}.}
+
+\item{coastline_linetype}{Character. Line type for the coastline. Default is \code{"solid"}.}
+
+\item{ten_segment_line_color}{Character. Color for the ten-segment line. Default is \code{"black"}.}
+
+\item{ten_segment_line_size}{Numeric. Line width for the ten-segment line. Default is \code{0.5}.}
+
+\item{ten_segment_line_linetype}{Character. Line type for the ten-segment line. Default is \code{"solid"}.}
+
+\item{SAR_boundary_color}{Character. Color for the SAR boundary. Default is \code{"grey"}.}
+
+\item{SAR_boundary_size}{Numeric. Line width for the SAR boundary. Default is \code{0.5}.}
+
+\item{SAR_boundary_linetype}{Character. Line type for the SAR boundary. Default is \code{"dashed"}.}
+
+\item{undefined_boundary_color}{Character. Color for the undefined boundary. Default is \code{"lightgrey"}.}
+
+\item{undefined_boundary_size}{Numeric. Line width for the undefined boundary. Default is \code{0.5}.}
+
+\item{undefined_boundary_linetype}{Character. Line type for the undefined boundary. Default is \code{"longdash"}.}
 
 \item{...}{Additional parameters passed to \code{geom_sf}.}
 }
 \value{
-A ggplot2 layer displaying China's mainland boundary and coastline with specified styles.
+A ggplot2 layer displaying China's multi-segment boundaries with the specified styles.
 }
 \description{
-A ggplot2 layer for plotting China's mainland boundary and coastline with customizable colors and line widths.
+Draws various types of boundaries for China, including mainland boundaries, coastlines, ten-segment line, special administrative region (SAR) boundaries, and undefined boundaries. Each boundary type can be customized in terms of color, line width, and line type.
 }
 \examples{
 \dontrun{
-# Plot China's boundary with default settings
-ggplot2::ggplot() +
-  geom_boundary_cn(
-    mainland_color = "black",
-    mainland_size = 0.5,
-    coastline_color = "#00A0E9",
-    coastline_size = 0.5
-  ) +
+# Plot China's boundaries with default settings
+ggplot() +
+  geom_boundary_cn() +
   theme_minimal()
 }
 }
