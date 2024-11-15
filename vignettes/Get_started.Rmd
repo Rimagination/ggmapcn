@@ -1,0 +1,42 @@
+---
+title: "Get_started"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Get_started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(ggmapcn)
+```
+
+## Basic Map Plot
+
+To plot a map of China with province boundaries, use the `geom_mapcn()` function. The map uses the Azimuthal Equal Distance projection by default.
+
+```{r example1, fig.alt='Basic Map'}
+ggplot() +
+  geom_mapcn() +
+  theme_minimal()
+```
+
+## Example
+
+Here’s a comprehensive example demonstrating how to plot province boundaries, buffer zones, and coastlines on the same map:
+
+```{r example5, fig.alt='Map of China'}
+ggplot() +
+  geom_buffer_cn(mainland_dist = 40000) +
+  geom_buffer_cn(mainland_dist = 20000, fill = "#BBB3D8") +
+  geom_mapcn(fill = "white") +
+  geom_boundary_cn() +
+  theme_minimal()
+```
