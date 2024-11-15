@@ -1,5 +1,5 @@
 ---
-title: Adding_Spatial_Data
+title: "Adding_Spatial_Data"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Adding_Spatial_Data}

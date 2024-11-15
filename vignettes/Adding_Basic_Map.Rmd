@@ -1,8 +1,8 @@
 ---
-title: Get_Started
+title: "Adding_Basic_Map"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Get_Started}
+  %\VignetteIndexEntry{Adding_Basic_Map}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
