@@ -1,11 +1,16 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://rimagination.github.io/ggmapcn/404.html</loc></url>
+<url><loc>https://rimagination.github.io/ggmapcn/articles/Adding_Spatial_Data.html</loc></url>
+<url><loc>https://rimagination.github.io/ggmapcn/articles/ggmapcn.html</loc></url>
+<url><loc>https://rimagination.github.io/ggmapcn/articles/index.html</loc></url>
 <url><loc>https://rimagination.github.io/ggmapcn/authors.html</loc></url>
 <url><loc>https://rimagination.github.io/ggmapcn/index.html</loc></url>
 <url><loc>https://rimagination.github.io/ggmapcn/reference/geom_boundary_cn.html</loc></url>
 <url><loc>https://rimagination.github.io/ggmapcn/reference/geom_buffer_cn.html</loc></url>
+<url><loc>https://rimagination.github.io/ggmapcn/reference/geom_loc.html</loc></url>
 <url><loc>https://rimagination.github.io/ggmapcn/reference/geom_mapcn.html</loc></url>
 <url><loc>https://rimagination.github.io/ggmapcn/reference/geom_vege_raster.html</loc></url>
 <url><loc>https://rimagination.github.io/ggmapcn/reference/index.html</loc></url>
+<url><loc>https://rimagination.github.io/ggmapcn/reference/pollen.html</loc></url>
 </urlset>
 
