@@ -1,12 +1,3 @@
 url: https://rimagination.github.io/ggmapcn/
 template:
   bootstrap: 5
-navigation:
-  main:
-    - title: "Get Started"
-      path: Get_Started.html
-  articles:
-    - title: "Articles"
-      contents:
-        - title: "Adding Spatial Data"
-          path: Adding_Spatial_Data.html
