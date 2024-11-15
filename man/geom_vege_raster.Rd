@@ -44,22 +44,26 @@ The default color table provides recommended colors suited for vegetation classi
 \dontrun{
 # Add vegetation raster of China to a ggplot
 ggplot() +
-geom_vege_raster() +
-theme_minimal()
+  geom_vege_raster() +
+  theme_minimal()
 
 # Customize color table
 custom_colors <- data.frame(
-    code = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
-    type = c("Non-vegetated", "Needleleaf forest", "Needleleaf and broadleaf mixed forest",
-             "Broadleaf forest", "Scrub", "Desert", "Steppe", "Grassland",
-             "Meadow", "Swamp", "Alpine vegetation", "Cultivated vegetation"),
-    col = c("#8D99B3", "#97B555", "#34BF36", "#9ACE30", "#2EC6C9", "#E5CE0E",
-            "#5BB1ED", "#6494EF", "#7AB9CB", "#D97A80", "#B87701", "#FEB780")
+  code = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
+  type = c(
+    "Non-vegetated", "Needleleaf forest", "Needleleaf and broadleaf mixed forest",
+    "Broadleaf forest", "Scrub", "Desert", "Steppe", "Grassland",
+    "Meadow", "Swamp", "Alpine vegetation", "Cultivated vegetation"
+  ),
+  col = c(
+    "#8D99B3", "#97B555", "#34BF36", "#9ACE30", "#2EC6C9", "#E5CE0E",
+    "#5BB1ED", "#6494EF", "#7AB9CB", "#D97A80", "#B87701", "#FEB780"
+  )
 )
 ggplot() +
-geom_vege_raster(color_table = custom_colors) +
-labs(fill = "Vegetation type group") +
-theme_minimal()
+  geom_vege_raster(color_table = custom_colors) +
+  labs(fill = "Vegetation type group") +
+  theme_minimal()
 }
 }
 \references{

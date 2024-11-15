@@ -39,12 +39,12 @@ default.
 
 ``` r
 ggplot() +
-    geom_mapcn() +
-    theme_minimal()
+  geom_mapcn() +
+  theme_minimal()
 #> Linking to GEOS 3.11.2, GDAL 3.8.2, PROJ 9.3.1; sf_use_s2() is TRUE
 ```
 
-<img src="man/figures/README-example2-1.png" width="100%" />
+<img src="man/figures/README-example2-1.png" alt="Basic Map" width="100%" />
 
 ## Custom Projection and Styling
 
@@ -52,11 +52,11 @@ If you want to try the Albers projection, you can customize it.
 
 ``` r
 ggplot() +
-    geom_mapcn(crs = "+proj=aea +lat_1=25 +lat_2=47 +lat_0=0 +lon_0=105 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs", color = "black", fill = "white", size = 0.7) +
-    theme_minimal()
+  geom_mapcn(crs = "+proj=aea +lat_1=25 +lat_2=47 +lat_0=0 +lon_0=105 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs", color = "black", fill = "white", size = 0.7) +
+  theme_minimal()
 ```
 
-<img src="man/figures/README-example3-1.png" width="100%" />
+<img src="man/figures/README-example3-1.png" alt="Basic Map" width="100%" />
 
 ## Adding Mainland Borders and Coastlines
 
@@ -66,17 +66,17 @@ coastline boundaries:
 
 ``` r
 ggplot() +
-    geom_mapcn(fill = NA) +
-    geom_boundary_cn(
-        mainland_color = "black",
-        mainland_size = 0.5,
-        coastline_color = "skyblue",
-        coastline_size = 0.5
-    ) +
-    theme_minimal()
+  geom_mapcn(fill = NA) +
+  geom_boundary_cn(
+    mainland_color = "black",
+    mainland_size = 0.5,
+    coastline_color = "skyblue",
+    coastline_size = 0.5
+  ) +
+  theme_minimal()
 ```
 
-<img src="man/figures/README-example4-1.png" width="100%" />
+<img src="man/figures/README-example4-1.png" alt="Map with Boundary" width="100%" />
 
 ## Adding Buffer Zones
 
@@ -86,12 +86,12 @@ example below shows buffer zones with varying distances:
 
 ``` r
 ggplot() +
-    geom_buffer_cn(mainland_dist = 40000) +
-    geom_buffer_cn(mainland_dist = 20000, fill = "#BBB3D8") +
-    theme_minimal()
+  geom_buffer_cn(mainland_dist = 40000) +
+  geom_buffer_cn(mainland_dist = 20000, fill = "#BBB3D8") +
+  theme_minimal()
 ```
 
-<img src="man/figures/README-example5-1.png" width="100%" />
+<img src="man/figures/README-example5-1.png" alt="Buffer" width="100%" />
 
 ## Data Source
 
@@ -108,11 +108,11 @@ boundaries, buffer zones, and coastlines on the same map:
 
 ``` r
 ggplot() +
-    geom_buffer_cn(mainland_dist = 40000) +
-    geom_buffer_cn(mainland_dist = 20000, fill = "#BBB3D8") +
-    geom_mapcn(fill = "white") + 
-    geom_boundary_cn() +
-    theme_minimal()
+  geom_buffer_cn(mainland_dist = 40000) +
+  geom_buffer_cn(mainland_dist = 20000, fill = "#BBB3D8") +
+  geom_mapcn(fill = "white") +
+  geom_boundary_cn() +
+  theme_minimal()
 ```
 
-<img src="man/figures/README-example6-1.png" width="100%" />
+<img src="man/figures/README-example6-1.png" alt="Map of China" width="100%" />

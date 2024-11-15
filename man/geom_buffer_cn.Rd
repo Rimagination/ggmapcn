@@ -48,6 +48,5 @@ ggplot() +
     ten_line_dist = 5000
   ) +
   theme_minimal()
-
 }
 }

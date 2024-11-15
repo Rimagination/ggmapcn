@@ -1,0 +1,15 @@
+#' Modern Pollen Sampling Sites in China
+#'
+#' This dataset contains information on 4,497 modern pollen sampling sites across China,
+#' including geographic coordinates, elevation, and sample types. It does not contain
+#' specific pollen data but serves as a valuable resource for identifying locations
+#' where modern pollen samples were collected. This information can be used to study
+#' vegetation patterns and environmental reconstructions by correlating with other data sources.
+#'
+#' @references
+#' Chen, H.-Y., Xu, D.-Y., Liao, M.-N., Li, K., Ni, J., Cao, X.-Y., Cheng, B., Hao, X.-D., Kong, Z.-C., Li, S.-F., Li, X.-Q., Liu, G.-X., Liu, P.-M., Liu, X.-Q., Sun, X.-J., Tang, L.-Y., Wei, H.-C., Xu, Q.-H., Yan, S., Yang, X.-D., Yang, Z.-J., Yu, G., Zhang, Y., Zhang, Z.-Y., Zhao, K.-L., Zheng, Z., Herzschuh, U. (2021). A modern pollen dataset of China. *Chinese Journal of Plant Ecology*, 45(7), 799–808. \doi{10.17521/cjpe.2021.0024}.
+#'
+#' @examples
+#' data(pollen)
+#' head(pollen)
+"pollen"

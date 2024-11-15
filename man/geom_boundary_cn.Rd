@@ -6,6 +6,8 @@
 \usage{
 geom_boundary_cn(
   crs = "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs",
+  compass = FALSE,
+  scale = FALSE,
   mainland_color = "black",
   mainland_size = 0.5,
   mainland_linetype = "solid",
@@ -65,7 +67,9 @@ Users can specify other CRS strings to customize the projection (e.g., "+proj=me
 A ggplot2 layer displaying China's multi-segment boundaries with the specified styles.
 }
 \description{
-Draws various types of boundaries for China, including mainland boundaries, coastlines, ten-segment line, special administrative region (SAR) boundaries, and undefined boundaries. Each boundary type can be customized in terms of color, line width, and line type.
+Draws various types of boundaries for China, including mainland boundaries,
+coastlines, ten-segment line, special administrative region (SAR) boundaries, and undefined boundaries.
+Each boundary type can be customized in terms of color, line width, and line type.
 }
 \examples{
 \dontrun{

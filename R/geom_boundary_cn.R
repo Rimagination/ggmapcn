@@ -1,6 +1,8 @@
 #' Plot Boundaries of China
 #'
-#' Draws various types of boundaries for China, including mainland boundaries, coastlines, ten-segment line, special administrative region (SAR) boundaries, and undefined boundaries. Each boundary type can be customized in terms of color, line width, and line type.
+#' Draws various types of boundaries for China, including mainland boundaries,
+#' coastlines, ten-segment line, special administrative region (SAR) boundaries, and undefined boundaries.
+#' Each boundary type can be customized in terms of color, line width, and line type.
 #'
 #' @param crs Character. Coordinate reference system (CRS) for the projection.
 #'   Defaults to "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs".
@@ -35,19 +37,19 @@
 #' @export
 geom_boundary_cn <- function(
     crs = "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs",
+    compass = FALSE, scale = FALSE,
     mainland_color = "black", mainland_size = 0.5, mainland_linetype = "solid",
     coastline_color = "blue", coastline_size = 0.3, coastline_linetype = "solid",
     ten_segment_line_color = "black", ten_segment_line_size = 0.5, ten_segment_line_linetype = "solid",
     SAR_boundary_color = "grey", SAR_boundary_size = 0.5, SAR_boundary_linetype = "dashed",
     undefined_boundary_color = "black", undefined_boundary_size = 0.5, undefined_boundary_linetype = "longdash",
     ...) {
-
   # Load the boundary data
   file_path <- system.file("extdata", "boundary.geojson", package = "ggmapcn")
-  boundary <- st_read(file_path, quiet = TRUE)
+  boundary <- sf::st_read(file_path, quiet = TRUE)
 
   # Apply the specified projection
-  boundary <- st_transform(boundary, crs = crs)
+  boundary <- sf::st_transform(boundary, crs = crs)
 
   # Split the data into different types based on the name attribute
   mainland <- boundary[boundary$name == "mainland", ]

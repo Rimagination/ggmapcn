@@ -27,10 +27,9 @@
 #'     ten_line_dist = 5000
 #'   ) +
 #'   theme_minimal()
-#'
 #' }
 #' @import ggplot2
-#' @importFrom sf st_read st_transform
+#' @importFrom sf st_read st_transform st_buffer st_as_sf st_geometry
 #' @export
 geom_buffer_cn <- function(mainland_dist = 20000,
                            ten_line_dist = NULL,
@@ -38,7 +37,7 @@ geom_buffer_cn <- function(mainland_dist = 20000,
                            color = NA,
                            fill = "#D2D5EB",
                            ...) {
-  library(sf)
+
   # Direction vector: alternate directions for each ten-segment line
   ten_line_direction <- c(1, -1, -1, -1, -1, -1, 1, 1, 1, 1)
 
@@ -49,17 +48,17 @@ geom_buffer_cn <- function(mainland_dist = 20000,
 
   # Load the boundary data
   file_path <- system.file("extdata", "buffer_line.geojson", package = "ggmapcn")
-  data <- st_read(file_path, quiet = TRUE)
+  data <- sf::st_read(file_path, quiet = TRUE)
 
   # Apply specified or default projection
-  data <- st_transform(data, crs = crs)
+  data <- sf::st_transform(data, crs = crs)
 
   # Create buffer for mainland boundary
-  mainland_buffer <- st_buffer(data[data$name == "mainland", ], dist = mainland_dist)
+  mainland_buffer <- sf::st_buffer(data[data$name == "mainland", ], dist = mainland_dist)
 
   # Apply buffer to each segment of the ten-segment line using specified distances and directions
   ten_segment_buffers <- mapply(function(line, dir) {
-    st_buffer(line, dist = ten_line_dist * dir, singleSide = TRUE)
+    sf::st_buffer(line, dist = ten_line_dist * dir, singleSide = TRUE)
   }, split(data[data$name == "ten_segment_line", ], seq_len(nrow(data[data$name == "ten_segment_line", ]))),
   ten_line_direction, SIMPLIFY = FALSE)
 
@@ -70,7 +69,7 @@ geom_buffer_cn <- function(mainland_dist = 20000,
   ten_segment_buffers$name <- "ten_segment_buffer"
 
   # Convert mainland buffer to sf with name attribute
-  mainland_buffer <- st_as_sf(data.frame(name = "mainland_buffer", geometry = st_geometry(mainland_buffer)))
+  mainland_buffer <- sf::st_as_sf(data.frame(name = "mainland_buffer", geometry = sf::st_geometry(mainland_buffer)))
 
   # Combine mainland and ten-segment buffers
   buffer_data <- rbind(mainland_buffer, ten_segment_buffers)
