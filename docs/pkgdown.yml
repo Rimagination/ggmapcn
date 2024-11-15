@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   01.Get_Started: 01.Get_Started.html
   02.Adding_Spatial_Data: 02.Adding_Spatial_Data.html
-last_built: 2024-11-15T13:02Z
+last_built: 2024-11-15T14:00Z
 urls:
   reference: https://rimagination.github.io/ggmapcn/reference
   article: https://rimagination.github.io/ggmapcn/articles

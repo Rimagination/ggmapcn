@@ -1,8 +1,8 @@
 ---
-title: "Get_started"
+title: Get_Started
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Get_started}
+  %\VignetteIndexEntry{Get_Started}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -38,5 +38,5 @@ ggplot() +
   geom_buffer_cn(mainland_dist = 20000, fill = "#BBB3D8") +
   geom_mapcn(fill = "white") +
   geom_boundary_cn() +
-  theme_minimal()
+  theme_bw()
 ```
