@@ -1,4 +1,6 @@
 url: https://rimagination.github.io/ggmapcn/
 template:
   bootstrap: 5
+page: "ggmapcn.md"
+article: "Adding_Spatial_Data.html"
 
