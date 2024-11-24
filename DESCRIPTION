@@ -18,8 +18,8 @@ Imports:
     ggspatial (>= 1.1.8),
     terra (>= 1.7),
     tidyterra (>= 0.6.0)
-URL: https://rimagination.github.io/ggmapcn/
-BugReports: https://github.com/yourusername/yourrepository/issues
+URL: https://github.com/Rimagination/ggmapcn
+BugReports: https://github.com/Rimagination/ggmapcn/issues
 Suggests: 
     knitr,
     rmarkdown

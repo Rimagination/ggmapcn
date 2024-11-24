@@ -21,4 +21,4 @@ navbar:
           href: articles/Adding_Spatial_Data.html
   right:
     - text: GitHub
-      href: https://rimagination.github.io/ggmapcn/
+      href: https://github.com/Rimagination/ggmapcn
