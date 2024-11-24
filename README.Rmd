@@ -85,5 +85,4 @@ ggplot() +
 
 ## Data Source
 
-The data used in this package is sourced from Tianditu, providing province-level boundary information. This data has been processed into GeoJSON format and is integrated into the package for easy access.
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
+The data used in this package is sourced from Tianditu (https://cloudcenter.tianditu.gov.cn/administrativeDivision/), a reliable provider of province-, city-, and county-level boundary information in China. This administrative division data has been processed into GeoJSON format for seamless integration into the package, enabling easy access and visualization.
