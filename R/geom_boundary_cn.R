@@ -3,10 +3,17 @@
 #' Draws various types of boundaries for China, including mainland boundaries,
 #' coastlines, ten-segment line, special administrative region (SAR) boundaries, and undefined boundaries.
 #' Each boundary type can be customized in terms of color, line width, and line type.
+#' This function also allows optional addition of a compass and a scale bar.
 #'
 #' @param crs Character. Coordinate reference system (CRS) for the projection.
 #'   Defaults to "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs".
 #'   Users can specify other CRS strings to customize the projection (e.g., "+proj=merc" for Mercator).
+#' @param compass Logical. Whether to display a compass (north arrow). Default is `FALSE`.
+#'   If set to `TRUE`, a default compass (north arrow) with `ggspatial::north_arrow_fancy_orienteering()`
+#'   will be added to the top-left corner. To customize the compass, use `ggspatial::annotation_north_arrow()` directly.
+#' @param scale Logical. Whether to display a scale bar. Default is `FALSE`.
+#'   If set to `TRUE`, a default scale bar with `ggspatial::annotation_scale()` will be added to the bottom-left corner.
+#'   To customize the scale bar, use `ggspatial::annotation_scale()` directly.
 #' @param mainland_color Character. Color for the mainland boundary. Default is "black".
 #' @param mainland_size Numeric. Line width for the mainland boundary. Default is `0.5`.
 #' @param mainland_linetype Character. Line type for the mainland boundary. Default is `"solid"`.
@@ -24,7 +31,8 @@
 #' @param undefined_boundary_linetype Character. Line type for the undefined boundary. Default is `"longdash"`.
 #' @param ... Additional parameters passed to `geom_sf`.
 #'
-#' @return A ggplot2 layer displaying China's multi-segment boundaries with the specified styles.
+#' @return A ggplot2 layer (or list of layers) displaying China's multi-segment boundaries with the specified styles,
+#'   optionally including a compass (north arrow) and a scale bar.
 #'
 #' @examples
 #' \dontrun{
@@ -32,8 +40,25 @@
 #' ggplot() +
 #'   geom_boundary_cn() +
 #'   theme_minimal()
+#'
+#' # Plot China's boundaries with a compass and scale bar
+#' ggplot() +
+#'   geom_boundary_cn(compass = TRUE, scale = TRUE) +
+#'   theme_minimal()
+#'
+#' # For customized compass or scale bar, use ggspatial directly:
+#' ggplot() +
+#'   geom_boundary_cn() +
+#'   ggspatial::annotation_north_arrow(
+#'     location = "br", style = ggspatial::north_arrow_minimal()
+#'   ) +
+#'   ggspatial::annotation_scale(
+#'     location = "tr", width_hint = 0.3
+#'   ) +
+#'   theme_minimal()
 #' }
 #' @importFrom sf st_read st_transform
+#' @importFrom ggspatial annotation_north_arrow annotation_scale
 #' @export
 geom_boundary_cn <- function(
     crs = "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs",
@@ -59,11 +84,34 @@ geom_boundary_cn <- function(
   undefined_boundary <- boundary[boundary$name == "undefined_boundary", ]
 
   # Create ggplot layers for each boundary type with specified styles
-  list(
-    geom_sf(data = mainland, color = mainland_color, size = mainland_size, linetype = mainland_linetype, ...),
-    geom_sf(data = coastline, color = coastline_color, size = coastline_size, linetype = coastline_linetype, ...),
-    geom_sf(data = ten_segment_line, color = ten_segment_line_color, size = ten_segment_line_size, linetype = ten_segment_line_linetype, ...),
-    geom_sf(data = SAR_boundary, color = SAR_boundary_color, size = SAR_boundary_size, linetype = SAR_boundary_linetype, ...),
-    geom_sf(data = undefined_boundary, color = undefined_boundary_color, size = undefined_boundary_size, linetype = undefined_boundary_linetype, ...)
+  layers <- list(
+    geom_sf(data = mainland, color = mainland_color, linewidth = mainland_size, linetype = mainland_linetype, ...),
+    geom_sf(data = coastline, color = coastline_color, linewidth = coastline_size, linetype = coastline_linetype, ...),
+    geom_sf(data = ten_segment_line, color = ten_segment_line_color, linewidth = ten_segment_line_size, linetype = ten_segment_line_linetype, ...),
+    geom_sf(data = SAR_boundary, color = SAR_boundary_color, linewidth = SAR_boundary_size, linetype = SAR_boundary_linetype, ...),
+    geom_sf(data = undefined_boundary, color = undefined_boundary_color, linewidth = undefined_boundary_size, linetype = undefined_boundary_linetype, ...)
   )
+
+  # Add compass if requested
+  if (compass) {
+    layers <- append(layers, list(
+      ggspatial::annotation_north_arrow(
+        location = "tl",  # Top-left position
+        which_north = "true",
+        style = ggspatial::north_arrow_fancy_orienteering()
+      )
+    ))
+  }
+
+  # Add scale bar if requested
+  if (scale) {
+    layers <- append(layers, list(
+      ggspatial::annotation_scale(
+        location = "bl",  # Bottom-left position
+        width_hint = 0.25
+      )
+    ))
+  }
+
+  return(layers)
 }

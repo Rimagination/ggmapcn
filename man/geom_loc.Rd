@@ -2,7 +2,7 @@
 % Please edit documentation in R/geom_loc.R
 \name{geom_loc}
 \alias{geom_loc}
-\title{Add Spatial Point Data Layer with Color by Grouping}
+\title{Visualize Spatial Point Data}
 \usage{
 geom_loc(
   data,
@@ -14,33 +14,61 @@ geom_loc(
 )
 }
 \arguments{
-\item{data}{A data frame, tibble, or \code{sf} object.}
+\item{data}{A data frame, tibble, or \code{sf} object containing spatial point data.}
 
-\item{lon}{Character. The name of the longitude column in \code{data} (required if \code{data} is tabular).}
+\item{lon}{A character string. The name of the longitude column in \code{data}
+(required if \code{data} is tabular).}
 
-\item{lat}{Character. The name of the latitude column in \code{data} (required if \code{data} is tabular).}
+\item{lat}{A character string. The name of the latitude column in \code{data}
+(required if \code{data} is tabular).}
 
-\item{crs}{Character. Coordinate reference system (CRS) to which the data should be transformed. Defaults to "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs".}
+\item{crs}{A character string. The target coordinate reference system (CRS) for the data.
+Defaults to \code{"+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs"}.}
 
-\item{mapping}{Aesthetic mappings created by \code{aes()}, such as \code{color}.}
+\item{mapping}{Aesthetic mappings created by \code{\link[ggplot2:aes]{ggplot2::aes()}},
+such as \code{color} or \code{size}.}
 
-\item{...}{Additional aesthetic mappings passed to \code{geom_sf}, such as \code{size}, \code{alpha}.}
+\item{...}{Additional parameters passed to \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}},
+such as \code{size}, \code{alpha}, or \code{color}.}
 }
 \value{
-A ggplot layer displaying spatial data as points in the specified CRS.
+A \pkg{ggplot2} layer for visualizing spatial point data.
 }
 \description{
-\code{geom_loc} is a flexible function that adds spatial data to a ggplot, supporting both \code{sf} and tabular data frames.
-It allows color mapping based on a grouping variable in the data.
+\code{geom_loc} is a wrapper around \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}} designed
+for visualizing spatial point data. It supports both \code{sf} objects and tabular data frames
+with longitude and latitude columns, automatically transforming them into the specified
+coordinate reference system (CRS).
+}
+\details{
+This function simplifies the process of visualizing spatial data in ggplot2 by automatically
+handling CRS transformations and providing an interface for both \code{sf} and tabular data.
+If the input is a tabular data frame, it will be converted to an \code{sf} object using the
+specified longitude and latitude columns.
+
+See \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}} for details on additional parameters
+and aesthetics.
 }
 \examples{
-# Example with tabular data from the package
-data(pollen) # Load the example data provided by the package
+# Generate a random dataset with latitude and longitude
+set.seed(123)
+data_sim <- data.frame(
+  Longitude = runif(100, 80, 120),
+  Latitude = runif(100, 28, 40),
+  Category = sample(c("Type A", "Type B", "Type C"), 100, replace = TRUE)
+)
+
+# Visualize the data with China's boundaries
 ggplot() +
+  geom_boundary_cn() +
   geom_loc(
-    data = pollen, lon = "Longitude", lat = "Latitude",
-    mapping = aes(color = `Sample type`), size = 1, alpha = 0.7
+    data = data_sim, lon = "Longitude", lat = "Latitude",
+    mapping = aes(color = Category), size = 1, alpha = 0.7
   ) +
-  labs(title = "Sample Points on Map")
+  theme_minimal()
 
 }
+\seealso{
+\code{\link[ggmapcn]{geom_boundary_cn}}
+}
+\concept{ggplot2.utils}

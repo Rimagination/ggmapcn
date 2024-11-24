@@ -31,6 +31,14 @@ geom_boundary_cn(
 Defaults to "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs".
 Users can specify other CRS strings to customize the projection (e.g., "+proj=merc" for Mercator).}
 
+\item{compass}{Logical. Whether to display a compass (north arrow). Default is \code{FALSE}.
+If set to \code{TRUE}, a default compass (north arrow) with \code{ggspatial::north_arrow_fancy_orienteering()}
+will be added to the top-left corner. To customize the compass, use \code{ggspatial::annotation_north_arrow()} directly.}
+
+\item{scale}{Logical. Whether to display a scale bar. Default is \code{FALSE}.
+If set to \code{TRUE}, a default scale bar with \code{ggspatial::annotation_scale()} will be added to the bottom-left corner.
+To customize the scale bar, use \code{ggspatial::annotation_scale()} directly.}
+
 \item{mainland_color}{Character. Color for the mainland boundary. Default is "black".}
 
 \item{mainland_size}{Numeric. Line width for the mainland boundary. Default is \code{0.5}.}
@@ -64,18 +72,36 @@ Users can specify other CRS strings to customize the projection (e.g., "+proj=me
 \item{...}{Additional parameters passed to \code{geom_sf}.}
 }
 \value{
-A ggplot2 layer displaying China's multi-segment boundaries with the specified styles.
+A ggplot2 layer (or list of layers) displaying China's multi-segment boundaries with the specified styles,
+optionally including a compass (north arrow) and a scale bar.
 }
 \description{
 Draws various types of boundaries for China, including mainland boundaries,
 coastlines, ten-segment line, special administrative region (SAR) boundaries, and undefined boundaries.
 Each boundary type can be customized in terms of color, line width, and line type.
+This function also allows optional addition of a compass and a scale bar.
 }
 \examples{
 \dontrun{
 # Plot China's boundaries with default settings
 ggplot() +
   geom_boundary_cn() +
+  theme_minimal()
+
+# Plot China's boundaries with a compass and scale bar
+ggplot() +
+  geom_boundary_cn(compass = TRUE, scale = TRUE) +
+  theme_minimal()
+
+# For customized compass or scale bar, use ggspatial directly:
+ggplot() +
+  geom_boundary_cn() +
+  ggspatial::annotation_north_arrow(
+    location = "br", style = ggspatial::north_arrow_minimal()
+  ) +
+  ggspatial::annotation_scale(
+    location = "tr", width_hint = 0.3
+  ) +
   theme_minimal()
 }
 }

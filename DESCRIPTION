@@ -1,11 +1,11 @@
 Package: ggmapcn
 Title: Customizable China Map Visualizations
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: 
       person("Liang", "Ren", , "rl23@mails.tsinghua.edu.cn", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-2360-7900"))
 Description: ggmapcn is a ggplot2 extension package for visualizing China’s map with customizable projections and styling.
-License: GPL (>= 2)
+License: GPL-3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2

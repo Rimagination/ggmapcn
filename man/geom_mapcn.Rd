@@ -2,56 +2,91 @@
 % Please edit documentation in R/geom_mapcn.R
 \name{geom_mapcn}
 \alias{geom_mapcn}
-\title{Plot China Map with Custom Projection}
-\source{
-China map data provided by Tianditu, available at \url{https://cloudcenter.tianditu.gov.cn/administrativeDivision}
-}
+\title{Plot China Map with Customizable Options}
 \usage{
 geom_mapcn(
   data = NULL,
-  mapping = aes(),
-  color = "grey",
-  fill = "white",
+  admin_level = "province",
   crs = "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs",
-  size = 0.2,
+  color = "black",
+  fill = "white",
+  linewidth = 0.5,
+  filter_attribute = NULL,
+  filter = NULL,
   ...
 )
 }
 \arguments{
-\item{data}{\code{sf} object with China's map data, or \code{NULL} to load the package's default map.}
+\item{data}{An \code{sf} object containing China's map data. If \code{NULL},
+the function loads the package's default map. Users can select provincial,
+municipal, or county-level maps using the \code{admin_level} parameter.}
 
-\item{color}{Border color for provinces. Default is "black".}
+\item{admin_level}{A character string specifying the administrative level of the map.
+Options are \code{"province"} (default), \code{"city"}, or \code{"county"}.
+The corresponding GeoJSON files (\code{China_sheng.geojson}, \code{China_shi.geojson},
+\code{China_xian.geojson}) must be located in the package's \code{extdata} folder.}
 
-\item{fill}{Fill color for provinces. Default is "white".}
+\item{crs}{A character string specifying the target coordinate reference system (CRS).
+Defaults to \code{"+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs"}.
+Users can specify other CRS strings or EPSG codes (e.g., \code{"EPSG:4326"}).}
 
-\item{crs}{The coordinate reference system (CRS) for the projection.
-Defaults to "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs".
-Users can specify other CRS strings (e.g., "+proj=merc" for Mercator) or use EPSG codes (e.g., "epsg:4326") to customize the projection.}
+\item{color}{A character string specifying the border color. Default is \code{"black"}.}
 
-\item{size}{Numeric. The width of the border lines for provinces. Default is \code{0.5}.}
+\item{fill}{A character string specifying the fill color. Default is \code{"white"}.}
 
-\item{...}{Additional parameters for \code{geom_sf}.}
+\item{linewidth}{A numeric value specifying the line width for borders. Default is \code{0.5}.}
+
+\item{filter_attribute}{A character string specifying the column name to use for filtering administrative regions.
+For example, use \code{"name_en"} for filtering by English province names. Default is \code{NULL}, meaning no filtering is applied.}
+
+\item{filter}{A character vector specifying the values to filter specific regions.
+For example, use \code{filter = c("Beijing", "Shanghai")} to visualize these regions only.
+Default is \code{NULL}, meaning no filtering is applied.}
+
+\item{...}{Additional parameters passed to \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}}, such as \code{alpha}.}
 }
 \value{
-A ggplot2 layer of China's provincial boundaries.
+A \pkg{ggplot2} layer for visualizing China's administrative boundaries.
 }
 \description{
-A ggplot2 layer to plot China's provincial map with a customizable projection.
+\code{geom_mapcn} is a wrapper around \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}} designed
+to visualize China's administrative boundaries with additional features such as filtering
+and support for custom projections.
+}
+\details{
+This function simplifies the process of visualizing China's administrative boundaries
+with customizable projections, filtering, and flexible aesthetics. Users can:
+\itemize{
+\item Select administrative levels (province, city, county) via the \code{admin_level} parameter.
+\item Filter specific regions using \code{filter_attribute} and \code{filter}.
+\item Apply custom projections and styling options.
+}
+
+See \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}} for details on additional parameters and aesthetics.
 }
 \examples{
-\dontrun{
-# Default map
+# Plot the default provincial map
 ggplot() +
-  geom_mapcn()
+  geom_mapcn() +
+  theme_minimal()
 
-# Load the China provincial map data from the package
-china_path <- system.file("extdata", "China_sheng.geojson", package = "ggmapcn")
-china_data <- sf::st_read(china_path, quiet = TRUE)
-
-# Use Albers Equal Area Conic projection
+# Use the municipal-level map
 ggplot() +
-  geom_mapcn(data=china_data, crs = "+proj=aea +lat_1=25 +lat_2=47 +lon_0=110")+
-  theme_bw() # Apply a black-and-white theme for a clean look
+  geom_mapcn(admin_level = "city", color = "blue", fill = "lightblue") +
+  theme_minimal()
+
+# Filter to display only specific provinces
+ggplot() +
+  geom_mapcn(filter_attribute = "name_en", filter = c("Beijing", "Shanghai"), fill = "red") +
+  theme_minimal()
+
+# Apply a Mercator projection
+ggplot() +
+  geom_mapcn(crs = "+proj=merc", linewidth = 0.7) +
+  theme_minimal()
+
 }
-
+\seealso{
+\code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}}, \code{\link[sf:st_transform]{sf::st_transform()}},
+\code{\link[sf:st_read]{sf::st_read()}}
 }

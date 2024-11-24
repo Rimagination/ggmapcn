@@ -12,7 +12,7 @@ province-level map data and supports adding mainland borders,
 coastlines, and buffer areas, making it easy to create geographic
 visualizations of China.
 
-## Installation
+# Installation
 
 You can install the development version of ggmapcn from
 [GitHub](https://github.com/) with `devtools`:
@@ -22,9 +22,9 @@ You can install the development version of ggmapcn from
 devtools::install_github("Rimagination/ggmapcn", force = TRUE)
 ```
 
-## Usage
+# Usage
 
-# Load the Package
+## Load the Package
 
 ``` r
 library(ggplot2)

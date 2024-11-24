@@ -16,6 +16,8 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(ggmapcn)
+# Define Azimuthal Equidistant projection centered on China
+china_proj <- "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs"
 ```
 
 ## Introduction
@@ -27,28 +29,49 @@ This vignette introduces two functions in the ggmapcn package: `geom_loc` and `g
 The `geom_loc` function allows you to add spatial point data to a ggplot, supporting both sf and tabular data frames, with color mapping based on a grouping variable.
 
 ```{r geom_loc, fig.alt='Sample site'}
-# Load the example data provided by the package
-data(pollen)
-
-# Create a ggplot with spatial points colored by 'Sample type'
+# Create a ggplot with spatial points colored by 'Category'
+set.seed(123)
+data_sim <- data.frame(
+   Longitude = runif(100, 80, 120),
+   Latitude = runif(100, 28, 40),
+   Category = sample(c("Type A", "Type B", "Type C"), 100, replace = TRUE)
+   )
 ggplot() +
-  geom_loc(
-    data = pollen, lon = "Longitude", lat = "Latitude",
-    mapping = aes(color = `Sample type`), size = 1, alpha = 0.7
-  ) +
-  labs(title = "Sample Points on Map")+
-  guides(color = guide_none()) +
-  theme_bw()
+   geom_boundary_cn() +
+   geom_loc(
+     data = data_sim, lon = "Longitude", lat = "Latitude",
+     mapping = aes(color = Category), size = 1, alpha = 0.7
+   ) +
+   theme_bw()
 ```
 
-## geom_vege_raster: Vegetation Map of China Layer for ggplot2
+## basemap_vege: Vegetation Map of China Layer for ggplot2
 
-The `geom_vege_raster` function adds a vegetation raster map of China with color-coded vegetation types to a ggplot.
+The `basemap_vege` function adds a vegetation raster map of China with color-coded vegetation types to a ggplot.
 
 ```{r vegetion map, fig.alt='Vegetation Map of China'}
 # Add vegetation raster of China to a ggplot
 ggplot() +
-  geom_vege_raster() +
+  basemap_vege() +
   guides(fill = guide_none()) +
   theme_bw()
+```
+
+## basemap_dem: Elevation Map of China Layer for ggplot2
+
+The `basemap_dem` function adds a digital elevation model (DEM) raster map of China as a layer to ggplot2.
+
+```{r dem map, fig.alt='Elevation Map of China'}
+# Apply Azimuthal Equidistant projection centered on China
+ggplot() +
+  basemap_dem(crs = china_proj, within_china = TRUE) +
+  geom_boundary_cn(crs = china_proj) +
+  tidyterra::scale_fill_hypso_c(
+    palette = "dem_print",
+    breaks = c(0, 2000, 4000, 6000),
+    limits = c(0, 7000)
+  ) +
+  labs(fill = "Elevation (m)") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
 ```
