@@ -38,6 +38,7 @@
     <li><a class="dropdown-item" href="../articles/Adding_Spatial_Data.html">Adding Spatial Data</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/Rimagination/ggmapcn">GitHub</a></li>
@@ -64,7 +65,7 @@
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rimagination.github.io/ggmapcn/">ggmapcn</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Rimagination/ggmapcn" class="external-link">ggmapcn</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: ggplot2</span></span>
 <span><span class="co"># Define Azimuthal Equidistant projection centered on China</span></span>
 <span><span class="va">china_proj</span> <span class="op">&lt;-</span> <span class="st">"+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs"</span></span></code></pre></div>
@@ -97,8 +98,7 @@ mapping based on a grouping variable.</p>
 <span>     data <span class="op">=</span> <span class="va">data_sim</span>, lon <span class="op">=</span> <span class="st">"Longitude"</span>, lat <span class="op">=</span> <span class="st">"Latitude"</span>,</span>
 <span>     mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">Category</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">1</span>, alpha <span class="op">=</span> <span class="fl">0.7</span></span>
 <span>   <span class="op">)</span> <span class="op">+</span></span>
-<span>   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Linking to GEOS 3.11.2, GDAL 3.8.2, PROJ 9.3.1; sf_use_s2() is TRUE</span></span></code></pre></div>
+<span>   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Adding_Spatial_Data_files/figure-html/geom_loc-1.png" alt="Sample site" width="700"></p>
 </div>
 <div class="section level2">
@@ -112,12 +112,6 @@ of China with color-coded vegetation types to a ggplot.</p>
 <span>  <span class="fu"><a href="../reference/basemap_vege.html">basemap_vege</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_none.html" class="external-link">guide_none</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; terra 1.7.78</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'tidyterra'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     filter</span></span>
 <span><span class="co">#&gt; <span style="color: #0000BB;">&lt;SpatRaster&gt;</span> resampled to <span style="color: #00BB00;">1000776</span> cells.</span></span>
 <span><span class="co">#&gt; Warning: Removed 715308 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_raster()`).</span></span></code></pre></div>

@@ -19,6 +19,8 @@ navbar:
           href: articles/Adding_Basic_Map.html
         - text: Adding Spatial Data
           href: articles/Adding_Spatial_Data.html
+    - text: News
+      href: news/index.html
   right:
     - text: GitHub
       href: https://github.com/Rimagination/ggmapcn

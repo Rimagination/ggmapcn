@@ -20,9 +20,11 @@ Imports:
     ggspatial (>= 1.1.8),
     terra (>= 1.7),
     tidyterra (>= 0.6.0)
-URL: https://github.com/Rimagination/ggmapcn
+URL: https://rimagination.github.io/ggmapcn
 BugReports: https://github.com/Rimagination/ggmapcn/issues
 Suggests: 
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+News: NEWS.md
+
