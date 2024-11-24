@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 # Installation
 
-You can install the development version of ggmapcn from [GitHub](https://github.com/) with `devtools`:
+Install the development version of ggmapcn from GitHub with:
 
 ``` r
 # install.packages("devtools")
@@ -31,18 +31,14 @@ devtools::install_github("Rimagination/ggmapcn", force = TRUE)
 
 # Usage
 
-## Load the Package
+## Plotting a Map of China
 
-```{r example1}
+To plot a map of China with province boundaries, use `geom_mapcn()`:
+
+```{r example1, fig.alt='Province Map'}
 library(ggplot2)
 library(ggmapcn)
-```
 
-## Basic Map Plot
-
-To plot a map of China with province boundaries, use the `geom_mapcn()` function. The map uses the Azimuthal Equal Distance projection by default.
-
-```{r example2, fig.alt='Basic Map'}
 ggplot() +
   geom_mapcn() +
   theme_minimal()
@@ -52,7 +48,7 @@ ggplot() +
 
 If you want to try the Albers projection, you can customize it.
 
-```{r example3, fig.alt='Basic Map'}
+```{r example2, fig.alt='Basic Map'}
 ggplot() +
   geom_mapcn(crs = "+proj=aea +lat_1=25 +lat_2=47 +lat_0=0 +lon_0=105 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs", color = "black", fill = "white", size = 0.7) +
   theme_minimal()
@@ -62,7 +58,7 @@ ggplot() +
 
 Use `geom_boundary_cn()` to add mainland borders and coastlines to the map. You can set colors and line widths for both the mainland and coastline boundaries:
 
-```{r example4, fig.alt='Map with Boundary'}
+```{r example3, fig.alt='Map with Boundary'}
 ggplot() +
   geom_mapcn(fill = NA) +
   geom_boundary_cn(
@@ -78,23 +74,7 @@ ggplot() +
 
 The `geom_buffer_cn()` function adds buffer zones around China’s borders. You can specify buffer distances, colors, and projections. The example below shows buffer zones with varying distances:
 
-```{r example5, fig.alt='Buffer'}
-ggplot() +
-  geom_buffer_cn(mainland_dist = 40000) +
-  geom_buffer_cn(mainland_dist = 20000, fill = "#BBB3D8") +
-  theme_minimal()
-```
-
-## Data Source
-
-The data used in this package is sourced from Tianditu, providing province-level boundary information. This data has been processed into GeoJSON format and is integrated into the package for easy access.
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
-
-## Example
-
-Here’s a comprehensive example demonstrating how to plot province boundaries, buffer zones, and coastlines on the same map:
-
-```{r example6, fig.alt='Map of China'}
+```{r example4, fig.alt='Map of China'}
 ggplot() +
   geom_buffer_cn(mainland_dist = 40000) +
   geom_buffer_cn(mainland_dist = 20000, fill = "#BBB3D8") +
@@ -102,3 +82,8 @@ ggplot() +
   geom_boundary_cn() +
   theme_minimal()
 ```
+
+## Data Source
+
+The data used in this package is sourced from Tianditu, providing province-level boundary information. This data has been processed into GeoJSON format and is integrated into the package for easy access.
+You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.

@@ -75,3 +75,23 @@ ggplot() +
   theme_minimal() +
   theme(legend.position = "bottom")
 ```
+
+## coord_proj: Transforming Limits for Custom Projections
+
+The `coord_proj` function is a wrapper around coord_sf that allows you to specify map limits (xlim, ylim) in longitude and latitude (WGS84 CRS) and automatically transforms them into the specified CRS for accurate projections.
+
+Here, the Azimuthal Equidistant projection centered on China is applied, with transformed map limits specified in longitude and latitude.
+
+```{r clip region, fig.alt='clip region'}
+# World map with Azimuthal Equidistant projection centered on China
+ggplot() +
+  geom_world(fill = "lightblue") +
+  coord_proj(
+    crs = china_proj,
+    xlim = c(60, 140),
+    ylim = c(10, 50)
+  ) +
+  theme_minimal()
+
+```
+

@@ -14,8 +14,7 @@ visualizations of China.
 
 # Installation
 
-You can install the development version of ggmapcn from
-[GitHub](https://github.com/) with `devtools`:
+Install the development version of ggmapcn from GitHub with:
 
 ``` r
 # install.packages("devtools")
@@ -24,27 +23,20 @@ devtools::install_github("Rimagination/ggmapcn", force = TRUE)
 
 # Usage
 
-## Load the Package
+## Plotting a Map of China
+
+To plot a map of China with province boundaries, use `geom_mapcn()`:
 
 ``` r
 library(ggplot2)
 library(ggmapcn)
-```
 
-## Basic Map Plot
-
-To plot a map of China with province boundaries, use the `geom_mapcn()`
-function. The map uses the Azimuthal Equal Distance projection by
-default.
-
-``` r
 ggplot() +
   geom_mapcn() +
   theme_minimal()
-#> Linking to GEOS 3.11.2, GDAL 3.8.2, PROJ 9.3.1; sf_use_s2() is TRUE
 ```
 
-<img src="man/figures/README-example2-1.png" alt="Basic Map" width="100%" />
+<img src="man/figures/README-example1-1.png" alt="Province Map" width="100%" />
 
 ## Custom Projection and Styling
 
@@ -56,7 +48,7 @@ ggplot() +
   theme_minimal()
 ```
 
-<img src="man/figures/README-example3-1.png" alt="Basic Map" width="100%" />
+<img src="man/figures/README-example2-1.png" alt="Basic Map" width="100%" />
 
 ## Adding Mainland Borders and Coastlines
 
@@ -76,7 +68,7 @@ ggplot() +
   theme_minimal()
 ```
 
-<img src="man/figures/README-example4-1.png" alt="Map with Boundary" width="100%" />
+<img src="man/figures/README-example3-1.png" alt="Map with Boundary" width="100%" />
 
 ## Adding Buffer Zones
 
@@ -88,10 +80,12 @@ example below shows buffer zones with varying distances:
 ggplot() +
   geom_buffer_cn(mainland_dist = 40000) +
   geom_buffer_cn(mainland_dist = 20000, fill = "#BBB3D8") +
+  geom_mapcn(fill = "white") +
+  geom_boundary_cn() +
   theme_minimal()
 ```
 
-<img src="man/figures/README-example5-1.png" alt="Buffer" width="100%" />
+<img src="man/figures/README-example4-1.png" alt="Map of China" width="100%" />
 
 ## Data Source
 
@@ -100,19 +94,3 @@ province-level boundary information. This data has been processed into
 GeoJSON format and is integrated into the package for easy access.
 You’ll still need to render `README.Rmd` regularly, to keep `README.md`
 up-to-date. `devtools::build_readme()` is handy for this.
-
-## Example
-
-Here’s a comprehensive example demonstrating how to plot province
-boundaries, buffer zones, and coastlines on the same map:
-
-``` r
-ggplot() +
-  geom_buffer_cn(mainland_dist = 40000) +
-  geom_buffer_cn(mainland_dist = 20000, fill = "#BBB3D8") +
-  geom_mapcn(fill = "white") +
-  geom_boundary_cn() +
-  theme_minimal()
-```
-
-<img src="man/figures/README-example6-1.png" alt="Map of China" width="100%" />

@@ -2,6 +2,7 @@
 
 export(basemap_dem)
 export(basemap_vege)
+export(coord_proj)
 export(geom_boundary_cn)
 export(geom_buffer_cn)
 export(geom_loc)
