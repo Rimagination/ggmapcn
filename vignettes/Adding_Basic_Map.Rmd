@@ -72,7 +72,7 @@ ggplot() +
   theme_minimal()
 ```
 
-## Example 3: Filtering China and Its Neighbors
+## Example 4: Filtering China and Its Neighbors
 
 This example demonstrates filtering for China and its neighboring countries, highlighting China in red.
 
