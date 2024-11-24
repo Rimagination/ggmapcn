@@ -48,8 +48,6 @@ basemap_dem <- function(crs = NULL,
                         maxcell = 1e6,
                         na.rm = FALSE,
                         ...) {
-  library(terra)
-  library(tidyterra)
 
   # Load DEM raster of Asia from the package's extdata directory
   dem_path <- system.file("extdata", "gebco_2024.tif", package = "ggmapcn")

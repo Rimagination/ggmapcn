@@ -1,46 +1,38 @@
 #' Plot World Map with Customizable Options
 #'
 #' @description
-#'
-#' `geom_world` is a wrapper around \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}} designed
+#' `geom_world` is a wrapper around [ggplot2::geom_sf()] designed
 #' for visualizing world maps with added flexibility. It allows custom projections,
 #' filtering specific countries or regions, and detailed aesthetic customizations for borders and fills.
 #'
-#' @return A \pkg{ggplot2} layer for world map visualization.
-#'
-#' @name geom_world
-#'
-#' @param data An \code{sf} object containing world map data. If \code{NULL}, the function loads the package's
-#'   default \code{world.geojson} dataset.
+#' @param data An `sf` object containing world map data. If `NULL`, the function loads the package's
+#'   default `world.geojson` dataset.
 #' @param crs A character string. The target coordinate reference system (CRS) for the map projection.
-#'   Defaults to \code{"+proj=longlat +datum=WGS84"}.
-#' @param color A character string specifying the border color for administrative boundaries. Default is \code{"black"}.
-#' @param fill A character string specifying the fill color for administrative areas. Default is \code{"white"}.
-#' @param linewidth A numeric value specifying the line width for administrative boundaries. Default is \code{0.5}.
+#'   Defaults to `"+proj=longlat +datum=WGS84"`.
+#' @param color A character string specifying the border color for administrative boundaries. Default is `"black"`.
+#' @param fill A character string specifying the fill color for administrative areas. Default is `"white"`.
+#' @param linewidth A numeric value specifying the line width for administrative boundaries. Default is `0.5`.
 #' @param filter_attribute A character string specifying the column name to use for filtering countries or regions.
-#'   Default is \code{"SOC"}, which refers to the ISO 3166-1 alpha-3 country code in the default dataset.
-#' @param filter A character vector specifying the values to filter specific countries or regions. Default is \code{NULL}.
-#' @param ... Additional parameters passed to \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}}, such as \code{size},
-#'   \code{alpha}, or \code{lty}.
+#'   Default is `"SOC"`, which refers to the ISO 3166-1 alpha-3 country code in the default dataset.
+#' @param filter A character vector specifying the values to filter specific countries or regions. Default is `NULL`.
+#' @param ... Additional parameters passed to [ggplot2::geom_sf()], such as `size`,
+#'   `alpha`, or `lty`.
+#'
+#' @return A `ggplot2` layer for world map visualization.
 #'
 #' @details
-#' `geom_world` simplifies the process of creating world maps by combining the functionality of \code{geom_sf}
+#' `geom_world` simplifies the process of creating world maps by combining the functionality of `geom_sf`
 #' with user-friendly options for projections, filtering, and custom styling.
 #' Key features include:
 #' - **Custom projections**: Easily apply any CRS to the map.
 #' - **Filtering by attributes**: Quickly focus on specific countries or regions.
 #' - **Flexible aesthetics**: Customize fill, borders, transparency, and other visual properties.
 #'
-#' See \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}} for additional details about supported parameters and aesthetics.
-#'
 #' @seealso
-#' \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}}, \code{\link[sf:st_transform]{sf::st_transform()}},
-#' \code{\link[sf:st_read]{sf::st_read()}}
+#' [ggplot2::geom_sf()], [sf::st_transform()],
+#' [sf::st_read()]
 #'
 #' @examples
-#' if (requireNamespace("ggplot2", quietly = TRUE)) {
-#'   library(ggplot2)
-#'
 #'   # Plot the default world map
 #'   ggplot() +
 #'     geom_world() +
@@ -68,10 +60,9 @@
 #'   ggplot() +
 #'     geom_world(fill = "lightblue", color = "darkblue", linewidth = 1, alpha = 0.8) +
 #'     theme_void()
-#' }
 #'
-#' @import ggplot2
 #' @importFrom sf st_read st_transform
+#' @importFrom ggplot2 geom_sf
 #' @export
 geom_world <- function(
     data = NULL,
@@ -83,15 +74,12 @@ geom_world <- function(
     filter = NULL,
     ...
 ) {
-  # Load required libraries
-  library(ggplot2)
-  library(sf)
-  library(dplyr)
-  library(rlang)
-
   # Load default world map data if no data is provided
   if (is.null(data)) {
     file_path <- system.file("extdata", "world.geojson", package = "ggmapcn")
+    if (file_path == "") {
+      stop("Default world map data not found in the package's 'extdata' directory.")
+    }
     data <- sf::st_read(file_path, quiet = TRUE)
   }
 
@@ -114,7 +102,7 @@ geom_world <- function(
   }
 
   # Create the ggplot2 layer
-  plot <- geom_sf(data = data, color = color, fill = fill, size = linewidth, ...)
+  plot <- ggplot2::geom_sf(data = data, color = color, fill = fill, linewidth = linewidth, ...)
 
   return(plot)
 }

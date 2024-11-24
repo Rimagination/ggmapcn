@@ -58,7 +58,6 @@
 geom_loc <- function(data, lon = NULL, lat = NULL,
                      crs = "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs",
                      mapping = aes(), ...) {
-  library(sf)
 
   # Convert tabular data to sf if necessary
   if (!inherits(data, "sf")) {

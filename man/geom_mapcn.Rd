@@ -26,67 +26,44 @@ Options are \code{"province"} (default), \code{"city"}, or \code{"county"}.
 The corresponding GeoJSON files (\code{China_sheng.geojson}, \code{China_shi.geojson},
 \code{China_xian.geojson}) must be located in the package's \code{extdata} folder.}
 
-\item{crs}{A character string specifying the target coordinate reference system (CRS).
-Defaults to \code{"+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs"}.
-Users can specify other CRS strings or EPSG codes (e.g., \code{"EPSG:4326"}).}
+\item{crs}{Coordinate Reference System (CRS). Defaults to
+\code{"+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs"}.
+Users can specify other CRS strings (e.g., \code{"EPSG:4326"}).}
 
-\item{color}{A character string specifying the border color. Default is \code{"black"}.}
+\item{color}{Border color. Default is \code{"black"}.}
 
-\item{fill}{A character string specifying the fill color. Default is \code{"white"}.}
+\item{fill}{Fill color. Default is \code{"white"}.}
 
-\item{linewidth}{A numeric value specifying the line width for borders. Default is \code{0.5}.}
+\item{linewidth}{Line width for borders. Default is \code{0.5}.}
 
-\item{filter_attribute}{A character string specifying the column name to use for filtering administrative regions.
-For example, use \code{"name_en"} for filtering by English province names. Default is \code{NULL}, meaning no filtering is applied.}
+\item{filter_attribute}{Column name for filtering regions (e.g., \code{"name_en"}).}
 
-\item{filter}{A character vector specifying the values to filter specific regions.
-For example, use \code{filter = c("Beijing", "Shanghai")} to visualize these regions only.
-Default is \code{NULL}, meaning no filtering is applied.}
+\item{filter}{Character vector of values to filter specific regions (e.g., \code{c("Beijing", "Shanghai")}).}
 
-\item{...}{Additional parameters passed to \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}}, such as \code{alpha}.}
+\item{...}{Additional parameters passed to \code{geom_sf}.}
 }
 \value{
-A \pkg{ggplot2} layer for visualizing China's administrative boundaries.
+A ggplot2 layer for visualizing China's administrative boundaries.
 }
 \description{
-\code{geom_mapcn} is a wrapper around \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}} designed
-to visualize China's administrative boundaries with additional features such as filtering
-and support for custom projections.
-}
-\details{
-This function simplifies the process of visualizing China's administrative boundaries
-with customizable projections, filtering, and flexible aesthetics. Users can:
-\itemize{
-\item Select administrative levels (province, city, county) via the \code{admin_level} parameter.
-\item Filter specific regions using \code{filter_attribute} and \code{filter}.
-\item Apply custom projections and styling options.
-}
-
-See \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}} for details on additional parameters and aesthetics.
+\code{geom_mapcn} provides a flexible interface for visualizing China's administrative boundaries.
+Users can select administrative levels (province, city, or county), apply custom projections,
+and filter specific regions.
 }
 \examples{
-# Plot the default provincial map
+# Plot provincial map
 ggplot() +
   geom_mapcn() +
   theme_minimal()
 
-# Use the municipal-level map
-ggplot() +
-  geom_mapcn(admin_level = "city", color = "blue", fill = "lightblue") +
-  theme_minimal()
-
-# Filter to display only specific provinces
+# Filter specific provinces
 ggplot() +
   geom_mapcn(filter_attribute = "name_en", filter = c("Beijing", "Shanghai"), fill = "red") +
   theme_minimal()
 
-# Apply a Mercator projection
+# Use a Mercator projection
 ggplot() +
   geom_mapcn(crs = "+proj=merc", linewidth = 0.7) +
   theme_minimal()
 
-}
-\seealso{
-\code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}}, \code{\link[sf:st_transform]{sf::st_transform()}},
-\code{\link[sf:st_read]{sf::st_read()}}
 }

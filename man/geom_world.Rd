@@ -33,14 +33,14 @@ Default is \code{"SOC"}, which refers to the ISO 3166-1 alpha-3 country code in 
 
 \item{filter}{A character vector specifying the values to filter specific countries or regions. Default is \code{NULL}.}
 
-\item{...}{Additional parameters passed to \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}}, such as \code{size},
+\item{...}{Additional parameters passed to \code{\link[ggplot2:ggsf]{ggplot2::geom_sf()}}, such as \code{size},
 \code{alpha}, or \code{lty}.}
 }
 \value{
-A \pkg{ggplot2} layer for world map visualization.
+A \code{ggplot2} layer for world map visualization.
 }
 \description{
-\code{geom_world} is a wrapper around \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}} designed
+\code{geom_world} is a wrapper around \code{\link[ggplot2:ggsf]{ggplot2::geom_sf()}} designed
 for visualizing world maps with added flexibility. It allows custom projections,
 filtering specific countries or regions, and detailed aesthetic customizations for borders and fills.
 }
@@ -53,13 +53,8 @@ Key features include:
 \item \strong{Filtering by attributes}: Quickly focus on specific countries or regions.
 \item \strong{Flexible aesthetics}: Customize fill, borders, transparency, and other visual properties.
 }
-
-See \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}} for additional details about supported parameters and aesthetics.
 }
 \examples{
-if (requireNamespace("ggplot2", quietly = TRUE)) {
-  library(ggplot2)
-
   # Plot the default world map
   ggplot() +
     geom_world() +
@@ -87,10 +82,9 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
   ggplot() +
     geom_world(fill = "lightblue", color = "darkblue", linewidth = 1, alpha = 0.8) +
     theme_void()
-}
 
 }
 \seealso{
-\code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}}, \code{\link[sf:st_transform]{sf::st_transform()}},
+\code{\link[ggplot2:ggsf]{ggplot2::geom_sf()}}, \code{\link[sf:st_transform]{sf::st_transform()}},
 \code{\link[sf:st_read]{sf::st_read()}}
 }

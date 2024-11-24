@@ -14,32 +14,27 @@ basemap_vege(
 )
 }
 \arguments{
-\item{color_table}{Data frame with vegetation type and corresponding colors.
-Should contain columns "code" (raster values), "type" (vegetation name), and "col" (hex color).
-The default color table follows the standard vegetation classification for China.}
+\item{color_table}{A data frame containing vegetation types and their corresponding colors.
+It should have columns "code" (raster values), "type" (vegetation names), and "col" (hex color codes).
+If NULL, a default color table based on standard vegetation classifications for China is used.}
 
-\item{crs}{The coordinate reference system for the projection. If NULL, the default projection
-"+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs" is used. Users can specify a different
-CRS if re-projection is needed.}
+\item{crs}{A character string specifying the coordinate reference system for the projection.
+If NULL, the default projection "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs" is applied.}
 
-\item{maxcell}{Maximum number of cells for rendering (to improve performance).
+\item{maxcell}{An integer indicating the maximum number of cells for rendering to improve performance.
 Defaults to 1e6.}
 
-\item{use_coltab}{Logical, whether to use the color table for raster values. Default is TRUE.}
+\item{use_coltab}{A logical value indicating whether to use the color table for raster values. Default is TRUE.}
 
-\item{na.rm}{Logical, if TRUE, remove missing values. Default is FALSE.}
+\item{na.rm}{A logical value indicating whether to remove missing values. Default is FALSE.}
 
-\item{...}{Additional parameters for \code{geom_spatraster}.}
+\item{...}{Additional parameters passed to \code{geom_spatraster}.}
 }
 \value{
 A ggplot2 layer object representing the vegetation map of China.
 }
 \description{
-A ggplot2 layer to add a vegetation raster map of China with color-coded vegetation types.
-}
-\details{
-Adds a layer visualizing China’s vegetation distribution with a 1 km spatial resolution.
-The default color table provides recommended colors suited for vegetation classification.
+Adds a vegetation raster map of China to a ggplot2 plot, with color-coded vegetation types.
 }
 \examples{
 \dontrun{
@@ -50,7 +45,7 @@ ggplot() +
 
 # Customize color table
 custom_colors <- data.frame(
-  code = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
+  code = 0:11,
   type = c(
     "Non-vegetated", "Needleleaf forest", "Needleleaf and broadleaf mixed forest",
     "Broadleaf forest", "Scrub", "Desert", "Steppe", "Grassland",
@@ -68,5 +63,5 @@ ggplot() +
 }
 }
 \references{
-Zhang X, Sun S, Yong S, et al. (2007) \emph{Vegetation map of the People’s Republic of China (1:1000000)}. Geology Publishing House, Beijing.
+Zhang X, Sun S, Yong S, et al. (2007). \emph{Vegetation map of the People's Republic of China (1:1000000)}. Geology Publishing House, Beijing.
 }
