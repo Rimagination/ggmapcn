@@ -43,6 +43,17 @@
 #'   ) +
 #'   theme_minimal()
 #'
+#' # Display a small map of the South China Sea Islands with a custom projection
+#' ggplot() +
+#'   geom_boundary_cn() +
+#'   theme_bw() +
+#'   coord_proj(
+#'     crs = china_proj,
+#'     expand = FALSE,
+#'     xlim = c(105, 123),
+#'     ylim = c(2, 23)
+#'   )
+#'
 #' @seealso
 #' \code{\link[ggplot2:coord_sf]{ggplot2::coord_sf}}, \code{\link[ggmapcn:geom_world]{geom_world}}
 #'

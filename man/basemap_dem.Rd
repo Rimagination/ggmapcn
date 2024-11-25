@@ -5,6 +5,7 @@
 \title{Elevation Map of China Layer for ggplot2}
 \usage{
 basemap_dem(
+  data = NULL,
   crs = NULL,
   within_china = FALSE,
   maxcell = 1e+06,
@@ -13,6 +14,9 @@ basemap_dem(
 )
 }
 \arguments{
+\item{data}{Optional. A \code{terra} raster object for custom DEM data. If \code{NULL} (default), the function
+uses the built-in DEM data (\code{gebco_2024.tif}).}
+
 \item{crs}{Coordinate reference system (CRS) for the projection. Defaults to the CRS of the DEM data.
 Users can specify other CRS strings (e.g., \code{"EPSG:4326"} or custom projections).}
 
@@ -29,13 +33,14 @@ If \code{FALSE}, displays the DEM for a larger rectangular area around China. De
 \code{basemap_dem} adds a digital elevation model (DEM) raster map of China as a layer to ggplot2.
 The function ensures the output map remains rectangular, regardless of the chosen projection.
 It supports displaying the DEM either within China's boundary or in a larger rectangular area
-around China.
+around China. Users can provide their own DEM data using the \code{data} parameter, or the default
+built-in DEM data will be used.
 }
 \examples{
 # Define Azimuthal Equidistant projection centered on China
 china_proj <- "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs"
 
-# Example 1: Display full rectangular area around China
+# Example 1: Display full rectangular area around China using built-in DEM data
 ggplot() +
   basemap_dem(within_china = FALSE) +
   tidyterra::scale_fill_hypso_tint_c(
@@ -44,7 +49,7 @@ ggplot() +
   ) +
   theme_minimal()
 
-# Example 2: Display only China's DEM and boundaries
+# Example 2: Display only China's DEM and boundaries using built-in DEM data
 ggplot() +
   basemap_dem(crs = china_proj, within_china = TRUE) +
   geom_boundary_cn(crs = china_proj) +
@@ -54,6 +59,13 @@ ggplot() +
     limits = c(0, 7000)
   ) +
   labs(fill = "Elevation (m)") +
+  theme_minimal()
+
+# Example 3: Use custom DEM data by specifying the path to your DEM file
+# dem_path <- "path/to/your/dem_file.tif" # Specify the path to your DEM file
+dem_path <- system.file("extdata", "gebco_2024.tif", package = "ggmapcn") # Use the built-in DEM data
+ggplot() +
+  basemap_dem(data = terra::rast(dem_path), within_china = FALSE) +
   theme_minimal()
 
 }
