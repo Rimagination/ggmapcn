@@ -15,16 +15,16 @@ coord_proj(
 }
 \arguments{
 \item{crs}{A character string specifying the coordinate reference system (CRS) for the projection
-(e.g., \code{"EPSG:4326"} or custom projections like \code{"+proj=merc"}).}
+(e.g., `"EPSG:4326"` or custom projections like `"+proj=merc"`).}
 
 \item{xlim}{Longitude range (in degrees) to display, as a numeric vector of length 2.}
 
 \item{ylim}{Latitude range (in degrees) to display, as a numeric vector of length 2.}
 
-\item{expand}{Logical, whether to expand the plot limits. Default is \code{TRUE}.}
+\item{expand}{Logical, whether to expand the plot limits. Default is `TRUE`.}
 
-\item{default_crs}{A character string specifying the CRS of the input \code{xlim} and \code{ylim}.
-Default is \code{"EPSG:4326"}.}
+\item{default_crs}{A character string specifying the CRS of the input `xlim` and `ylim`.
+Default is `"EPSG:4326"`.}
 
 \item{...}{Additional arguments passed to \code{\link[ggplot2:coord_sf]{ggplot2::coord_sf()}}.}
 }
@@ -32,8 +32,8 @@ Default is \code{"EPSG:4326"}.}
 A ggplot2 \code{coord_sf} object with the transformed limits.
 }
 \description{
-\code{coord_proj} is a wrapper around \code{\link[ggplot2:coord_sf]{ggplot2::coord_sf()}}.
-It simplifies specifying map limits (\code{xlim}, \code{ylim}) in longitude and latitude (WGS84 CRS)
+`coord_proj` is a wrapper around \code{\link[ggplot2:coord_sf]{ggplot2::coord_sf()}}.
+It simplifies specifying map limits (`xlim`, `ylim`) in longitude and latitude (WGS84 CRS)
 and automatically transforms them into the specified CRS for accurate projections.
 
 This function extends the functionality of \code{coord_sf()} to seamlessly handle user-specified

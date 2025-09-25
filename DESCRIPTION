@@ -1,30 +1,30 @@
 Package: ggmapcn
 Title: Customizable China Map Visualizations
-Version: 0.0.2
+Version: 0.2.0
 Authors@R: 
-      person("Liang", "Ren", , "rl23@mails.tsinghua.edu.cn", role = c("aut", "cre"),
+    person("Liang", "Ren", email = "rl23@mails.tsinghua.edu.cn", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-2360-7900"))
-Description: ggmapcn is a ggplot2 extension package for visualizing China’s map with customizable projections and styling.
+Description: A 'ggplot2' extension for visualizing China’s map, offering customizable projections, boundary styles, and buffer zones for thematic maps. 
+    Suitable for spatial data analysis and enhancing map visualization with flexible styling options.
 License: GPL-3
 Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
 Depends: 
-    R (>= 3.1.0),
+    R (>= 3.5.0),
     ggplot2 (>= 3.4.0)
-LazyData: true
 Imports: 
     sf (>= 1.0.0),
     dplyr (>= 1.1.0),
-    rlang (>= 1.1.3),
-    ggspatial (>= 1.1.8),
     terra (>= 1.7),
-    tidyterra (>= 0.6.0)
-URL: https://rimagination.github.io/ggmapcn
+    tidyterra (>= 0.6.0),
+    curl (>= 5.0.0),
+    digest,
+    grid
+URL: https://rimagination.github.io/ggmapcn/
 BugReports: https://github.com/Rimagination/ggmapcn/issues
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
-News: NEWS.md
-
+Config/testthat/edition: 3
+RoxygenNote: 7.3.2

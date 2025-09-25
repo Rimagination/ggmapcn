@@ -14,17 +14,22 @@
 #' @param ... Additional parameters passed to `geom_spatraster`.
 #' @return A ggplot2 layer object representing the vegetation map of China.
 #' @importFrom tidyterra geom_spatraster
-#' @importFrom ggplot2 ggplot
+#' @importFrom terra levels coltab rast project
 #' @references Zhang X, Sun S, Yong S, et al. (2007). *Vegetation map of the People's Republic of China (1:1000000)*. Geology Publishing House, Beijing.
 #' @export
 #' @examples
-#' \dontrun{
-#' # Add vegetation raster of China to a ggplot
+#' \donttest{
+#' # Example1: Check and load the vegetation raster map
+#'
+#' # Make sure the required raster data is available
+#' check_geodata(files = c("vege_1km_projected.tif"))
+#'
+#' # Once the data is checked or downloaded, add the vegetation raster to a ggplot
 #' ggplot() +
 #'   basemap_vege() +
 #'   theme_minimal()
 #'
-#' # Customize color table
+#' # Example2: Customize color table
 #' custom_colors <- data.frame(
 #'   code = 0:11,
 #'   type = c(
@@ -49,9 +54,12 @@ basemap_vege <- function(color_table = NULL,
                          na.rm = FALSE,
                          ...) {
 
-  # Load vegetation raster of China from package's extdata directory
-  vege_path <- system.file("extdata", "vege_1km_projected.tif", package = "ggmapcn")
-  vege_raster <- terra::rast(vege_path)
+  # Ensure the required 'vege_1km_projected.tif' file is available in the package's extdata directory
+  # This check will allow the data to be found in the temp directory if needed
+  geodata_path <- check_geodata(files = c("vege_1km_projected.tif"), quiet = TRUE)
+
+  # Now use the path returned by check_geodata (which could be in tempdir)
+  vege_raster <- terra::rast(geodata_path)
 
   # Reproject raster if a new CRS is provided
   if (!is.null(crs)) {
@@ -79,5 +87,5 @@ basemap_vege <- function(color_table = NULL,
   terra::coltab(vege_raster) <- color_table[, c("code", "col")]
 
   # Return a ggplot2 layer with the raster
-  list(geom_spatraster(data = vege_raster, maxcell = maxcell, use_coltab = use_coltab, na.rm = na.rm, ...))
+  list(tidyterra::geom_spatraster(data = vege_raster, maxcell = maxcell, use_coltab = use_coltab, na.rm = na.rm, ...))
 }

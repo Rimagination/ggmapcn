@@ -16,53 +16,51 @@ geom_world(
 )
 }
 \arguments{
-\item{data}{An \code{sf} object containing world map data. If \code{NULL}, the function loads the package's
-default \code{world.geojson} dataset.}
+\item{data}{An `sf` object containing world map data. If `NULL`, the default world map data
+from the package will be loaded from a `.rda` file.}
 
-\item{crs}{A character string. The target coordinate reference system (CRS) for the map projection.
-Defaults to \code{"+proj=longlat +datum=WGS84"}.}
+\item{crs}{A character string specifying the target coordinate reference system (CRS) for the map projection.
+Defaults to `"+proj=longlat +datum=WGS84"`.}
 
-\item{color}{A character string specifying the border color for administrative boundaries. Default is \code{"black"}.}
+\item{color}{A character string specifying the border color for administrative boundaries. Default is `"black"`.}
 
-\item{fill}{A character string specifying the fill color for administrative areas. Default is \code{"white"}.}
+\item{fill}{A character string specifying the fill color for administrative areas. Default is `"white"`.}
 
-\item{linewidth}{A numeric value specifying the line width for administrative boundaries. Default is \code{0.5}.}
+\item{linewidth}{A numeric value specifying the line width for administrative boundaries. Default is `0.5`.}
 
-\item{filter_attribute}{A character string specifying the column name to use for filtering countries or regions.
-Default is \code{"SOC"}, which refers to the ISO 3166-1 alpha-3 country code in the default dataset.}
+\item{filter_attribute}{A character string specifying the column name used for filtering countries or regions.
+Default is `"SOC"`, which refers to the ISO 3166-1 alpha-3 country code in the default dataset.}
 
-\item{filter}{A character vector specifying the values to filter specific countries or regions. Default is \code{NULL}.}
+\item{filter}{A character vector specifying the values to filter specific countries or regions. Default is `NULL`.}
 
-\item{...}{Additional parameters passed to \code{\link[ggplot2:ggsf]{ggplot2::geom_sf()}}, such as \code{size},
-\code{alpha}, or \code{lty}.}
+\item{...}{Additional parameters passed to [ggplot2::geom_sf()], such as `size`, `alpha`, or `lty`.}
 }
 \value{
-A \code{ggplot2} layer for world map visualization.
+A `ggplot2` layer for world map visualization.
 }
 \description{
-\code{geom_world} is a wrapper around \code{\link[ggplot2:ggsf]{ggplot2::geom_sf()}} designed
-for visualizing world maps with added flexibility. It allows custom projections,
-filtering specific countries or regions, and detailed aesthetic customizations for borders and fills.
+A wrapper around [ggplot2::geom_sf()] for visualizing world maps with customizable options.
+This function allows for custom projections, filtering specific countries or regions, and detailed
+aesthetic customizations for borders and fills.
 }
 \details{
-\code{geom_world} simplifies the process of creating world maps by combining the functionality of \code{geom_sf}
+This function simplifies the process of creating world maps by combining the functionality of `geom_sf`
 with user-friendly options for projections, filtering, and custom styling.
 Key features include:
-\itemize{
-\item \strong{Custom projections}: Easily apply any CRS to the map.
-\item \strong{Filtering by attributes}: Quickly focus on specific countries or regions.
-\item \strong{Flexible aesthetics}: Customize fill, borders, transparency, and other visual properties.
-}
+- **Custom projections**: Easily apply any CRS to the map.
+- **Filtering by attributes**: Quickly focus on specific countries or regions.
+- **Flexible aesthetics**: Customize fill, borders, transparency, and other visual properties.
 }
 \examples{
+\donttest{
   # Plot the default world map
   ggplot() +
     geom_world() +
     theme_minimal()
 
-  # Apply Mercator projection
+  # Using Robinson projection with central meridian at 0°
   ggplot() +
-    geom_world(crs = "+proj=merc") +
+    geom_world(crs = "+proj=robin +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m") +
     theme_minimal()
 
   # Filter specific countries (e.g., China and its neighbors)
@@ -82,9 +80,9 @@ Key features include:
   ggplot() +
     geom_world(fill = "lightblue", color = "darkblue", linewidth = 1, alpha = 0.8) +
     theme_void()
-
+}
 }
 \seealso{
-\code{\link[ggplot2:ggsf]{ggplot2::geom_sf()}}, \code{\link[sf:st_transform]{sf::st_transform()}},
-\code{\link[sf:st_read]{sf::st_read()}}
+[ggplot2::geom_sf()], [sf::st_transform()],
+[sf::st_read()]
 }

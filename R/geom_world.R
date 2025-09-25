@@ -1,27 +1,26 @@
 #' Plot World Map with Customizable Options
 #'
 #' @description
-#' `geom_world` is a wrapper around [ggplot2::geom_sf()] designed
-#' for visualizing world maps with added flexibility. It allows custom projections,
-#' filtering specific countries or regions, and detailed aesthetic customizations for borders and fills.
+#' A wrapper around [ggplot2::geom_sf()] for visualizing world maps with customizable options.
+#' This function allows for custom projections, filtering specific countries or regions, and detailed
+#' aesthetic customizations for borders and fills.
 #'
-#' @param data An `sf` object containing world map data. If `NULL`, the function loads the package's
-#'   default `world.geojson` dataset.
-#' @param crs A character string. The target coordinate reference system (CRS) for the map projection.
+#' @param data An `sf` object containing world map data. If `NULL`, the default world map data
+#'   from the package will be loaded from a `.rda` file.
+#' @param crs A character string specifying the target coordinate reference system (CRS) for the map projection.
 #'   Defaults to `"+proj=longlat +datum=WGS84"`.
 #' @param color A character string specifying the border color for administrative boundaries. Default is `"black"`.
 #' @param fill A character string specifying the fill color for administrative areas. Default is `"white"`.
 #' @param linewidth A numeric value specifying the line width for administrative boundaries. Default is `0.5`.
-#' @param filter_attribute A character string specifying the column name to use for filtering countries or regions.
+#' @param filter_attribute A character string specifying the column name used for filtering countries or regions.
 #'   Default is `"SOC"`, which refers to the ISO 3166-1 alpha-3 country code in the default dataset.
 #' @param filter A character vector specifying the values to filter specific countries or regions. Default is `NULL`.
-#' @param ... Additional parameters passed to [ggplot2::geom_sf()], such as `size`,
-#'   `alpha`, or `lty`.
+#' @param ... Additional parameters passed to [ggplot2::geom_sf()], such as `size`, `alpha`, or `lty`.
 #'
 #' @return A `ggplot2` layer for world map visualization.
 #'
 #' @details
-#' `geom_world` simplifies the process of creating world maps by combining the functionality of `geom_sf`
+#' This function simplifies the process of creating world maps by combining the functionality of `geom_sf`
 #' with user-friendly options for projections, filtering, and custom styling.
 #' Key features include:
 #' - **Custom projections**: Easily apply any CRS to the map.
@@ -33,14 +32,15 @@
 #' [sf::st_read()]
 #'
 #' @examples
+#' \donttest{
 #'   # Plot the default world map
 #'   ggplot() +
 #'     geom_world() +
 #'     theme_minimal()
 #'
-#'   # Apply Mercator projection
+#'   # Using Robinson projection with central meridian at 0°
 #'   ggplot() +
-#'     geom_world(crs = "+proj=merc") +
+#'     geom_world(crs = "+proj=robin +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m") +
 #'     theme_minimal()
 #'
 #'   # Filter specific countries (e.g., China and its neighbors)
@@ -60,9 +60,8 @@
 #'   ggplot() +
 #'     geom_world(fill = "lightblue", color = "darkblue", linewidth = 1, alpha = 0.8) +
 #'     theme_void()
-#'
-#' @importFrom sf st_read st_transform
-#' @importFrom ggplot2 geom_sf
+#' }
+#' @importFrom sf st_transform
 #' @export
 geom_world <- function(
     data = NULL,
@@ -74,13 +73,35 @@ geom_world <- function(
     filter = NULL,
     ...
 ) {
+
+  # Ensure the required 'world.rda' file is available
+  check_geodata(files = c("world.rda"), quiet = TRUE)
+
   # Load default world map data if no data is provided
   if (is.null(data)) {
-    file_path <- system.file("extdata", "world.geojson", package = "ggmapcn")
+    file_path <- system.file("extdata", "world.rda", package = "ggmapcn")
     if (file_path == "") {
       stop("Default world map data not found in the package's 'extdata' directory.")
     }
-    data <- sf::st_read(file_path, quiet = TRUE)
+
+    # Load the .rda file
+    load(file_path)
+
+    # Dynamically generate the object name based on the .rda file name
+    object_name <- gsub("\\.rda$", "", basename(file_path))  # Get object name by stripping ".rda"
+
+    # Check if the object exists in the environment
+    if (!exists(object_name)) {
+      stop(paste("The object", object_name, "was not found in the .rda file."))
+    }
+
+    # Retrieve the object from the environment
+    data <- get(object_name)
+
+    # Ensure the loaded object is of class 'sf'
+    if (!inherits(data, "sf")) {
+      stop("The loaded object is not an 'sf' object. Please check the .rda file.")
+    }
   }
 
   # Ensure the input data is an sf object

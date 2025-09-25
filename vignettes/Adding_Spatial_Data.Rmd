@@ -47,9 +47,17 @@ ggplot() +
 
 ## basemap_vege: Vegetation Map of China Layer for ggplot2
 
+Before using the function, ensure that the necessary data files are available by running:
+
+```{r check-geodata, eval=FALSE}
+# This function checks if the required data files are available
+# It may take some time, especially if your network connection is slow.
+  check_geodata(files = c("vege_1km_projected.tif"), quiet = FALSE)
+```
+
 The `basemap_vege` function adds a vegetation raster map of China with color-coded vegetation types to a ggplot.
 
-```{r vegetion map, fig.alt='Vegetation Map of China'}
+```{r vegetion map, fig.alt='Vegetation Map of China', eval=FALSE}
 # Add vegetation raster of China to a ggplot
 ggplot() +
   basemap_vege() +

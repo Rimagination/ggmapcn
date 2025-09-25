@@ -28,7 +28,7 @@ Defaults to 1e6.}
 
 \item{na.rm}{A logical value indicating whether to remove missing values. Default is FALSE.}
 
-\item{...}{Additional parameters passed to \code{geom_spatraster}.}
+\item{...}{Additional parameters passed to `geom_spatraster`.}
 }
 \value{
 A ggplot2 layer object representing the vegetation map of China.
@@ -37,13 +37,18 @@ A ggplot2 layer object representing the vegetation map of China.
 Adds a vegetation raster map of China to a ggplot2 plot, with color-coded vegetation types.
 }
 \examples{
-\dontrun{
-# Add vegetation raster of China to a ggplot
+\donttest{
+# Example1: Check and load the vegetation raster map
+
+# Make sure the required raster data is available
+check_geodata(files = c("vege_1km_projected.tif"))
+
+# Once the data is checked or downloaded, add the vegetation raster to a ggplot
 ggplot() +
   basemap_vege() +
   theme_minimal()
 
-# Customize color table
+# Example2: Customize color table
 custom_colors <- data.frame(
   code = 0:11,
   type = c(
@@ -63,5 +68,5 @@ ggplot() +
 }
 }
 \references{
-Zhang X, Sun S, Yong S, et al. (2007). \emph{Vegetation map of the People's Republic of China (1:1000000)}. Geology Publishing House, Beijing.
+Zhang X, Sun S, Yong S, et al. (2007). *Vegetation map of the People's Republic of China (1:1000000)*. Geology Publishing House, Beijing.
 }

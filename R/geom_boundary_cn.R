@@ -1,116 +1,166 @@
 #' Plot Boundaries of China
 #'
-#' Draws various types of boundaries for China, including mainland boundaries,
-#' coastlines, ten-segment line, special administrative region (SAR) boundaries, and undefined boundaries.
-#' Each boundary type can be customized in terms of color, line width, and line type.
-#' This function also allows optional addition of a compass and a scale bar.
+#' @description
+#' Draw China's administrative boundaries and optional map decorations
+#' (compass and scale bar). Each boundary category (mainland, coastline,
+#' provinces, etc.) can be styled independently. The data are reprojected
+#' to the specified CRS before plotting.
 #'
-#' @param crs Character. Coordinate reference system (CRS) for the projection.
-#'   Defaults to "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs".
-#'   Users can specify other CRS strings to customize the projection (e.g., "+proj=merc" for Mercator).
-#' @param compass Logical. Whether to display a compass (north arrow). Default is `FALSE`.
-#'   If set to `TRUE`, a default compass (north arrow) with `ggspatial::north_arrow_fancy_orienteering()`
-#'   will be added to the top-left corner. To customize the compass, use `ggspatial::annotation_north_arrow()` directly.
-#' @param scale Logical. Whether to display a scale bar. Default is `FALSE`.
-#'   If set to `TRUE`, a default scale bar with `ggspatial::annotation_scale()` will be added to the bottom-left corner.
-#'   To customize the scale bar, use `ggspatial::annotation_scale()` directly.
-#' @param mainland_color Character. Color for the mainland boundary. Default is "black".
-#' @param mainland_size Numeric. Line width for the mainland boundary. Default is `0.5`.
-#' @param mainland_linetype Character. Line type for the mainland boundary. Default is `"solid"`.
-#' @param coastline_color Character. Color for the coastline. Default is "blue".
-#' @param coastline_size Numeric. Line width for the coastline. Default is `0.3`.
-#' @param coastline_linetype Character. Line type for the coastline. Default is `"solid"`.
-#' @param ten_segment_line_color Character. Color for the ten-segment line. Default is `"black"`.
-#' @param ten_segment_line_size Numeric. Line width for the ten-segment line. Default is `0.5`.
-#' @param ten_segment_line_linetype Character. Line type for the ten-segment line. Default is `"solid"`.
-#' @param SAR_boundary_color Character. Color for the SAR boundary. Default is `"grey"`.
-#' @param SAR_boundary_size Numeric. Line width for the SAR boundary. Default is `0.5`.
-#' @param SAR_boundary_linetype Character. Line type for the SAR boundary. Default is `"dashed"`.
-#' @param undefined_boundary_color Character. Color for the undefined boundary. Default is `"lightgrey"`.
-#' @param undefined_boundary_size Numeric. Line width for the undefined boundary. Default is `0.5`.
-#' @param undefined_boundary_linetype Character. Line type for the undefined boundary. Default is `"longdash"`.
-#' @param ... Additional parameters passed to `geom_sf`.
+#' @param crs Character or `sf::crs`. Target coordinate reference system for
+#'   plotting. Defaults to an azimuthal equidistant projection centered on China
+#'   (`+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs`).
+#' @param compass Logical. If `TRUE`, add a compass pointing to true north in
+#'   the top-left corner. Default: `FALSE`.
+#' @param scale Logical. If `TRUE`, add a scale bar in the bottom-left corner.
+#'   Default: `FALSE`.
 #'
-#' @return A ggplot2 layer (or list of layers) displaying China's multi-segment boundaries with the specified styles,
-#'   optionally including a compass (north arrow) and a scale bar.
+#' @param mainland_color Character. Line color for the mainland boundary.
+#'   Default: `"black"`.
+#' @param mainland_size Numeric. Line width for the mainland boundary.
+#'   Default: `0.5`.
+#' @param mainland_linetype Character. Line type for the mainland boundary.
+#'   Default: `"solid"`.
 #'
-#' @examples
-#' \dontrun{
-#' # Plot China's boundaries with default settings
+#' @param coastline_color Character. Line color for coastlines.
+#'   Default: `"blue"`.
+#' @param coastline_size Numeric. Line width for coastlines.
+#'   Default: `0.3`.
+#' @param coastline_linetype Character. Line type for coastlines.
+#'   Default: `"solid"`.
+#'
+#' @param ten_segment_line_color Character. Line color for the South China Sea
+#'   ten-segment line. Default: `"black"`.
+#' @param ten_segment_line_size Numeric. Line width for the ten-segment line.
+#'   Default: `0.5`.
+#' @param ten_segment_line_linetype Character. Line type for the ten-segment line.
+#'   Default: `"solid"`.
+#'
+#' @param SAR_boundary_color Character. Line color for Hong Kong and Macau SAR
+#'   boundaries. Default: `"grey40"`.
+#' @param SAR_boundary_size Numeric. Line width for SAR boundaries.
+#'   Default: `0.5`.
+#' @param SAR_boundary_linetype Character. Line type for SAR boundaries.
+#'   Default: `"dashed"`.
+#'
+#' @param undefined_boundary_color Character. Line color for undefined or
+#'   disputed boundaries. Default: `"black"`.
+#' @param undefined_boundary_size Numeric. Line width for undefined boundaries.
+#'   Default: `0.5`.
+#' @param undefined_boundary_linetype Character. Line type for undefined
+#'   boundaries. Default: `"longdash"`.
+#'
+#' @param province_color Character. Line color for provincial boundaries.
+#'   Default: `"transparent"`.
+#' @param province_size Numeric. Line width for provincial boundaries.
+#'   Default: `0.3`.
+#' @param province_linetype Character. Line type for provincial boundaries.
+#'   Default: `"solid"`.
+#'
+#' @param ... Additional arguments passed to `ggplot2::geom_sf()` (e.g., `alpha`).
+#'
+#' @return A list of `ggplot2` layers.
+#' @export
+#' @import ggplot2
+#' @importFrom sf st_transform st_crs
+#'
+#' @examplesIf require("ggplot2") && require("sf")
+#' # Example 1: Basic China map
 #' ggplot() +
 #'   geom_boundary_cn() +
 #'   theme_minimal()
 #'
-#' # Plot China's boundaries with a compass and scale bar
+#' # Example 2: Add compass and scale bar (easy mode)
 #' ggplot() +
 #'   geom_boundary_cn(compass = TRUE, scale = TRUE) +
 #'   theme_minimal()
 #'
-#' # For customized compass or scale bar, use ggspatial directly:
+#' # Example 3: Custom styling
 #' ggplot() +
-#'   geom_boundary_cn() +
-#'   ggspatial::annotation_north_arrow(
-#'     location = "br", style = ggspatial::north_arrow_minimal()
-#'   ) +
-#'   ggspatial::annotation_scale(
-#'     location = "tr", width_hint = 0.3
+#'   geom_boundary_cn(
+#'     coastline_color = "steelblue",
+#'     province_color = "grey70",
+#'     province_linetype = "dashed"
 #'   ) +
 #'   theme_minimal()
-#' }
-#' @importFrom sf st_read st_transform
-#' @importFrom ggspatial annotation_north_arrow annotation_scale
-#' @export
+#'
+#' # Example 4: Advanced usage with a custom projected CRS
+#' Albers <-  "+proj=aea +lat_1=25 +lat_2=47 +lat_0=0 +lon_0=105 +x_0=0 +y_0=0 +
+#' + datum=WGS84 +units=m +no_defs"
+#'
+#' ggplot() +
+#'   geom_boundary_cn(crs = Albers) +
+#'   annotation_compass(location = "tl", which_north = "true") +
+#'   annotation_scalebar(location = "bl", fixed_width = 500000, display_unit = "km") +
+#'   coord_sf(crs = Albers) +
+#'   theme_minimal()
+#'
 geom_boundary_cn <- function(
     crs = "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs",
-    compass = FALSE, scale = FALSE,
+    compass = FALSE,
+    scale = FALSE,
     mainland_color = "black", mainland_size = 0.5, mainland_linetype = "solid",
     coastline_color = "blue", coastline_size = 0.3, coastline_linetype = "solid",
     ten_segment_line_color = "black", ten_segment_line_size = 0.5, ten_segment_line_linetype = "solid",
-    SAR_boundary_color = "grey", SAR_boundary_size = 0.5, SAR_boundary_linetype = "dashed",
+    SAR_boundary_color = "grey40", SAR_boundary_size = 0.5, SAR_boundary_linetype = "dashed",
     undefined_boundary_color = "black", undefined_boundary_size = 0.5, undefined_boundary_linetype = "longdash",
+    province_color = "transparent", province_size = 0.3, province_linetype = "solid",
     ...) {
-  # Load the boundary data
-  file_path <- system.file("extdata", "boundary.geojson", package = "ggmapcn")
-  boundary <- sf::st_read(file_path, quiet = TRUE)
 
-  # Apply the specified projection
-  boundary <- sf::st_transform(boundary, crs = crs)
+  # Ensure boundary dataset exists
+  files <- check_geodata(files = c("boundary.rda"), overwrite = FALSE, quiet = TRUE)
+  if (is.na(files[1])) stop("Cannot obtain 'boundary.rda'. Check network, mirrors, or local_dirs.")
+  load(files[1]) # loads `boundary`
 
-  # Split the data into different types based on the name attribute
-  mainland <- boundary[boundary$name == "mainland", ]
-  coastline <- boundary[boundary$name == "coastline", ]
-  ten_segment_line <- boundary[boundary$name == "ten_segment_line", ]
-  SAR_boundary <- boundary[boundary$name == "SAR_boundary", ]
-  undefined_boundary <- boundary[boundary$name == "undefined_boundary", ]
-
-  # Create ggplot layers for each boundary type with specified styles
-  layers <- list(
-    geom_sf(data = mainland, color = mainland_color, linewidth = mainland_size, linetype = mainland_linetype, ...),
-    geom_sf(data = coastline, color = coastline_color, linewidth = coastline_size, linetype = coastline_linetype, ...),
-    geom_sf(data = ten_segment_line, color = ten_segment_line_color, linewidth = ten_segment_line_size, linetype = ten_segment_line_linetype, ...),
-    geom_sf(data = SAR_boundary, color = SAR_boundary_color, linewidth = SAR_boundary_size, linetype = SAR_boundary_linetype, ...),
-    geom_sf(data = undefined_boundary, color = undefined_boundary_color, linewidth = undefined_boundary_size, linetype = undefined_boundary_linetype, ...)
+  # Reproject boundary data
+  boundary <- tryCatch(
+    sf::st_transform(boundary, crs = crs),
+    error = function(e) {
+      warning("Failed to transform CRS. Returning original data.")
+      boundary
+    }
   )
 
-  # Add compass if requested
+  # Split by category (safe subsetting)
+  get_layer_data <- function(name) boundary[boundary$name == name, , drop = FALSE]
+
+  mainland <- get_layer_data("mainland")
+  coastline <- get_layer_data("coastline")
+  ten_segment_line <- get_layer_data("ten_segment_line")
+  SAR_boundary <- get_layer_data("SAR_boundary")
+  undefined_boundary <- get_layer_data("undefined_boundary")
+  province <- get_layer_data("province")
+
+  # Build layers
+  layers <- list(
+    ggplot2::geom_sf(data = mainland, color = mainland_color,
+                     linewidth = mainland_size, linetype = mainland_linetype, ...),
+    ggplot2::geom_sf(data = coastline, color = coastline_color,
+                     linewidth = coastline_size, linetype = coastline_linetype, ...),
+    ggplot2::geom_sf(data = ten_segment_line, color = ten_segment_line_color,
+                     linewidth = ten_segment_line_size, linetype = ten_segment_line_linetype, ...),
+    ggplot2::geom_sf(data = SAR_boundary, color = SAR_boundary_color,
+                     linewidth = SAR_boundary_size, linetype = SAR_boundary_linetype, ...),
+    ggplot2::geom_sf(data = undefined_boundary, color = undefined_boundary_color,
+                     linewidth = undefined_boundary_size, linetype = undefined_boundary_linetype, ...),
+    ggplot2::geom_sf(data = province, color = province_color,
+                     linewidth = province_size, linetype = province_linetype, ...)
+  )
+
+  # Convert CRS string to object
+  crs_obj <- tryCatch(sf::st_crs(crs), error = function(e) NULL)
+
+  # Optional compass
   if (compass) {
-    layers <- append(layers, list(
-      ggspatial::annotation_north_arrow(
-        location = "tl",  # Top-left position
-        which_north = "true",
-        style = ggspatial::north_arrow_fancy_orienteering()
-      )
-    ))
+    compass_layer <- annotation_compass(location = "tl", which_north = "true")
+    compass_layer$geom_params$crs <- crs_obj
+    layers <- append(layers, list(compass_layer))
   }
 
-  # Add scale bar if requested
+  # Optional scale bar
   if (scale) {
-    layers <- append(layers, list(
-      ggspatial::annotation_scale(
-        location = "bl",  # Bottom-left position
-        width_hint = 0.25
-      )
-    ))
+    scale_layer <- annotation_scalebar(location = "bl")
+    scale_layer$geom_params$crs <- crs_obj
+    layers <- append(layers, list(scale_layer))
   }
 
   return(layers)

@@ -17,30 +17,30 @@ geom_buffer_cn(
 \item{mainland_dist}{Numeric. The buffer distance (in meters) for the mainland boundary.}
 
 \item{ten_line_dist}{Numeric. The buffer distance (in meters) for each segment of the ten-segment line.
-If not specified, it defaults to the same value as \code{mainland_dist}.}
+If not specified, it defaults to the same value as `mainland_dist`.}
 
 \item{crs}{Character. The coordinate reference system (CRS) for the projection.
 Defaults to "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs".
-Users can specify other CRS strings to customize the projection (e.g., "+proj=merc" for Mercator).}
+Users can specify other CRS strings (e.g., "+proj=merc" for Mercator).}
 
-\item{color}{Character. The border color for the buffer area. Default is \code{NA} (transparent).}
+\item{color}{Character. The border color for the buffer area. Default is `NA` (transparent).}
 
-\item{fill}{Character. The fill color for the buffer area. Default is \code{"#D2D5EB"}.}
+\item{fill}{Character. The fill color for the buffer area. Default is `"#D2D5EB"`.}
 
-\item{...}{Additional parameters passed to \code{geom_sf}.}
+\item{...}{Additional parameters passed to `geom_sf`.}
 }
 \value{
 A ggplot2 layer displaying buffered areas around China's boundaries,
-with customizable buffer distances for the mainland boundary and the ten-segment line,
-using the specified projection.
+  with customizable buffer distances for the mainland boundary and the ten-segment line,
+  using the specified projection.
 }
 \description{
-This function creates a ggplot2 layer for displaying buffered areas around China's boundaries,
+Creates a ggplot2 layer for displaying buffered areas around China's boundaries,
 including both the mainland boundary and the ten-segment line. Buffers with user-defined distances
 are generated around each boundary, providing flexibility in projection and appearance.
 }
 \examples{
-\dontrun{
+\donttest{
 # Plot buffers with specified distances for mainland and ten-segment line
 ggplot() +
   geom_buffer_cn(

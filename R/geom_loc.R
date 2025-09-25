@@ -6,7 +6,8 @@
 #' with longitude and latitude columns, automatically transforming them into the specified
 #' coordinate reference system (CRS).
 #'
-#' @return A \pkg{ggplot2} layer for visualizing spatial point data.
+#' @return A ggplot2 layer for visualizing spatial point data, either from an `sf` object or a tabular data frame
+#'   with longitude and latitude columns, after transforming the data to the specified coordinate reference system (CRS).
 #'
 #' @family ggplot2.utils
 #'
@@ -57,7 +58,7 @@
 #' @export
 geom_loc <- function(data, lon = NULL, lat = NULL,
                      crs = "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs",
-                     mapping = aes(), ...) {
+                     mapping = ggplot2::aes(), ...) {
 
   # Convert tabular data to sf if necessary
   if (!inherits(data, "sf")) {
@@ -71,5 +72,5 @@ geom_loc <- function(data, lon = NULL, lat = NULL,
   data <- sf::st_transform(data, crs = crs)
 
   # Plot as an sf layer with specified mapping
-  geom_sf(data = data, mapping = mapping, ...)
+  ggplot2::geom_sf(data = data, mapping = mapping, ...)
 }

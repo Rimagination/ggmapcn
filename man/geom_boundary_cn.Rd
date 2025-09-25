@@ -17,91 +17,124 @@ geom_boundary_cn(
   ten_segment_line_color = "black",
   ten_segment_line_size = 0.5,
   ten_segment_line_linetype = "solid",
-  SAR_boundary_color = "grey",
+  SAR_boundary_color = "grey40",
   SAR_boundary_size = 0.5,
   SAR_boundary_linetype = "dashed",
   undefined_boundary_color = "black",
   undefined_boundary_size = 0.5,
   undefined_boundary_linetype = "longdash",
+  province_color = "transparent",
+  province_size = 0.3,
+  province_linetype = "solid",
   ...
 )
 }
 \arguments{
-\item{crs}{Character. Coordinate reference system (CRS) for the projection.
-Defaults to "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs".
-Users can specify other CRS strings to customize the projection (e.g., "+proj=merc" for Mercator).}
+\item{crs}{Character or `sf::crs`. Target coordinate reference system for
+plotting. Defaults to an azimuthal equidistant projection centered on China
+(`+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs`).}
 
-\item{compass}{Logical. Whether to display a compass (north arrow). Default is \code{FALSE}.
-If set to \code{TRUE}, a default compass (north arrow) with \code{ggspatial::north_arrow_fancy_orienteering()}
-will be added to the top-left corner. To customize the compass, use \code{ggspatial::annotation_north_arrow()} directly.}
+\item{compass}{Logical. If `TRUE`, add a compass pointing to true north in
+the top-left corner. Default: `FALSE`.}
 
-\item{scale}{Logical. Whether to display a scale bar. Default is \code{FALSE}.
-If set to \code{TRUE}, a default scale bar with \code{ggspatial::annotation_scale()} will be added to the bottom-left corner.
-To customize the scale bar, use \code{ggspatial::annotation_scale()} directly.}
+\item{scale}{Logical. If `TRUE`, add a scale bar in the bottom-left corner.
+Default: `FALSE`.}
 
-\item{mainland_color}{Character. Color for the mainland boundary. Default is "black".}
+\item{mainland_color}{Character. Line color for the mainland boundary.
+Default: `"black"`.}
 
-\item{mainland_size}{Numeric. Line width for the mainland boundary. Default is \code{0.5}.}
+\item{mainland_size}{Numeric. Line width for the mainland boundary.
+Default: `0.5`.}
 
-\item{mainland_linetype}{Character. Line type for the mainland boundary. Default is \code{"solid"}.}
+\item{mainland_linetype}{Character. Line type for the mainland boundary.
+Default: `"solid"`.}
 
-\item{coastline_color}{Character. Color for the coastline. Default is "blue".}
+\item{coastline_color}{Character. Line color for coastlines.
+Default: `"blue"`.}
 
-\item{coastline_size}{Numeric. Line width for the coastline. Default is \code{0.3}.}
+\item{coastline_size}{Numeric. Line width for coastlines.
+Default: `0.3`.}
 
-\item{coastline_linetype}{Character. Line type for the coastline. Default is \code{"solid"}.}
+\item{coastline_linetype}{Character. Line type for coastlines.
+Default: `"solid"`.}
 
-\item{ten_segment_line_color}{Character. Color for the ten-segment line. Default is \code{"black"}.}
+\item{ten_segment_line_color}{Character. Line color for the South China Sea
+ten-segment line. Default: `"black"`.}
 
-\item{ten_segment_line_size}{Numeric. Line width for the ten-segment line. Default is \code{0.5}.}
+\item{ten_segment_line_size}{Numeric. Line width for the ten-segment line.
+Default: `0.5`.}
 
-\item{ten_segment_line_linetype}{Character. Line type for the ten-segment line. Default is \code{"solid"}.}
+\item{ten_segment_line_linetype}{Character. Line type for the ten-segment line.
+Default: `"solid"`.}
 
-\item{SAR_boundary_color}{Character. Color for the SAR boundary. Default is \code{"grey"}.}
+\item{SAR_boundary_color}{Character. Line color for Hong Kong and Macau SAR
+boundaries. Default: `"grey40"`.}
 
-\item{SAR_boundary_size}{Numeric. Line width for the SAR boundary. Default is \code{0.5}.}
+\item{SAR_boundary_size}{Numeric. Line width for SAR boundaries.
+Default: `0.5`.}
 
-\item{SAR_boundary_linetype}{Character. Line type for the SAR boundary. Default is \code{"dashed"}.}
+\item{SAR_boundary_linetype}{Character. Line type for SAR boundaries.
+Default: `"dashed"`.}
 
-\item{undefined_boundary_color}{Character. Color for the undefined boundary. Default is \code{"lightgrey"}.}
+\item{undefined_boundary_color}{Character. Line color for undefined or
+disputed boundaries. Default: `"black"`.}
 
-\item{undefined_boundary_size}{Numeric. Line width for the undefined boundary. Default is \code{0.5}.}
+\item{undefined_boundary_size}{Numeric. Line width for undefined boundaries.
+Default: `0.5`.}
 
-\item{undefined_boundary_linetype}{Character. Line type for the undefined boundary. Default is \code{"longdash"}.}
+\item{undefined_boundary_linetype}{Character. Line type for undefined
+boundaries. Default: `"longdash"`.}
 
-\item{...}{Additional parameters passed to \code{geom_sf}.}
+\item{province_color}{Character. Line color for provincial boundaries.
+Default: `"transparent"`.}
+
+\item{province_size}{Numeric. Line width for provincial boundaries.
+Default: `0.3`.}
+
+\item{province_linetype}{Character. Line type for provincial boundaries.
+Default: `"solid"`.}
+
+\item{...}{Additional arguments passed to `ggplot2::geom_sf()` (e.g., `alpha`).}
 }
 \value{
-A ggplot2 layer (or list of layers) displaying China's multi-segment boundaries with the specified styles,
-optionally including a compass (north arrow) and a scale bar.
+A list of `ggplot2` layers.
 }
 \description{
-Draws various types of boundaries for China, including mainland boundaries,
-coastlines, ten-segment line, special administrative region (SAR) boundaries, and undefined boundaries.
-Each boundary type can be customized in terms of color, line width, and line type.
-This function also allows optional addition of a compass and a scale bar.
+Draw China's administrative boundaries and optional map decorations
+(compass and scale bar). Each boundary category (mainland, coastline,
+provinces, etc.) can be styled independently. The data are reprojected
+to the specified CRS before plotting.
 }
 \examples{
-\dontrun{
-# Plot China's boundaries with default settings
+\dontshow{if (require("ggplot2") && require("sf")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Example 1: Basic China map
 ggplot() +
   geom_boundary_cn() +
   theme_minimal()
 
-# Plot China's boundaries with a compass and scale bar
+# Example 2: Add compass and scale bar (easy mode)
 ggplot() +
   geom_boundary_cn(compass = TRUE, scale = TRUE) +
   theme_minimal()
 
-# For customized compass or scale bar, use ggspatial directly:
+# Example 3: Custom styling
 ggplot() +
-  geom_boundary_cn() +
-  ggspatial::annotation_north_arrow(
-    location = "br", style = ggspatial::north_arrow_minimal()
-  ) +
-  ggspatial::annotation_scale(
-    location = "tr", width_hint = 0.3
+  geom_boundary_cn(
+    coastline_color = "steelblue",
+    province_color = "grey70",
+    province_linetype = "dashed"
   ) +
   theme_minimal()
-}
+
+# Example 4: Advanced usage with a custom projected CRS
+Albers <-  "+proj=aea +lat_1=25 +lat_2=47 +lat_0=0 +lon_0=105 +x_0=0 +y_0=0 +
++ datum=WGS84 +units=m +no_defs"
+
+ggplot() +
+  geom_boundary_cn(crs = Albers) +
+  annotation_compass(location = "tl", which_north = "true") +
+  annotation_scalebar(location = "bl", fixed_width = 500000, display_unit = "km") +
+  coord_sf(crs = Albers) +
+  theme_minimal()
+\dontshow{\}) # examplesIf}
 }

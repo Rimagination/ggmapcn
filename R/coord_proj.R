@@ -57,6 +57,8 @@
 #' @seealso
 #' \code{\link[ggplot2:coord_sf]{ggplot2::coord_sf}}, \code{\link[ggmapcn:geom_world]{geom_world}}
 #'
+#' @import ggplot2
+#' @importFrom sf st_bbox st_as_sfc st_transform st_crs
 #' @export
 coord_proj <- function(crs = NULL,
                        xlim = NULL,
@@ -64,20 +66,21 @@ coord_proj <- function(crs = NULL,
                        expand = TRUE,
                        default_crs = "EPSG:4326",
                        ...) {
-  library(sf)
 
+  # Ensure CRS is specified
   if (is.null(crs)) {
     stop("You must specify a CRS for `coord_proj()`.")
   }
 
+  # Transform the limits if xlim and ylim are provided
   if (!is.null(xlim) && !is.null(ylim)) {
     # Create a bounding box in the default CRS
-    bbox <- st_bbox(c(xmin = xlim[1], ymin = ylim[1], xmax = xlim[2], ymax = ylim[2]), crs = st_crs(default_crs))
-    bbox_sf <- st_as_sfc(bbox)
+    bbox <- sf::st_bbox(c(xmin = xlim[1], ymin = ylim[1], xmax = xlim[2], ymax = ylim[2]), crs = sf::st_crs(default_crs))
+    bbox_sf <- sf::st_as_sfc(bbox)
 
     # Transform the bounding box to the specified CRS
-    bbox_transformed <- st_transform(bbox_sf, crs)
-    bbox_coords <- st_bbox(bbox_transformed)
+    bbox_transformed <- sf::st_transform(bbox_sf, crs)
+    bbox_coords <- sf::st_bbox(bbox_transformed)
 
     # Extract transformed xlim and ylim
     xlim <- c(bbox_coords["xmin"], bbox_coords["xmax"])
