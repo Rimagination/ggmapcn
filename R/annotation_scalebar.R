@@ -62,16 +62,15 @@
 #' @return A `ggplot2` layer object representing the scale bar.
 #'
 #' @examples
-#' # Since ggplot2 and sf are in Imports, we can use @examples directly.
 #' nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
 #'
 #' base_plot <- ggplot2::ggplot() +
 #'   ggplot2::geom_sf(data = nc, fill = "grey90") +
 #'   ggplot2::theme_minimal()
 #'
-#' # Example 1: Projected CRS (accurate, auto-sized)
+#' # Example 1: Projected CRS with a longer scale bar
 #' base_plot + ggplot2::coord_sf(crs = 32617) +
-#'   annotation_scalebar(location = "bl")
+#'   annotation_scalebar(location = "bl", width_hint = 0.5)
 #'
 #' # Example 2: Ticks style, top-right (now correctly rendered)
 #' base_plot + ggplot2::coord_sf(crs = 32617) +
@@ -81,11 +80,7 @@
 #' base_plot + ggplot2::coord_sf(crs = 4326) +
 #'   annotation_scalebar(location = "bl", geographic_mode = "approx_m")
 #'
-#' # Example 4: Geographic CRS, display in degrees
-#' base_plot + ggplot2::coord_sf(crs = 4326) +
-#'   annotation_scalebar(location = "bl", geographic_mode = "degrees")
-#'
-#' # Example 5: Force a 100 km bar with red lines (now works correctly)
+#' # Example 4: Force a 100 km bar with red lines (now works correctly)
 #' base_plot + ggplot2::coord_sf(crs = 32617) +
 #'   annotation_scalebar(location = "bl", fixed_width = 100000, display_unit = "km",
 #'                       line_col = "red")
@@ -106,10 +101,10 @@ annotation_scalebar <- function(mapping = NULL, data = NULL, ...,
                                 unit_category = "metric",
                                 bar_cols = c("black", "white"),
                                 line_width = 1,
-                                height = unit(0.25, "cm"),
-                                pad_x = unit(0.25, "cm"),
-                                pad_y = unit(0.25, "cm"),
-                                text_pad = unit(0.15, "cm"),
+                                height = grid::unit(0.25, "cm"),
+                                pad_x = grid::unit(0.25, "cm"),
+                                pad_y = grid::unit(0.25, "cm"),
+                                text_pad = grid::unit(0.15, "cm"),
                                 text_cex = 0.7,
                                 text_face = NULL,
                                 text_family = "",
@@ -123,9 +118,9 @@ annotation_scalebar <- function(mapping = NULL, data = NULL, ...,
 
   geographic_mode <- match.arg(geographic_mode)
 
+  # Aesthetics are now only location and unit_category
   layer_data <- data.frame(
     location = location,
-    width_hint = width_hint,
     unit_category = unit_category
   )
 
@@ -145,6 +140,7 @@ annotation_scalebar <- function(mapping = NULL, data = NULL, ...,
       crs = crs,
       display_unit = display_unit,
       unit_labels = unit_labels,
+      width_hint = width_hint,
       bar_cols = bar_cols,
       line_width = line_width,
       height = height,
@@ -176,10 +172,12 @@ GeomCnScaleBar <- ggplot2::ggproto(
   extra_params = c("na.rm", "crs"),
   handle_na = function(data, params) data,
 
+  # default_aes is now minimal
   default_aes = ggplot2::aes(
-    width_hint = 0.25, location = "bl", unit_category = "metric"
+    location = "bl", unit_category = "metric"
   ),
 
+  # draw_panel
   draw_panel = function(self, data, panel_params, coordinates,
                         style, fixed_width, crs_unit, crs,
                         display_unit, unit_labels,
@@ -187,6 +185,7 @@ GeomCnScaleBar <- ggplot2::ggproto(
                         pad_x, pad_y, text_pad, text_cex,
                         text_face, text_family, tick_height,
                         segments, label_show, minor_tick_height,
+                        width_hint, # Added here
                         geographic_mode, text_col, line_col) {
 
     x_range <- panel_params$x_range
@@ -198,7 +197,7 @@ GeomCnScaleBar <- ggplot2::ggproto(
     }
 
     details <- data[1, intersect(
-      c("width_hint", "location", "unit_category"),
+      c("location", "unit_category"),
       names(data)
     )]
 
@@ -209,7 +208,7 @@ GeomCnScaleBar <- ggplot2::ggproto(
     params <- scalebar_params(
       sf_bbox = sf_bbox,
       crs_unit = crs_unit,
-      widthhint = details$width_hint,
+      widthhint = width_hint,
       unitcategory = details$unit_category,
       sf_crs = sf_crs,
       fixed_width = fixed_width,
@@ -408,7 +407,6 @@ grob_scalebar <- function(params, style, location,
                         fontfamily = text_family, fontface = text_face)
 
   if (identical(style, "segment")) {
-    # 'segment' style logic remains the same as your original, robust version.
     n_divs <- if (!is.null(segments) && is.finite(segments) && segments >= 1) as.integer(segments) else params$majordivs
     if (n_divs < 1) n_divs <- 1
     n_ticks <- n_divs + 1
@@ -489,12 +487,9 @@ grob_scalebar <- function(params, style, location,
   } else if (identical(style, "ticks")) {
 
     # Independent logic for 'ticks' style, mimicking ggspatial
-    # 1. --- Define labels and positions specific to 'ticks' style ---
-    # We only need two labels: "0" at the start and the full distance at the end.
     tick_labels <- c("0", params$labeltext)
     tick_x_pos <- grid::unit.c(origin_x, origin_x + width)
 
-    # 2. --- Draw the baseline and all the tick marks ---
     all_tick_x <- origin_x + grid::unit((seq_len(params$majordivs + 1) - 1) * params$majordivnpc, "npc")
     all_tick_y_heights <- grid::unit.c(height, rep(height * tick_height, max(0, params$majordivs - 1)), height)
 
@@ -510,12 +505,11 @@ grob_scalebar <- function(params, style, location,
       gp = grid::gpar(lwd = line_width, col = line_col)
     )
 
-    # 3. --- Create the text grob with exactly two, centered labels ---
     label_grob <- grid::textGrob(
       label = tick_labels,
       x = tick_x_pos,
       y = origin_y + height + text_pad,
-      hjust = 0.5, # Center-align labels over the start and end ticks
+      hjust = 0.5,
       vjust = 0,
       gp = gp_text
     )
@@ -523,7 +517,6 @@ grob_scalebar <- function(params, style, location,
     return(grid::gList(baseline, ticks, label_grob))
 
   } else { # "bar"
-    # 'bar' style logic remains the same
     block_x <- origin_x + grid::unit((seq_len(params$majordivs) - 1) * params$majordivnpc, "npc")
 
     rects <- grid::rectGrob(

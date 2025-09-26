@@ -19,10 +19,10 @@ annotation_scalebar(
   unit_category = "metric",
   bar_cols = c("black", "white"),
   line_width = 1,
-  height = unit(0.25, "cm"),
-  pad_x = unit(0.25, "cm"),
-  pad_y = unit(0.25, "cm"),
-  text_pad = unit(0.15, "cm"),
+  height = grid::unit(0.25, "cm"),
+  pad_x = grid::unit(0.25, "cm"),
+  pad_y = grid::unit(0.25, "cm"),
+  text_pad = grid::unit(0.15, "cm"),
   text_cex = 0.7,
   text_face = NULL,
   text_family = "",
@@ -123,16 +123,15 @@ Requires **ggplot2**, **sf**, and **grid**.
 }
 
 \examples{
-# Since ggplot2 and sf are in Imports, we can use @examples directly.
 nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
 
 base_plot <- ggplot2::ggplot() +
   ggplot2::geom_sf(data = nc, fill = "grey90") +
   ggplot2::theme_minimal()
 
-# Example 1: Projected CRS (accurate, auto-sized)
+# Example 1: Projected CRS with a longer scale bar
 base_plot + ggplot2::coord_sf(crs = 32617) +
-  annotation_scalebar(location = "bl")
+  annotation_scalebar(location = "bl", width_hint = 0.5)
 
 # Example 2: Ticks style, top-right (now correctly rendered)
 base_plot + ggplot2::coord_sf(crs = 32617) +
@@ -142,11 +141,7 @@ base_plot + ggplot2::coord_sf(crs = 32617) +
 base_plot + ggplot2::coord_sf(crs = 4326) +
   annotation_scalebar(location = "bl", geographic_mode = "approx_m")
 
-# Example 4: Geographic CRS, display in degrees
-base_plot + ggplot2::coord_sf(crs = 4326) +
-  annotation_scalebar(location = "bl", geographic_mode = "degrees")
-
-# Example 5: Force a 100 km bar with red lines (now works correctly)
+# Example 4: Force a 100 km bar with red lines (now works correctly)
 base_plot + ggplot2::coord_sf(crs = 32617) +
   annotation_scalebar(location = "bl", fixed_width = 100000, display_unit = "km",
                       line_col = "red")
