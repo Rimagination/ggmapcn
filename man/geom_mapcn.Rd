@@ -17,54 +17,60 @@ geom_mapcn(
 )
 }
 \arguments{
-\item{data}{An `sf` object containing China's map data. If `NULL`, the function loads the package's default map.
-Users can select provincial, municipal, or county-level maps using the `admin_level` parameter.}
+\item{data}{An `sf` object containing China's map data. If `NULL`, the function
+loads the default dataset corresponding to the chosen `admin_level`.}
 
-\item{admin_level}{A character string specifying the administrative level of the map.
-Options are `"province"` (default), `"city"`, or `"county"`. The corresponding `.rda` files
-(`China_sheng.rda`, `China_shi.rda`, `China_xian.rda`) must be located in the package's `extdata` folder.}
+\item{admin_level}{Character string specifying administrative level:
+`"province"` (default), `"city"`, or `"county"`. Requires
+`China_sheng.rda`, `China_shi.rda`, or `China_xian.rda` in `extdata/`.}
 
-\item{crs}{A string specifying the Coordinate Reference System (CRS). Defaults to
-`"+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs"`. Users can specify other CRS strings
-(e.g., `"EPSG:4326"`).}
+\item{crs}{Coordinate Reference System (CRS). Defaults to an azimuthal
+equidistant projection centered on China
+(`+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs`).
+Accepts proj4 strings or EPSG codes (e.g., `"EPSG:4326"`).}
 
-\item{color}{Border color. Default is `"black"`.}
+\item{color}{Border color. Default: `"black"`.}
 
-\item{fill}{Fill color. Default is `"white"`.}
+\item{fill}{Fill color. Default: `"white"`.}
 
-\item{linewidth}{Line width for borders. Default is `0.5`.
-Note: `linewidth` is used to control the border width in `ggplot2` version 3.3.0 or higher. Use `size` for earlier versions.}
+\item{linewidth}{Line width for borders. Default: `0.5`.
+Note: use `size` instead of `linewidth` for `ggplot2 < 3.3.0`.}
 
-\item{filter_attribute}{Column name for filtering regions (e.g., `"name_en"`).}
+\item{filter_attribute}{Column name used for filtering regions (e.g., `"name_en"`).}
 
-\item{filter}{A character vector of values to filter specific regions (e.g., `c("Beijing", "Shanghai")`).}
+\item{filter}{Character vector of values to filter specific regions
+(e.g., `c("Beijing", "Shanghai")`).}
 
-\item{...}{Additional parameters passed to `geom_sf`.}
+\item{...}{Additional parameters passed to `geom_sf()`.}
 }
 \value{
-A `ggplot2` layer (of class `ggproto`) for visualizing China's administrative boundaries.
-This layer can be added to a `ggplot` object to generate maps with customizable projections,
-border colors, fill colors, and more.
+A `ggplot2` layer object.
 }
 \description{
-`geom_mapcn` provides a flexible interface for visualizing China's administrative boundaries.
-Users can select administrative levels (province, city, or county), apply custom projections,
-and filter specific regions.
+`geom_mapcn()` provides a flexible interface for visualizing China's
+administrative boundaries. Users can select administrative levels
+(province, city, or county), apply custom projections, and filter specific regions.
+
+This function automatically loads the packaged map data (`.rda` files in `extdata`)
+if no input data is provided. A helper function `load_map_data()` ensures
+correct loading and validation of map files.
 }
 \examples{
-# Plot provincial map (default)
-ggplot() +
+# Example 1: Plot provincial map (default)
+ggplot2::ggplot() +
   geom_mapcn() +
-  theme_minimal()
+  ggplot2::theme_minimal()
 
-# Filter specific provinces
-ggplot() +
-  geom_mapcn(filter_attribute = "name_en", filter = c("Beijing", "Shanghai"), fill = "red") +
-  theme_minimal()
+# Example 2: Filter specific provinces
+ggplot2::ggplot() +
+  geom_mapcn(filter_attribute = "name_en",
+             filter = c("Beijing", "Shanghai"),
+             fill = "red") +
+  ggplot2::theme_minimal()
 
-# Use a Mercator projection
-ggplot() +
+# Example 3: Use a Mercator projection
+ggplot2::ggplot() +
   geom_mapcn(crs = "+proj=merc", linewidth = 0.7) +
-  theme_minimal()
+  ggplot2::theme_minimal()
 
 }
