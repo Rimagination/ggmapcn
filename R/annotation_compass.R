@@ -29,8 +29,11 @@
 #' @return A `ggplot2` layer object.
 #' @seealso \code{\link{compass-styles}}
 #' @export
+#' @import ggplot2
+#' @importFrom grid unit gList gTree viewport is.grob rectGrob circleGrob polygonGrob textGrob gpar nullGrob
+#' @importFrom sf st_is_longlat st_coordinates st_transform st_as_sf st_crs st_sfc st_point
 #'
-#' @examplesIf require("ggplot2") && require("sf")
+#' @examples
 #' nc <- sf::st_read(system.file("shape/nc.shp", package="sf"), quiet = TRUE)
 #'
 #' base <- ggplot2::ggplot() +
@@ -51,10 +54,10 @@
 annotation_compass <- function(mapping = NULL, data = NULL, ...,
                                location = "bl",
                                which_north = "grid",
-                               height = grid::unit(1.5, "cm"),
-                               width  = grid::unit(1.5, "cm"),
-                               pad_x  = grid::unit(0.5, "cm"),
-                               pad_y  = grid::unit(0.5, "cm"),
+                               height = unit(1.5, "cm"),
+                               width  = unit(1.5, "cm"),
+                               pad_x  = unit(0.5, "cm"),
+                               pad_y  = unit(0.5, "cm"),
                                rotation = NULL,
                                style = north_arrow_classic()) {
 

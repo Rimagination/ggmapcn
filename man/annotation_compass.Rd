@@ -10,10 +10,10 @@ annotation_compass(
   ...,
   location = "bl",
   which_north = "grid",
-  height = grid::unit(1.5, "cm"),
-  width = grid::unit(1.5, "cm"),
-  pad_x = grid::unit(0.5, "cm"),
-  pad_y = grid::unit(0.5, "cm"),
+  height = unit(1.5, "cm"),
+  width = unit(1.5, "cm"),
+  pad_x = unit(0.5, "cm"),
+  pad_y = unit(0.5, "cm"),
   rotation = NULL,
   style = north_arrow_classic()
 )
@@ -56,7 +56,6 @@ a grob (e.g., `north_arrow_classic()`, `compass_sinan()`).
 * The layer is annotation-like: it draws once per panel using the panel bounds.
 }
 \examples{
-\dontshow{if (require("ggplot2") && require("sf")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 nc <- sf::st_read(system.file("shape/nc.shp", package="sf"), quiet = TRUE)
 
 base <- ggplot2::ggplot() +
@@ -73,7 +72,7 @@ base + annotation_compass(location = "tl", style = compass_sinan())
 base +
   ggplot2::coord_sf(crs = "+proj=lcc +lon_0=-100 +lat_1=33 +lat_2=45") +
   annotation_compass(which_north = "true")
-\dontshow{\}) # examplesIf}
+
 }
 \seealso{
 \code{\link{compass-styles}}
