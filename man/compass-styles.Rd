@@ -103,7 +103,7 @@ A `grid` graphical object (grob).
 \description{
 A collection of style constructors that return `grid` grobs for use with
 `annotation_compass(style = ...)`. These styles provide different visual
-appearances for a compass or north arrow that is drawn as an annotation.
+appearances for a compass or north arrow drawn as an annotation.
 }
 \details{
 Exported constructors documented under this topic:
@@ -118,8 +118,7 @@ Exported constructors documented under this topic:
 }
 
 Each constructor returns a grob ready to be passed to \code{annotation_compass(style = ...)}.
-Most arguments are visual parameters (colors, line widths, label styles). All styles include
-an "N" label (or cardinal labels) by default to indicate north.
+All styles include an "N" (or cardinal labels) to indicate north.
 }
 \section{Common parameters (used selectively by constructors)}{
 
@@ -152,7 +151,7 @@ an "N" label (or cardinal labels) by default to indicate north.
 }
 
 \examples{
-# Draw each style standalone with grid
+# Standalone preview
 grid::grid.newpage(); grid::grid.draw(north_arrow_classic())
 grid::grid.newpage(); grid::grid.draw(north_arrow_solid())
 grid::grid.newpage(); grid::grid.draw(compass_rose_simple())
@@ -161,7 +160,7 @@ grid::grid.newpage(); grid::grid.draw(compass_rose_circle())
 grid::grid.newpage(); grid::grid.draw(compass_guiding_fish())
 grid::grid.newpage(); grid::grid.draw(compass_sinan())
 
-# Use in ggplot (requires ggplot2 and sf)
+# Use in ggplot
 \donttest{
 if (requireNamespace("ggplot2", quietly = TRUE) &&
     requireNamespace("sf", quietly = TRUE)) {
@@ -170,10 +169,7 @@ if (requireNamespace("ggplot2", quietly = TRUE) &&
     ggplot2::geom_sf(data = nc, fill = "grey90") +
     ggplot2::theme_minimal()
 
-  # Classic arrow in top-right
   p + annotation_compass(location = "tr", style = north_arrow_classic())
-
-  # Sinan style in bottom-left
   p + annotation_compass(location = "bl", style = compass_sinan())
 }
 }

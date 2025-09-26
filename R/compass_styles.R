@@ -3,7 +3,7 @@
 #' @description
 #' A collection of style constructors that return `grid` grobs for use with
 #' `annotation_compass(style = ...)`. These styles provide different visual
-#' appearances for a compass or north arrow that is drawn as an annotation.
+#' appearances for a compass or north arrow drawn as an annotation.
 #'
 #' @details
 #' Exported constructors documented under this topic:
@@ -18,8 +18,7 @@
 #' }
 #'
 #' Each constructor returns a grob ready to be passed to \code{annotation_compass(style = ...)}.
-#' Most arguments are visual parameters (colors, line widths, label styles). All styles include
-#' an "N" label (or cardinal labels) by default to indicate north.
+#' All styles include an "N" (or cardinal labels) to indicate north.
 #'
 #' @section Common parameters (used selectively by constructors):
 #' \describe{
@@ -55,7 +54,7 @@
 #' \code{\link{annotation_compass}} for adding the compass to a ggplot.
 #'
 #' @examples
-#' # Draw each style standalone with grid
+#' # Standalone preview
 #' grid::grid.newpage(); grid::grid.draw(north_arrow_classic())
 #' grid::grid.newpage(); grid::grid.draw(north_arrow_solid())
 #' grid::grid.newpage(); grid::grid.draw(compass_rose_simple())
@@ -64,7 +63,7 @@
 #' grid::grid.newpage(); grid::grid.draw(compass_guiding_fish())
 #' grid::grid.newpage(); grid::grid.draw(compass_sinan())
 #'
-#' # Use in ggplot (requires ggplot2 and sf)
+#' # Use in ggplot
 #' \donttest{
 #' if (requireNamespace("ggplot2", quietly = TRUE) &&
 #'     requireNamespace("sf", quietly = TRUE)) {
@@ -73,10 +72,7 @@
 #'     ggplot2::geom_sf(data = nc, fill = "grey90") +
 #'     ggplot2::theme_minimal()
 #'
-#'   # Classic arrow in top-right
 #'   p + annotation_compass(location = "tr", style = north_arrow_classic())
-#'
-#'   # Sinan style in bottom-left
 #'   p + annotation_compass(location = "bl", style = compass_sinan())
 #' }
 #' }
@@ -84,12 +80,11 @@
 #' @name compass-styles
 #' @keywords themes
 #' @importFrom grid polygonGrob circleGrob rectGrob xsplineGrob linesGrob textGrob
-#' @importFrom grid gList gTree viewport unit gpar
+#' @importFrom grid gList gTree viewport unit gpar grobTree
 NULL
 
 
 # ---------- north_arrow_classic ------------------------------------------------
-
 #' @rdname compass-styles
 #' @export
 north_arrow_classic <- function(
@@ -119,7 +114,7 @@ north_arrow_classic <- function(
   text_x <- 0.5
   text_y <- 0.9
 
-  grid::gList(
+  children <- grid::gList(
     grid::polygonGrob(x = fill_x, y = fill_y, id = fill_id,
                       gp = grid::gpar(fill = fill, col = NA)),
     grid::polygonGrob(x = outline_x, y = outline_y,
@@ -130,11 +125,13 @@ north_arrow_classic <- function(
                    gp = grid::gpar(col = text_col, fontsize = text_size,
                                    fontface = text_face, fontfamily = text_family))
   )
+
+  grid::gTree(children = children,
+              vp = grid::viewport(width = grid::unit(1,"snpc"), height = grid::unit(1,"snpc")))
 }
 
 
 # ---------- north_arrow_solid --------------------------------------------------
-
 #' @rdname compass-styles
 #' @export
 north_arrow_solid <- function(
@@ -156,7 +153,7 @@ north_arrow_solid <- function(
   text_x <- 0.5
   text_y <- 0.9
 
-  grid::gList(
+  children <- grid::gList(
     grid::polygonGrob(
       x = arrow_x, y = arrow_y,
       gp = grid::gpar(fill = fill, col = line_col, lwd = line_width)
@@ -165,11 +162,13 @@ north_arrow_solid <- function(
                    gp = grid::gpar(col = text_col, fontsize = text_size,
                                    fontface = text_face, fontfamily = text_family))
   )
+
+  grid::gTree(children = children,
+              vp = grid::viewport(width = grid::unit(1,"snpc"), height = grid::unit(1,"snpc")))
 }
 
 
 # ---------- compass_rose_simple ------------------------------------------------
-
 #' @rdname compass-styles
 #' @export
 compass_rose_simple <- function(
@@ -218,18 +217,18 @@ compass_rose_simple <- function(
   )
   ids <- rep(1:8, each = 3)
 
-  grid::gList(
+  children <- grid::gList(
     grid::polygonGrob(x = x_coords, y = y_coords, id = ids,
                       gp = grid::gpar(fill = fill, col = line_col, lwd = line_width)),
     grid::textGrob("N", x = 0.5, y = 0.9, vjust = 0,
                    gp = grid::gpar(col = text_col, fontsize = text_size,
                                    fontface = text_face, fontfamily = text_family))
   )
+
+  grid::gTree(children = children,
+              vp = grid::viewport(width = grid::unit(1,"snpc"), height = grid::unit(1,"snpc")))
 }
-
-
 # ---------- compass_rose_classic ----------------------------------------------
-
 #' @rdname compass-styles
 #' @export
 compass_rose_classic <- function(
@@ -273,7 +272,7 @@ compass_rose_classic <- function(
     y = center[2] + c(text_radius, 0, -text_radius, 0)
   )
 
-  grid::gList(
+  children <- grid::gList(
     grid::polygonGrob(x = x_coords, y = y_coords, id = ids,
                       gp = grid::gpar(fill = fill, col = line_col, lwd = line_width)),
     grid::textGrob(labels, x = label_coords$x, y = label_coords$y,
@@ -281,11 +280,13 @@ compass_rose_classic <- function(
                    gp = grid::gpar(col = text_col, fontsize = text_size,
                                    fontface = text_face, fontfamily = text_family))
   )
+
+  grid::gTree(children = children,
+              vp = grid::viewport(width = grid::unit(1,"snpc"), height = grid::unit(1,"snpc")))
 }
 
 
 # ---------- compass_rose_circle -----------------------------------------------
-
 #' @rdname compass-styles
 #' @export
 compass_rose_circle <- function(
@@ -336,12 +337,14 @@ compass_rose_circle <- function(
                     fontface = text_face, fontfamily = text_family)
   )
 
-  grid::gList(pointers_grob, circle_grob, text_grob)
+  children <- grid::gList(pointers_grob, circle_grob, text_grob)
+
+  grid::gTree(children = children,
+              vp = grid::viewport(width = grid::unit(1,"snpc"), height = grid::unit(1,"snpc")))
 }
 
 
 # ---------- compass_guiding_fish ----------------------------------------------
-
 #' @rdname compass-styles
 #' @export
 compass_guiding_fish <- function(
@@ -413,13 +416,15 @@ compass_guiding_fish <- function(
     )
   )
 
-  grid::grobTree(children = do.call(grid::gList,
-                                    c(ring_grobs, list(fish_grob, eye_grob, text_grob))))
+  children <- do.call(grid::gList,
+                      c(ring_grobs, list(fish_grob, eye_grob, text_grob)))
+
+  grid::gTree(children = children,
+              vp = grid::viewport(width = grid::unit(1,"snpc"), height = grid::unit(1,"snpc")))
 }
 
 
 # ---------- compass_sinan ------------------------------------------------------
-
 #' @rdname compass-styles
 #' @export
 compass_sinan <- function(
@@ -442,10 +447,6 @@ compass_sinan <- function(
     inner_width  = 1,
     spoon_width  = 1
 ) {
-  square_vp <- grid::viewport(width = grid::unit(1, "snpc"),
-                              height = grid::unit(1, "snpc"),
-                              x = 0.5, y = 0.5, just = c(0.5, 0.5))
-
   max_r <- (1 - 2 * square_pad) / 2
   r_out <- min(ring_outer, max_r * 0.999)
   r_in  <- r_out * ring_ratio
@@ -483,7 +484,9 @@ compass_sinan <- function(
                               gp = grid::gpar(col = text_col, fontsize = text_size,
                                               fontface = text_face, fontfamily = text_family))
 
-  grid::gTree(children = grid::gList(square_grob, circle_outer, circle_inner,
-                                     handle, ellipse, text_grob),
-              vp = square_vp)
+  children <- grid::gList(square_grob, circle_outer, circle_inner,
+                          handle, ellipse, text_grob)
+
+  grid::gTree(children = children,
+              vp = grid::viewport(width = grid::unit(1,"snpc"), height = grid::unit(1,"snpc")))
 }
