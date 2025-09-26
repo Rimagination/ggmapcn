@@ -10,13 +10,14 @@ License: GPL-3
 Encoding: UTF-8
 Depends: 
     R (>= 3.5.0),
-    ggplot2 (>= 3.4.0)
+    ggplot2 (>= 3.3.0)
 Imports: 
     sf (>= 1.0.0),
     dplyr (>= 1.1.0),
     terra (>= 1.7),
     tidyterra (>= 0.6.0),
     curl (>= 5.0.0),
+    rlang,
     digest,
     grid
 URL: https://rimagination.github.io/ggmapcn/

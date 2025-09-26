@@ -1,54 +1,57 @@
 #' Plot China Map with Customizable Options
 #'
 #' @description
-#' `geom_mapcn()` provides a flexible interface for visualizing China's
-#' administrative boundaries. Users can select administrative levels
-#' (province, city, or county), apply custom projections, and filter specific regions.
+#' `geom_mapcn()` plots China's administrative boundaries with a simple,
+#' opinionated interface. It loads packaged map data when `data` is `NULL`,
+#' removes the special row labeled `"Boundary Line"`, supports optional
+#' attribute-based filtering, and can reproject to a user-specified CRS.
 #'
-#' This function automatically loads the packaged map data (`.rda` files in `extdata`)
-#' if no input data is provided. A helper function `load_map_data()` ensures
-#' correct loading and validation of map files.
+#' @param data An `sf` object of geometries to draw. If `NULL`, the function
+#'   loads the packaged dataset for the chosen `admin_level`.
+#' @param admin_level Administrative level to plot. One of `"province"`
+#'   (default), `"city"`, or `"county"`. These correspond to packaged
+#'   files `China_sheng.rda`, `China_shi.rda`, and `China_xian.rda`.
+#' @param crs Coordinate Reference System to use for plotting. Defaults to an
+#'   Azimuthal Equidistant projection centered on China:
+#'   `"+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs"`.
+#'   Accepts proj strings or EPSG codes (e.g., `"EPSG:4326"`).
+#' @param color Border color. Default `"black"`.
+#' @param fill Fill color. Default `"white"`.
+#' @param linewidth Border line width. Default `0.5`.
+#'   For older `ggplot2` versions, use `size` instead of `linewidth`.
+#' @param filter_attribute Optional column name used to filter features
+#'   (e.g., `"name_en"`).
+#' @param filter Optional character vector of values to keep (e.g.,
+#'   `c("Beijing","Shanghai")`). If supplied with `filter_attribute`,
+#'   features are filtered accordingly. If the result is empty, an error
+#'   is thrown.
+#' @param mapping Optional aesthetics mapping passed to `geom_sf()`.
+#'   Useful when you already have aesthetics to apply (e.g., fill).
+#' @param ... Additional arguments forwarded to `ggplot2::geom_sf()`.
 #'
-#' @param data An `sf` object containing China's map data. If `NULL`, the function
-#'   loads the default dataset corresponding to the chosen `admin_level`.
-#' @param admin_level Character string specifying administrative level:
-#'   `"province"` (default), `"city"`, or `"county"`. Requires
-#'   `China_sheng.rda`, `China_shi.rda`, or `China_xian.rda` in `extdata/`.
-#' @param crs Coordinate Reference System (CRS). Defaults to an azimuthal
-#'   equidistant projection centered on China
-#'   (`+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs`).
-#'   Accepts proj4 strings or EPSG codes (e.g., `"EPSG:4326"`).
-#' @param color Border color. Default: `"black"`.
-#' @param fill Fill color. Default: `"white"`.
-#' @param linewidth Line width for borders. Default: `0.5`.
-#'   Note: use `size` instead of `linewidth` for `ggplot2 < 3.3.0`.
-#' @param filter_attribute Column name used for filtering regions (e.g., `"name_en"`).
-#' @param filter Character vector of values to filter specific regions
-#'   (e.g., `c("Beijing", "Shanghai")`).
-#' @param ... Additional parameters passed to `geom_sf()`.
-#'
-#' @return A `ggplot2` layer object.
+#' @return A `ggplot2` layer.
 #'
 #' @examples
-#' # Example 1: Plot provincial map (default)
+#' # Basic provincial map
 #' ggplot2::ggplot() +
 #'   geom_mapcn() +
 #'   ggplot2::theme_minimal()
 #'
-#' # Example 2: Filter specific provinces
+#' # Filter by names stored in the data (e.g., English names)
 #' ggplot2::ggplot() +
 #'   geom_mapcn(filter_attribute = "name_en",
 #'              filter = c("Beijing", "Shanghai"),
 #'              fill = "red") +
 #'   ggplot2::theme_minimal()
 #'
-#' # Example 3: Use a Mercator projection
+#' # Use a different projection
 #' ggplot2::ggplot() +
 #'   geom_mapcn(crs = "+proj=merc", linewidth = 0.7) +
 #'   ggplot2::theme_minimal()
 #'
-#' @importFrom sf st_transform st_crs
+#' @importFrom sf st_crs st_transform
 #' @importFrom dplyr filter
+#' @importFrom rlang sym
 #' @export
 geom_mapcn <- function(
     data = NULL,
@@ -59,45 +62,59 @@ geom_mapcn <- function(
     linewidth = 0.5,
     filter_attribute = NULL,
     filter = NULL,
+    mapping = NULL,
     ...
 ) {
-  # Ensure required geodata is available
-  check_geodata(files = c("China_sheng.rda", "China_shi.rda", "China_xian.rda"),
-                quiet = TRUE)
-
-  # Load default data if not provided
+  # Select the packaged file if data is not supplied
   if (is.null(data)) {
     file_name <- switch(
       admin_level,
       "province" = "China_sheng.rda",
       "city"     = "China_shi.rda",
       "county"   = "China_xian.rda",
-      stop("Invalid admin_level. Choose from 'province', 'city', or 'county'.")
+      stop("Invalid `admin_level`. Choose one of 'province', 'city', or 'county'.")
     )
+    # Ensure the file is available locally (download if missing)
+    check_geodata(files = file_name, quiet = TRUE)
+    # Load the file into an sf object
     data <- load_map_data(file_name, package = "ggmapcn")
   }
 
-  # Validate input
+  # Must be sf
   if (!inherits(data, "sf")) {
-    stop("The input 'data' must be an 'sf' object.")
+    stop("The input `data` must be an 'sf' object (or leave it NULL to use packaged data).")
   }
 
-  # Apply filtering if requested
+  # Drop the special "Boundary Line" row if present
+  drop_idx <- rep(FALSE, nrow(data))
+  if ("name_en" %in% names(data)) drop_idx <- drop_idx | (toupper(data$name_en) == "BOUNDARY LINE")
+  if ("name"    %in% names(data)) drop_idx <- drop_idx | (toupper(data$name)    == "BOUNDARY LINE")
+  if (any(drop_idx)) data <- data[!drop_idx, , drop = FALSE]
+
+  # Attribute-based filtering
   if (!is.null(filter) && !is.null(filter_attribute)) {
-    if (!(filter_attribute %in% colnames(data))) {
-      stop("The filter_attribute '", filter_attribute, "' does not exist in the data.")
+    if (!(filter_attribute %in% names(data))) {
+      stop(sprintf("Column '%s' not found in data.", filter_attribute))
     }
     data <- dplyr::filter(data, !!rlang::sym(filter_attribute) %in% filter)
+    if (nrow(data) == 0) {
+      stop("No features matched the provided filter; nothing to plot.")
+    }
   }
 
-  # Reproject if necessary
-  if (sf::st_crs(data)$input != crs) {
+  # Reproject if necessary (guard against missing CRS)
+  data_crs <- try(sf::st_crs(data), silent = TRUE)
+  needs_transform <- !inherits(data_crs, "try-error") &&
+    !is.null(data_crs) &&
+    !is.null(data_crs$input) &&
+    !identical(data_crs$input, crs)
+  if (isTRUE(needs_transform)) {
     data <- sf::st_transform(data, crs = crs)
   }
 
-  # Return ggplot layer
   ggplot2::geom_sf(
     data = data,
+    mapping = mapping,
     color = color,
     fill = fill,
     linewidth = linewidth,
@@ -105,37 +122,32 @@ geom_mapcn <- function(
   )
 }
 
-#' Load packaged map data safely
+# ---- Internal helper (not exported, not documented) -------------------------
+
+#' Load a packaged `.rda` map from inst/extdata (internal)
 #'
-#' @description
-#' Load a `.rda` map file from the package's `extdata/` into a temporary
-#' environment and return the expected `sf` object.
-#'
-#' @param file_name Character scalar. Name of the `.rda` file
-#'   (e.g., `"China_sheng.rda"`).
-#' @param package Character scalar. Package name. Default: `"ggmapcn"`.
-#'
-#' @return An `sf` object from the `.rda` file.
+#' @param file_name Name of the `.rda` file (e.g., "China_sheng.rda").
+#' @param package   Package name; defaults to "ggmapcn".
+#' @return An `sf` object loaded from the `.rda` file.
 #' @keywords internal
 #' @noRd
 load_map_data <- function(file_name, package = "ggmapcn") {
   file_path <- system.file("extdata", file_name, package = package)
-  if (file_path == "") {
-    stop("Map file ", file_name, " not found in package extdata folder.")
+  if (identical(file_path, "")) {
+    stop(sprintf("Map file '%s' not found in the package extdata.", file_name))
   }
 
-  env <- new.env()
-  load(file_path, envir = env)
+  env <- new.env(parent = emptyenv())
+  base::load(file_path, envir = env)
 
-  object_name <- gsub("\\.rda$", "", file_name)
-  if (!exists(object_name, envir = env)) {
-    stop("The object ", object_name, " was not found inside ", file_name, ".")
+  obj_name <- sub("\\.rda$", "", file_name)
+  if (!exists(obj_name, envir = env, inherits = FALSE)) {
+    stop(sprintf("Object '%s' not found inside '%s'.", obj_name, file_name))
   }
 
-  data <- get(object_name, envir = env)
-  if (!inherits(data, "sf")) {
-    stop("Object ", object_name, " in ", file_name, " is not an 'sf' object.")
+  obj <- get(obj_name, envir = env, inherits = FALSE)
+  if (!inherits(obj, "sf")) {
+    stop(sprintf("Object '%s' in '%s' is not an 'sf' object.", obj_name, file_name))
   }
-
-  return(data)
+  obj
 }
