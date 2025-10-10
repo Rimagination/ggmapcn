@@ -20,38 +20,34 @@
 #' Each constructor returns a grob ready to be passed to \code{annotation_compass(style = ...)}.
 #' All styles include an "N" (or cardinal labels) to indicate north.
 #'
-#' @section Common parameters (used selectively by constructors):
-#' \describe{
-#'   \item{fill}{Fill color(s) for polygons. Vectorized for alternating fills in some styles.}
-#'   \item{line_col}{Stroke color for outlines.}
-#'   \item{line_width}{Stroke width for outlines (numeric).}
-#'   \item{text_col}{Text color for labels.}
-#'   \item{text_size}{Text font size for labels (points).}
-#'   \item{text_face}{Text font face (e.g., "plain", "bold").}
-#'   \item{text_family}{Text font family.}
-#'   \item{labels}{Character vector of cardinal labels, usually \code{c("N","E","S","W")}.}
-#'   \item{sharpness}{Controls star-point sharpness in rose styles, numeric in [0, 1].}
-#'   \item{size}{Global size scaler (used by some styles).}
-#'   \item{ring_ratio}{Inner/outer radius ratio for ringed styles (0 < value < 1).}
-#'   \item{ring_width}{Stroke width of ring outlines (numeric).}
-#'   \item{n_seg}{Number of ring segments (integer).}
-#'   \item{fish_col}{Fill color for fish shape (guiding fish style).}
-#'   \item{fish_shift}{Vertical shift for fish shape (guiding fish style).}
-#'   \item{square_pad}{Padding around the outer square (Sinan style), fraction of box side.}
-#'   \item{ring_outer}{Outer ring radius (Sinan style), expressed in npc units (0..1).}
-#'   \item{label_offset}{Label offset from the square edges (Sinan style), npc units.}
-#'   \item{spoon_fill}{Fill color for spoon glyph (Sinan style).}
-#'   \item{spoon_col}{Stroke color for spoon glyph (Sinan style).}
-#'   \item{spoon_scale}{Scale factor for spoon glyph (Sinan style).}
-#'   \item{inner_fill}{Fill color for inner disk (Sinan style).}
-#'   \item{square_width,outer_width,inner_width,spoon_width}{Stroke widths for respective
-#'     elements in Sinan style.}
-#' }
+#' @param fill Fill color(s) for polygons. Vectorized for alternating fills in some styles.
+#' @param line_col Stroke color for outlines.
+#' @param line_width Stroke width for outlines (numeric).
+#' @param text_col Text color for labels.
+#' @param text_size Text font size for labels (points).
+#' @param text_face Text font face (e.g., "plain", "bold").
+#' @param text_family Text font family.
+#' @param labels Character vector of cardinal labels, usually `c("N","E","S","W")`.
+#' @param sharpness Controls star-point sharpness in rose styles, numeric in [0, 1].
+#' @param size Global size scaler (used by some styles).
+#' @param ring_ratio Inner/outer radius ratio for ringed styles (0 < value < 1).
+#' @param ring_width Stroke width of ring outlines (numeric).
+#' @param n_seg Number of ring segments (integer).
+#' @param fish_col Fill color for fish shape (guiding fish style).
+#' @param fish_shift Vertical shift for fish shape (guiding fish style).
+#' @param square_pad Padding around the outer square (Sinan style), fraction of box side.
+#' @param ring_outer Outer ring radius (Sinan style), expressed in npc units (0..1).
+#' @param label_offset Label offset from the square edges (Sinan style), npc units.
+#' @param spoon_fill Fill color for spoon glyph (Sinan style).
+#' @param spoon_col Stroke color for spoon glyph (Sinan style).
+#' @param spoon_scale Scale factor for spoon glyph (Sinan style).
+#' @param inner_fill Fill color for inner disk (Sinan style).
+#' @param square_width,outer_width,inner_width,spoon_width Stroke widths for respective elements in Sinan style.
 #'
 #' @return A `grid` graphical object (grob).
 #'
 #' @seealso
-#' \code{\link{annotation_compass}} for adding the compass to a ggplot.
+#' [annotation_compass] for adding the compass to a ggplot.
 #'
 #' @examples
 #' # Standalone preview
@@ -78,7 +74,6 @@
 #' }
 #'
 #' @name compass-styles
-#' @keywords themes
 #' @importFrom grid polygonGrob circleGrob rectGrob xsplineGrob linesGrob textGrob
 #' @importFrom grid gList gTree viewport unit gpar grobTree
 NULL

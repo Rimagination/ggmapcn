@@ -27,7 +27,7 @@
 #'   (e.g., `north_arrow_classic()`). Default: `north_arrow_classic()`.
 #'
 #' @return A `ggplot2` layer object.
-#' @seealso \code{\link{compass-styles}}
+#' @seealso [compass-styles]
 #' @export
 #' @import ggplot2
 #' @importFrom grid unit gList gTree viewport is.grob rectGrob circleGrob polygonGrob textGrob gpar nullGrob
@@ -182,7 +182,7 @@ true_north <- function(x, y, crs, delta_crs = 0.1, delta_lat = 0.1) {
 }
 
 #' Classic North Arrow Style (Minimal)
-#' @return A grob representing a simple black arrow with "N".
+#' @rdname compass-styles
 #' @export
 north_arrow_classic <- function() {
   grid::gList(
@@ -196,7 +196,7 @@ north_arrow_classic <- function() {
 }
 
 #' Sinan (Ancient Chinese Compass) Style (Simplified)
-#' @return A grob representing a simplified "Sinan"-inspired compass.
+#' @rdname compass-styles
 #' @export
 compass_sinan <- function() {
   grid::gList(

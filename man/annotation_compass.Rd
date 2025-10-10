@@ -75,5 +75,5 @@ base +
 
 }
 \seealso{
-\code{\link{compass-styles}}
+[compass-styles]
 }
