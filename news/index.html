@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ggmapcn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,29 +37,22 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.0.2" id="ggmapcn-002">ggmapcn 0.0.2<a class="anchor" aria-label="anchor" href="#ggmapcn-002"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.0" id="ggmapcn-020">ggmapcn 0.2.0<a class="anchor" aria-label="anchor" href="#ggmapcn-020"></a></h2><p class="text-muted">CRAN release: 2025-10-10</p>
 <div class="section level3">
-<h3 id="new-features-0-0-2">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-0-2"></a></h3>
-<ul><li>Introduced <code><a href="../reference/basemap_dem.html">basemap_dem()</a></code> for visualizing elevation data with customizable projections.</li>
-<li>Introduced <code><a href="../reference/basemap_vege.html">basemap_vege()</a></code> for visualizing vegetation data of China with customizable projections.</li>
-<li>Introduced <code><a href="../reference/geom_world.html">geom_world()</a></code> for visualizing global administrative divisions.</li>
-</ul></div>
-<div class="section level3">
-<h3 id="bug-fixes-0-0-2">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-2"></a></h3>
-<ul><li>Replaced <code>size</code> with <code>linewidth</code> to align with the latest <code>ggplot2</code> standards.</li>
-</ul></div>
-<div class="section level3">
-<h3 id="enhancements-0-0-2">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-0-2"></a></h3>
-<ul><li>Improved styling options for various boundaries in <code><a href="../reference/geom_boundary_cn.html">geom_boundary_cn()</a></code>.</li>
-</ul><hr></div>
-</div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.0.1" id="ggmapcn-001">ggmapcn 0.0.1<a class="anchor" aria-label="anchor" href="#ggmapcn-001"></a></h2>
-<div class="section level3">
-<h3 id="initial-release-0-0-1">Initial Release<a class="anchor" aria-label="anchor" href="#initial-release-0-0-1"></a></h3>
-<ul><li>Added basic functionality for creating customized maps of China.</li>
-<li>Integrated seamless support for <code>ggplot2</code>.</li>
-<li>Included administrative boundary datasets for provinces, cities, and counties.</li>
+<h3 id="new-features-0-2-0">NEW FEATURES<a class="anchor" aria-label="anchor" href="#new-features-0-2-0"></a></h3>
+<ul><li>Added the <code><a href="../reference/annotation_compass.html">annotation_compass()</a></code> function to add a powerful and highly customizable compass/north arrow to maps.
+<ul><li>Supports alignment to “grid” north or “true” north via the which_north argument.</li>
+<li>Can be easily placed in any corner of the plot panel using the location argument.</li>
+</ul></li>
+<li>Introduced a family of built-in style constructors (compass-styles) for <code><a href="../reference/annotation_compass.html">annotation_compass()</a></code> to support a wide range of visual appearances:
+<ul><li>Classic Styles: <code><a href="../reference/compass-styles.html">north_arrow_classic()</a></code> and <code><a href="../reference/compass-styles.html">north_arrow_solid()</a></code>.</li>
+<li>Compass Rose Styles: <code><a href="../reference/compass-styles.html">compass_rose_simple()</a></code>, <code><a href="../reference/compass-styles.html">compass_rose_classic()</a></code>, and <code><a href="../reference/compass-styles.html">compass_rose_circle()</a></code>.</li>
+<li>Original Chinese-Themed Styles: Added two unique styles, <code><a href="../reference/compass-styles.html">compass_guiding_fish()</a></code> (Guiding Fish) and <code><a href="../reference/compass-styles.html">compass_sinan()</a></code> (Sinan), inspired by ancient Chinese navigational instruments to add a cultural touch to maps.</li>
+</ul></li>
+<li>Added the annotation_scalebar() function to add a projection-aware and intelligent scale bar.
+<ul><li>The function automatically detects the map’s Coordinate Reference System (CRS) to select appropriate units and breaks.</li>
+<li>Supports several common styles, including “segment”, “bar”, and “ticks”.</li>
+</ul></li>
 </ul></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -71,7 +64,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
