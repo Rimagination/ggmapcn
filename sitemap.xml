@@ -1,12 +1,14 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://rimagination.github.io/ggmapcn/404.html</loc></url>
 <url><loc>https://rimagination.github.io/ggmapcn/articles/Adding_Basic_Map.html</loc></url>
-<url><loc>https://rimagination.github.io/ggmapcn/articles/Adding_Spatial_Data.html</loc></url>
+<url><loc>https://rimagination.github.io/ggmapcn/articles/Advanced_Scalebar_and_Compass.html</loc></url>
+<url><loc>https://rimagination.github.io/ggmapcn/articles/World_Map_Overview.html</loc></url>
 <url><loc>https://rimagination.github.io/ggmapcn/articles/index.html</loc></url>
 <url><loc>https://rimagination.github.io/ggmapcn/authors.html</loc></url>
 <url><loc>https://rimagination.github.io/ggmapcn/index.html</loc></url>
 <url><loc>https://rimagination.github.io/ggmapcn/news/index.html</loc></url>
 <url><loc>https://rimagination.github.io/ggmapcn/reference/annotation_compass.html</loc></url>
+<url><loc>https://rimagination.github.io/ggmapcn/reference/annotation_graticule.html</loc></url>
 <url><loc>https://rimagination.github.io/ggmapcn/reference/annotation_scalebar.html</loc></url>
 <url><loc>https://rimagination.github.io/ggmapcn/reference/basemap_dem.html</loc></url>
 <url><loc>https://rimagination.github.io/ggmapcn/reference/basemap_vege.html</loc></url>

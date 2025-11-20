@@ -8,8 +8,10 @@ per-user cache tools::R_user_dir("ggmapcn","data")
 If no valid local file is found (or overwrite = TRUE), the function
 downloads from mirrors in order. By default, a China-friendly CDN
 (jsDelivr) is tried first, then GitHub raw.
-Robust features: multiple mirrors, atomic writes, resume, timeouts, retries,
-safe checksum checks, and correct curl progress callback.'><meta property="og:description" content='Ensure required geodata files exist locally. The function searches and reuses
+When internet access is unavailable or all mirrors fail, the function
+fails gracefully: it returns NA for the corresponding files
+and prints an informative message (no error or warning is thrown unless
+invalid file names are requested).'><meta property="og:description" content='Ensure required geodata files exist locally. The function searches and reuses
 existing files (when overwrite = FALSE) before attempting any
 network download, in the following order:
 user-provided local_dirs
@@ -18,8 +20,10 @@ per-user cache tools::R_user_dir("ggmapcn","data")
 If no valid local file is found (or overwrite = TRUE), the function
 downloads from mirrors in order. By default, a China-friendly CDN
 (jsDelivr) is tried first, then GitHub raw.
-Robust features: multiple mirrors, atomic writes, resume, timeouts, retries,
-safe checksum checks, and correct curl progress callback.'></head><body>
+When internet access is unavailable or all mirrors fail, the function
+fails gracefully: it returns NA for the corresponding files
+and prints an informative message (no error or warning is thrown unless
+invalid file names are requested).'></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -27,7 +31,7 @@ safe checksum checks, and correct curl progress callback.'></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">ggmapcn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,8 +70,10 @@ network download, in the following order:</p><ol><li><p>user-provided <strong>lo
 </ol><p>If no valid local file is found (or <code>overwrite = TRUE</code>), the function
 downloads from mirrors <em>in order</em>. By default, a China-friendly CDN
 (jsDelivr) is tried first, then GitHub raw.</p>
-<p>Robust features: multiple mirrors, atomic writes, resume, timeouts, retries,
-safe checksum checks, and correct <code>curl</code> progress callback.</p>
+<p>When internet access is unavailable or all mirrors fail, the function
+<em>fails gracefully</em>: it returns <code>NA</code> for the corresponding files
+and prints an informative message (no error or warning is thrown unless
+invalid file names are requested).</p>
     </div>
 
     <div class="section level2">
@@ -138,64 +144,21 @@ it is returned immediately.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
-<span class="r-in"><span><span class="co"># Basic: ensure default files exist</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># interactive() &amp;&amp; curl::has_internet()</span></span></span>
+<span class="r-in"><span><span class="co"># Basic: ensure default files exist (may download if not found locally)</span></span></span>
 <span class="r-in"><span><span class="fu">check_geodata</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> extdata dir: /home/runner/work/_temp/Library/ggmapcn/extdata (writable = TRUE)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> cache   dir: /home/runner/.local/share/R/ggmapcn (writable = TRUE)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using existing extdata file: /home/runner/work/_temp/Library/ggmapcn/extdata/China_sheng.rda</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Fetching China_shi.rda into: /home/runner/work/_temp/Library/ggmapcn/extdata</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> URL: https://cdn.jsdelivr.net/gh/Rimagination/ggmapcn-data@main/data/China_shi.rda</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Saved to extdata: /home/runner/work/_temp/Library/ggmapcn/extdata/China_shi.rda</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Fetching China_xian.rda into: /home/runner/work/_temp/Library/ggmapcn/extdata</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> URL: https://cdn.jsdelivr.net/gh/Rimagination/ggmapcn-data@main/data/China_xian.rda</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Saved to extdata: /home/runner/work/_temp/Library/ggmapcn/extdata/China_xian.rda</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using existing extdata file: /home/runner/work/_temp/Library/ggmapcn/extdata/boundary.rda</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using existing extdata file: /home/runner/work/_temp/Library/ggmapcn/extdata/buffer_line.rda</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using existing extdata file: /home/runner/work/_temp/Library/ggmapcn/extdata/China_mask.gpkg</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using existing extdata file: /home/runner/work/_temp/Library/ggmapcn/extdata/world.rda</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using existing extdata file: /home/runner/work/_temp/Library/ggmapcn/extdata/gebco_2024_China.tif</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using existing extdata file: /home/runner/work/_temp/Library/ggmapcn/extdata/vege_1km_projected.tif</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/home/runner/work/_temp/Library/ggmapcn/extdata/China_sheng.rda"       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2] "/home/runner/work/_temp/Library/ggmapcn/extdata/China_shi.rda"         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "/home/runner/work/_temp/Library/ggmapcn/extdata/China_xian.rda"        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "/home/runner/work/_temp/Library/ggmapcn/extdata/boundary.rda"          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "/home/runner/work/_temp/Library/ggmapcn/extdata/buffer_line.rda"       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [6] "/home/runner/work/_temp/Library/ggmapcn/extdata/China_mask.gpkg"       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [7] "/home/runner/work/_temp/Library/ggmapcn/extdata/world.rda"             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [8] "/home/runner/work/_temp/Library/ggmapcn/extdata/gebco_2024_China.tif"  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [9] "/home/runner/work/_temp/Library/ggmapcn/extdata/vege_1km_projected.tif"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Single file: reuse existing file if present (default overwrite = FALSE)</span></span></span>
 <span class="r-in"><span><span class="fu">check_geodata</span><span class="op">(</span>files <span class="op">=</span> <span class="st">"boundary.rda"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> extdata dir: /home/runner/work/_temp/Library/ggmapcn/extdata (writable = TRUE)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> cache   dir: /home/runner/.local/share/R/ggmapcn (writable = TRUE)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using existing extdata file: /home/runner/work/_temp/Library/ggmapcn/extdata/boundary.rda</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/home/runner/work/_temp/Library/ggmapcn/extdata/boundary.rda"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Force re-download a file (e.g., suspected corruption)</span></span></span>
 <span class="r-in"><span><span class="fu">check_geodata</span><span class="op">(</span>files <span class="op">=</span> <span class="st">"boundary.rda"</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> extdata dir: /home/runner/work/_temp/Library/ggmapcn/extdata (writable = TRUE)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> cache   dir: /home/runner/.local/share/R/ggmapcn (writable = TRUE)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Fetching boundary.rda into: /home/runner/work/_temp/Library/ggmapcn/extdata</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> URL: https://cdn.jsdelivr.net/gh/Rimagination/ggmapcn-data@main/data/boundary.rda</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Saved to extdata: /home/runner/work/_temp/Library/ggmapcn/extdata/boundary.rda</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/home/runner/work/_temp/Library/ggmapcn/extdata/boundary.rda"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Search local folders first; skip download if a valid file is found there</span></span></span>
 <span class="r-in"><span><span class="fu">check_geodata</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  files <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"boundary.rda"</span>, <span class="st">"world.rda"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  local_dirs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>  <span class="co"># add more directories if needed</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> extdata dir: /home/runner/work/_temp/Library/ggmapcn/extdata (writable = TRUE)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> cache   dir: /home/runner/.local/share/R/ggmapcn (writable = TRUE)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using existing extdata file: /home/runner/work/_temp/Library/ggmapcn/extdata/boundary.rda</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using existing extdata file: /home/runner/work/_temp/Library/ggmapcn/extdata/world.rda</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/home/runner/work/_temp/Library/ggmapcn/extdata/boundary.rda"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2] "/home/runner/work/_temp/Library/ggmapcn/extdata/world.rda"   </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Provide your own mirror order (first tried wins)</span></span></span>
 <span class="r-in"><span><span class="fu">check_geodata</span><span class="op">(</span></span></span>
@@ -205,12 +168,7 @@ it is returned immediately.</p></dd>
 <span class="r-in"><span>    <span class="st">"https://raw.githubusercontent.com/Rimagination/ggmapcn-data/main/data/"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> extdata dir: /home/runner/work/_temp/Library/ggmapcn/extdata (writable = TRUE)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> cache   dir: /home/runner/.local/share/R/ggmapcn (writable = TRUE)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using existing extdata file: /home/runner/work/_temp/Library/ggmapcn/extdata/boundary.rda</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/home/runner/work/_temp/Library/ggmapcn/extdata/boundary.rda"</span>
-<span class="r-in"><span><span class="co"># }</span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -222,7 +180,7 @@ it is returned immediately.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

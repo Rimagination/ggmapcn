@@ -1,0 +1,260 @@
+# Convenient global basemap layer for ggplot2
+
+\`geom_world()\` draws a styled global basemap using bundled country
+polygons, coastlines, and administrative boundary data. It automatically
+handles antimeridian splitting and CRS transformation, and supports
+optional country filtering for focused maps.
+
+## Usage
+
+``` r
+geom_world(
+  crs = 4326,
+  filter_attribute = "SOC",
+  filter = NULL,
+  show_ocean = TRUE,
+  show_admin_boundaries = TRUE,
+  show_frame = FALSE,
+  ocean_fill = "#c7e8fb",
+  frame_color = "black",
+  frame_size = 0.2,
+  frame_linetype = "solid",
+  country_fill = "grey90",
+  country_boundary_color = "transparent",
+  country_boundary_size = 0.1,
+  country_boundary_linetype = "solid",
+  coastline_color = "#26ace7",
+  coastline_size = 0.1,
+  coastline_linetype = "solid",
+  international_boundary_color = "grey20",
+  international_boundary_size = 0.1,
+  international_boundary_linetype = "solid",
+  regional_boundary_color = "grey20",
+  regional_boundary_size = 0.1,
+  regional_boundary_linetype = "dashed",
+  undefined_boundary_color = "grey20",
+  undefined_boundary_size = 0.1,
+  undefined_boundary_linetype = "longdash",
+  military_boundary_color = "grey20",
+  military_boundary_size = 0.05,
+  military_boundary_linetype = "dotted",
+  ...
+)
+```
+
+## Arguments
+
+- crs:
+
+  Coordinate reference system for the basemap. Accepts a numeric EPSG
+  code, a PROJ string, or an \`sf::crs\` object. The default is
+  \`4326\`, corresponding to WGS84 longitude–latitude.
+
+- filter_attribute:
+
+  Name of the column in the \`countries\` dataset used for filtering.
+  Default \`"SOC"\`.
+
+- filter:
+
+  Character vector specifying which values of \`filter_attribute\` to
+  retain. If \`NULL\` (default), no filtering is applied. When
+  non-\`NULL\`, only the selected countries are drawn, and the ocean,
+  coastlines, administrative boundaries, and optional frame are all
+  omitted.
+
+- show_ocean:
+
+  Logical; draw an ocean background polygon. Default \`TRUE\`. Ignored
+  when \`filter\` is not \`NULL\`.
+
+- show_admin_boundaries:
+
+  Logical; draw administrative and political boundaries (international,
+  regional, undefined/disputed, and military demarcation lines). Default
+  \`TRUE\`. Ignored when \`filter\` is not \`NULL\`.
+
+- show_frame:
+
+  Logical; draw an outer frame following the projected outline of the
+  world. Default \`FALSE\`. Ignored when \`filter\` is not \`NULL\`.
+
+- ocean_fill:
+
+  Fill colour for the ocean polygon. Default \`"#c7e8fb"\`.
+
+- frame_color:
+
+  Colour of the outer frame line. Default \`"grey20"\`.
+
+- frame_size:
+
+  Line width of the outer frame. Default \`0.1\`.
+
+- frame_linetype:
+
+  Line type of the outer frame. Default \`"solid"\`.
+
+- country_fill:
+
+  Fill colour for country polygons. Default \`"grey90"\`.
+
+- country_boundary_color:
+
+  Colour of country boundary outlines. Default \`"transparent"\`.
+
+- country_boundary_size:
+
+  Width of country boundary outlines. Default \`0.1\`.
+
+- country_boundary_linetype:
+
+  Line type of country boundaries. Default \`"solid"\`.
+
+- coastline_color:
+
+  Colour of the coastline layer. Default \`"#26ace7"\`.
+
+- coastline_size:
+
+  Line width of coastlines. Default \`0.1\`.
+
+- coastline_linetype:
+
+  Line type of coastlines. Default \`"solid"\`.
+
+- international_boundary_color:
+
+  Colour for international boundary lines. Default \`"grey20"\`.
+
+- international_boundary_size:
+
+  Width for international boundaries. Default \`0.1\`.
+
+- international_boundary_linetype:
+
+  Line type for international boundaries. Default \`"solid"\`.
+
+- regional_boundary_color:
+
+  Colour for regional boundaries (e.g. states). Default \`"grey20"\`.
+
+- regional_boundary_size:
+
+  Width for regional boundaries. Default \`0.1\`.
+
+- regional_boundary_linetype:
+
+  Line type for regional boundaries. Default \`"dashed"\`.
+
+- undefined_boundary_color:
+
+  Colour for undefined or disputed boundaries. Default \`"grey20"\`.
+
+- undefined_boundary_size:
+
+  Width for undefined boundaries. Default \`0.1\`.
+
+- undefined_boundary_linetype:
+
+  Line type for undefined boundaries. Default \`"longdash"\`.
+
+- military_boundary_color:
+
+  Colour for military demarcation lines. Default \`"grey20"\`.
+
+- military_boundary_size:
+
+  Width for military demarcation lines. Default \`0.05\`.
+
+- military_boundary_linetype:
+
+  Line type for military demarcation lines. Default \`"dotted"\`.
+
+- ...:
+
+  Additional arguments passed to \`ggplot2::geom_sf()\`.
+
+## Value
+
+A list of \`ggplot2\` layers representing the world map (or a filtered
+subset), ready to be added to a ggplot.
+
+## Details
+
+This function supersedes an earlier, much simpler version of
+\`geom_world()\` that was a thin wrapper around \`ggplot2::geom_sf()\`
+and required users to supply their own map data. The current
+implementation:
+
+\- always uses bundled world map data (countries, coastlines,
+boundaries), - exposes dedicated arguments for ocean fill, coastlines,
+and different types of administrative boundaries, - and has a different
+argument set and default behaviour compared to the original version.
+
+If you are upgrading from an older development version of
+\*\*ggmapcn\*\*, please review your existing calls to \`geom_world()\`
+and the examples below, as some arguments have been renamed or removed.
+
+To silence the one-time redesign warning in a session, you can set:
+
+“\`r options(ggmapcn.geom_world_silence_redesign = TRUE) “\`
+
+## Examples
+
+``` r
+library(ggplot2)
+
+# 1. Simplest world map
+ggplot() +
+  geom_world() +
+  theme_void()
+
+
+# 2. World map with long–lat axes
+ggplot() +
+  geom_world() +
+  coord_sf(
+    crs    = 4326,
+    expand = FALSE,
+    datum  = sf::st_crs(4326)
+  ) +
+  theme_minimal() +
+  theme(panel.ontop = TRUE)
+
+
+# 3. Without ocean layer
+ggplot() +
+  geom_world(show_ocean = FALSE) +
+  theme_minimal()
+
+
+# 4. Without administrative boundaries
+ggplot() +
+  geom_world(show_admin_boundaries = FALSE) +
+  theme_minimal()
+
+
+# 5. Robinson projection centred at 150°E
+crs_robin_150 <- "+proj=robin +lon_0=150 +datum=WGS84"
+ggplot() +
+  geom_world(crs = crs_robin_150) +
+  coord_sf(crs = crs_robin_150) +
+  theme_void()
+#> Spherical geometry (s2) switched off
+#> Spherical geometry (s2) switched on
+
+
+# 6. Highlight China
+ggplot() +
+  geom_world(
+    country_fill = "grey95", show_frame   = TRUE) +
+  geom_world(
+    filter_attribute = "SOC",
+    filter           = "CHN",
+    country_fill     = "red",
+    country_boundary_color = "black"
+  ) +
+  theme_void()
+
+```
