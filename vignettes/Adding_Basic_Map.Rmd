@@ -16,6 +16,8 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(ggmapcn)
+# Define Azimuthal Equidistant projection centered on China
+china_proj <- "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs"
 ```
 
 ## Introduction
@@ -24,17 +26,18 @@ The ggmapcn package provides various tools for visualizing geographic data in Ch
 
 ## Example 1: Basic Map of China
 
-To plot a map of China with province boundaries, use the `geom_mapcn()` function. The map uses the Azimuthal Equal Distance projection by default.
+To draw a simple map of China with provincial boundaries, use `geom_mapcn()`. By default, it uses an Azimuthal Equidistant projection centered on China.
 
 ```{r example1, fig.alt='Basic Map'}
 ggplot() +
   geom_mapcn() +
-  theme_minimal()
+  geom_boundary_cn() +
+  theme_bw()
 ```
 
 ## Example 2: Adding Buffer Zones and Coastlines
 
-Here’s a comprehensive example demonstrating how to plot province boundaries, buffer zones, and coastlines on the same map:
+This example illustrates how to layer multiple geographic features—such as mainland buffers, coastlines, and administrative boundaries—onto a single map.
 
 ```{r example2, fig.alt='Map of China'}
 ggplot() +
@@ -45,63 +48,97 @@ ggplot() +
   theme_bw()
 ```
 
-## Example 3: Overlaying China on a World Map
+## Example 3: Adding Spatial Point Data
 
-The `geom_world()` function allows you to visualize global data, while `geom_mapcn()` overlays China for detailed analysis.
+The `geom_loc` function allows you to overlay spatial point data onto your map. It supports both `sf` objects and `data frames` containing longitude and latitude columns, and can map aesthetics like color to categorical variables.
 
-```{r example3, fig.alt='Map of world'}
-# Define projections
-china_proj <- "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs"
-
-# Combine world map as a background and China map as overlay
+```{r geom_loc, fig.alt='Sample site'}
+# Create a ggplot with spatial points colored by 'Category'
+set.seed(123)
+data_sim <- data.frame(
+   Longitude = runif(100, 80, 120),
+   Latitude = runif(100, 28, 40),
+   Category = sample(c("Type A", "Type B", "Type C"), 100, replace = TRUE)
+   )
 ggplot() +
-  # World map as background
-  geom_world(fill = "gray90", color = "gray70", linewidth = 0.2) +
-  coord_proj(
-    crs = "+proj=merc",
-    xlim = c(-180, 180),
-    ylim = c(-90, 90)
-  ) +
-  # Overlay China map
-  geom_mapcn(
-    fill = "lightblue",
-    color = "black",
-    linewidth = 0.5
-  ) +
-  geom_boundary_cn(color = "red", linewidth = 0.6) +
-  theme_minimal()
+   geom_boundary_cn() +
+   geom_loc(
+     data = data_sim, lon = "Longitude", lat = "Latitude",
+     mapping = aes(color = Category), size = 1, alpha = 0.7
+   ) +
+   theme_bw()
 ```
 
-## Example 3: Filtering China and Its Neighbors
+## Example 4: basemap_vege: Vegetation Map of China Layer for ggplot2
 
-This example demonstrates filtering for China and its neighboring countries, highlighting China in red.
+Before using the function, ensure that the necessary data files are available by running:
 
-```{r example4, fig.alt='Map of China'}
-# Define neighboring countries
-china_neighbors <- c("CHN", "AFG", "BTN", "MMR", "LAO", "NPL", "PRK", "KOR",
-                     "KAZ", "KGZ", "MNG", "IND", "BGD", "TJK", "PAK", "LKA", "VNM")
+```{r check-geodata, eval=FALSE}
+# This function checks if the required data files are available
+# It may take some time, especially if your network connection is slow.
+  check_geodata(files = c("vege_1km_projected.tif"), quiet = FALSE)
+```
 
-# Plot world map with filtered countries
+The `basemap_vege` function adds a vegetation raster map of China with color-coded vegetation types to a ggplot.
+
+```{r vegetion map, fig.alt='Vegetation Map of China', eval=FALSE}
+# Add vegetation raster of China to a ggplot
 ggplot() +
-  geom_world(fill = "gray90", color = "gray70", linewidth = 0.2) +
-  geom_world(
-    filter = china_neighbors,
-    filter_attribute = "SOC",
-    fill = "lightblue",
-    color = "black",
-    linewidth = 0.5
+  basemap_vege() +
+  guides(fill = guide_none()) +
+  theme_bw()
+```
+
+## Example 5: basemap_dem: Elevation Map of China Layer for ggplot2
+
+The `basemap_dem` function adds a digital elevation model (DEM) raster map of China as a layer to ggplot2.
+
+```{r dem map, fig.alt='Elevation Map of China'}
+# Apply Azimuthal Equidistant projection centered on China
+ggplot() +
+  basemap_dem(crs = china_proj, within_china = TRUE) +
+  geom_boundary_cn(crs = china_proj) +
+  tidyterra::scale_fill_hypso_c(
+    palette = "dem_print",
+    breaks = c(0, 2000, 4000, 6000),
+    limits = c(0, 7000)
   ) +
-  geom_world(
-    filter = "CHN",
-    filter_attribute = "SOC",
-    fill = "red",
-    color = "black",
-    linewidth = 0.8
-  ) +
+  labs(fill = "Elevation (m)") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+## Example 6: coord_proj: Transforming Limits for Custom Projections
+
+The `coord_proj` function simplifies working with custom projections. It accepts map limits (xlim, ylim) in standard WGS84 longitude/latitude coordinates and automatically transforms them into the specified CRS.
+
+Here, the Azimuthal Equidistant projection centered on China is applied, with transformed map limits specified in longitude and latitude.
+
+```{r clip region, fig.alt='clip region'}
+ggplot() +
+  geom_mapcn(fill = "white") +
+  geom_boundary_cn() +
   coord_proj(
-    crs = "+proj=merc",
+    crs = china_proj,
     xlim = c(60, 140),
-    ylim = c(-10, 60)
+    ylim = c(10, 50)
   ) +
-  theme_minimal()
+  theme_bw()
+
+```
+
+
+Additionally, we can focus the map on the South China Sea Islands. The longitude and latitude range shown here is for demonstration purposes only.
+
+```{r Nanhai, fig.alt='Naihai'}
+ggplot() +
+  geom_mapcn(fill = "white") +
+  geom_boundary_cn() +
+  theme_bw() +
+  coord_proj(
+    crs = china_proj,
+    expand = FALSE,
+    xlim = c(105, 126),
+    ylim = c(2, 23)
+  )
 ```

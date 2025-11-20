@@ -13,8 +13,10 @@
 #' downloads from mirrors \emph{in order}. By default, a China-friendly CDN
 #' (jsDelivr) is tried first, then GitHub raw.
 #'
-#' Robust features: multiple mirrors, atomic writes, resume, timeouts, retries,
-#' safe checksum checks, and correct \code{curl} progress callback.
+#' When internet access is unavailable or all mirrors fail, the function
+#' \emph{fails gracefully}: it returns \code{NA} for the corresponding files
+#' and prints an informative message (no error or warning is thrown unless
+#' invalid file names are requested).
 #'
 #' @param files Character vector of file names. If `NULL`, all known files are used.
 #' @param overwrite Logical. Force re-download even if a non-empty file exists.
@@ -34,9 +36,8 @@
 #'
 #' @return Character vector of absolute file paths (NA for failures).
 #'
-#' @examples
-#' \donttest{
-#' # Basic: ensure default files exist
+#' @examplesIf interactive() && curl::has_internet()
+#' # Basic: ensure default files exist (may download if not found locally)
 #' check_geodata()
 #'
 #' # Single file: reuse existing file if present (default overwrite = FALSE)
@@ -59,14 +60,12 @@
 #'     "https://raw.githubusercontent.com/Rimagination/ggmapcn-data/main/data/"
 #'   )
 #' )
-#' }
 #'
 #' @export
-#' @importFrom curl curl_download new_handle handle_setopt
+#' @importFrom curl curl_download new_handle handle_setopt has_internet
 #' @importFrom tools R_user_dir
 #' @importFrom digest digest
 #' @importFrom stats runif
-#'
 check_geodata <- function(files = NULL,
                           overwrite = FALSE,
                           quiet = FALSE,
@@ -81,7 +80,9 @@ check_geodata <- function(files = NULL,
   known <- known_files()
   if (is.null(files)) files <- names(known)
   invalid <- setdiff(files, names(known))
-  if (length(invalid)) stop("Invalid file names requested: ", paste(invalid, collapse = ", "))
+  if (length(invalid)) {
+    stop("Invalid file names requested: ", paste(invalid, collapse = ", "))
+  }
 
   # mirrors: CDN (CN) first
   if (is.null(mirrors)) {
@@ -104,12 +105,17 @@ check_geodata <- function(files = NULL,
   # canonical dirs
   ext_dir   <- system.file("extdata", package = "ggmapcn")
   cache_dir <- tools::R_user_dir("ggmapcn", "data")
-  if (!dir.exists(cache_dir)) dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
+  if (!dir.exists(cache_dir)) {
+    dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
+  }
 
   is_writable <- function(dir) {
     if (!nzchar(dir) || !dir.exists(dir)) return(FALSE)
     tf <- file.path(dir, sprintf(".perm_test_%08x", as.integer(runif(1, 0, 1e9))))
-    ok <- tryCatch({ file.create(tf); file.exists(tf) }, warning = function(w) FALSE, error = function(e) FALSE)
+    ok <- tryCatch({
+      file.create(tf)
+      file.exists(tf)
+    }, warning = function(w) FALSE, error = function(e) FALSE)
     if (ok) unlink(tf)
     isTRUE(ok)
   }
@@ -117,8 +123,23 @@ check_geodata <- function(files = NULL,
   cache_writable <- is_writable(cache_dir)
 
   if (!quiet) {
-    message(sprintf("extdata dir: %s (writable = %s)", if (nzchar(ext_dir)) ext_dir else "<none>", ext_writable))
+    message(sprintf("extdata dir: %s (writable = %s)",
+                    if (nzchar(ext_dir)) ext_dir else "<none>", ext_writable))
     message(sprintf("cache   dir: %s (writable = %s)", cache_dir, cache_writable))
+  }
+
+  # safe internet check: never error, only TRUE/FALSE
+  has_internet_safe <- function() {
+    out <- FALSE
+    try({
+      out <- isTRUE(curl::has_internet())
+    }, silent = TRUE)
+    isTRUE(out)
+  }
+  online <- has_internet_safe()
+  if (!online && !quiet) {
+    message("No internet connectivity detected; will not attempt downloads. ",
+            "Only existing local files (if any) will be used.")
   }
 
   # verify checksum if provided
@@ -137,14 +158,15 @@ check_geodata <- function(files = NULL,
         if (verify_file(cand, fname)) {
           return(normalizePath(cand, winslash = "/", mustWork = FALSE))
         } else if (!quiet) {
-          warning(fname, ": found at ", cand, " but checksum mismatch; ignoring.")
+          message(fname, ": found at ", cand,
+                  " but checksum mismatch; ignoring this copy.")
         }
       }
     }
-    return(NA_character_)
+    NA_character_
   }
 
-  # curl plumbing
+  # curl plumbing -------------------------------------------------------------
   mk_handle <- function(resume_from = NULL) {
     h <- curl::new_handle(
       noprogress       = FALSE,
@@ -160,28 +182,45 @@ check_geodata <- function(files = NULL,
     }
     h
   }
+
   prog_cb <- function(file_name, quiet) {
     function(dt, dn, ut, un) {
       if (!quiet) {
-        pct <- if (is.finite(dt) && dt > 0) sprintf("%6.2f%%", 100 * dn / dt) else "  ..  "
-        cat(sprintf("\rDownloading %-28s %s", substr(file_name, 1, 28), pct))
+        pct <- if (is.finite(dt) && dt > 0) {
+          sprintf("%6.2f%%", 100 * dn / dt)
+        } else {
+          "  ..  "
+        }
+        cat(sprintf("\rDownloading %-28s %s",
+                    substr(file_name, 1, 28), pct))
       }
       0
     }
   }
-  backoff <- function(k) { base <- 2^(k - 1); jitter <- runif(1, 0, 1); min(30, base + jitter) }
 
+  backoff <- function(k) {
+    base   <- 2^(k - 1)
+    jitter <- runif(1, 0, 1)
+    min(30, base + jitter)
+  }
+
+  # low-level fetch of a single URL to dest (with checksum)
   fetch_one <- function(url, dest, fname, can_resume) {
     dir.create(dirname(dest), recursive = TRUE, showWarnings = FALSE)
     part <- paste0(dest, ".part")
     if (!can_resume && file.exists(part)) unlink(part)
     resume_from <- if (can_resume && file.exists(part)) file.info(part)$size else NULL
 
-    ok <- FALSE; last_err <- NULL
+    ok <- FALSE
+    last_err <- NULL
+
     for (k in seq_len(max_retries)) {
       h <- mk_handle(resume_from = resume_from)
       curl::handle_setopt(h, progressfunction = prog_cb(basename(dest), quiet))
-      err <- try({ curl::curl_download(url, destfile = part, handle = h, quiet = TRUE) }, silent = TRUE)
+      err <- try(
+        curl::curl_download(url, destfile = part, handle = h, quiet = TRUE),
+        silent = TRUE
+      )
 
       if (inherits(err, "try-error")) {
         last_err <- conditionMessage(attr(err, "condition"))
@@ -190,18 +229,44 @@ check_geodata <- function(files = NULL,
       } else if (has_checksum(fname) && use_checksum) {
         got <- digest::digest(part, algo = "sha256", file = TRUE)
         if (!identical(tolower(got), tolower(checksums[[fname]]))) {
-          last_err <- sprintf("checksum mismatch: got %s, want %s", got, checksums[[fname]])
-        } else last_err <- NULL
+          last_err <- sprintf(
+            "checksum mismatch: got %s, expected %s",
+            got, checksums[[fname]]
+          )
+        } else {
+          last_err <- NULL
+        }
       } else {
         last_err <- NULL
       }
 
-      if (is.null(last_err)) { ok <- TRUE; break }
-      if (!quiet) { cat("\n"); warning(sprintf("Attempt %d failed: %s", k, last_err)) }
-      if (k < max_retries) { Sys.sleep(backoff(k)); resume_from <- NULL }
+      if (is.null(last_err)) {
+        ok <- TRUE
+        break
+      }
+
+      if (!quiet) {
+        cat("\n")
+        message(sprintf("Download attempt %d for '%s' failed: %s",
+                        k, fname, last_err))
+      }
+
+      if (k < max_retries) {
+        Sys.sleep(backoff(k))
+        resume_from <- NULL
+      }
     }
+
     if (!quiet) cat("\n")
-    if (!ok) return(FALSE)
+
+    if (!ok) {
+      if (!quiet) {
+        message("Giving up on '", fname,
+                "' from URL: ", url,
+                " (last error: ", last_err, ").")
+      }
+      return(FALSE)
+    }
 
     if (file.exists(dest)) unlink(dest)
     file.rename(part, dest)
@@ -210,13 +275,35 @@ check_geodata <- function(files = NULL,
 
   try_download_to_dir <- function(target_dir, fname, can_resume) {
     dest <- file.path(target_dir, fname)
+
+    if (!online) {
+      # no internet: graceful failure
+      if (!quiet) {
+        message("Skipping download of '", fname,
+                "' (no internet connection).")
+      }
+      return(list(ok = FALSE, path = NA_character_))
+    }
+
+    if (!quiet) {
+      message("Fetching '", fname, "' into: ", target_dir)
+    }
+
     success <- FALSE
-    if (!quiet) message("Fetching ", fname, " into: ", target_dir)
     for (m in mirrors) {
       url <- paste0(m, fname)
-      if (!quiet) message("URL: ", url)
-      if (fetch_one(url, dest, fname, can_resume)) { success <- TRUE; break }
+      if (!quiet) message("  Trying URL: ", url)
+      if (fetch_one(url, dest, fname, can_resume)) {
+        success <- TRUE
+        break
+      }
     }
+
+    if (!success && !quiet) {
+      message("All mirrors failed for '", fname,
+              "'. Returning NA (no error is thrown).")
+    }
+
     list(ok = success, path = if (success) dest else NA_character_)
   }
 
@@ -226,42 +313,83 @@ check_geodata <- function(files = NULL,
   for (i in seq_along(files)) {
     fname <- files[i]
 
-    # A) pre-check & reuse when overwrite=FALSE
+    # A) pre-check & reuse when overwrite = FALSE -----------------------------
     if (!overwrite) {
       # A1) user local dirs
       if (length(local_dirs)) {
         hit <- try_reuse_in_dirs(fname, local_dirs)
-        if (!is.na(hit)) { out[i] <- hit; if (!quiet) message("Using existing local file (local_dirs): ", hit); next }
+        if (!is.na(hit)) {
+          out[i] <- hit
+          if (!quiet) {
+            message("Using existing local file (local_dirs): ", hit)
+          }
+          next
+        }
       }
+
       # A2) extdata
       if (nzchar(ext_dir)) {
         hit <- try_reuse_in_dirs(fname, ext_dir)
-        if (!is.na(hit)) { out[i] <- hit; if (!quiet) message("Using existing extdata file: ", hit); next }
+        if (!is.na(hit)) {
+          out[i] <- hit
+          if (!quiet) {
+            message("Using existing extdata file: ", hit)
+          }
+          next
+        }
       }
+
       # A3) cache
       hit <- try_reuse_in_dirs(fname, cache_dir)
-      if (!is.na(hit)) { out[i] <- hit; if (!quiet) message("Using existing cache file: ", hit); next }
+      if (!is.na(hit)) {
+        out[i] <- hit
+        if (!quiet) {
+          message("Using existing cache file: ", hit)
+        }
+        next
+      }
     }
 
-    # B) need download (either overwrite=TRUE or not found/invalid)
+    # B) need download (either overwrite = TRUE or not found/invalid) --------
     # B1) prefer extdata if writable
     tried_ext <- FALSE
     if (ext_writable) {
       tried_ext <- TRUE
       res <- try_download_to_dir(ext_dir, fname, can_resume = resume)
-      if (res$ok) { out[i] <- res$path; if (!quiet) message("Saved to extdata: ", res$path); next }
-      if (!quiet) warning("extdata download failed for ", fname, "; falling back to cache.")
+      if (res$ok) {
+        out[i] <- res$path
+        if (!quiet) message("Saved to extdata: ", res$path)
+        next
+      } else if (!quiet && online) {
+        # only mention failure if we actually tried to download
+        message("Download into extdata failed for '", fname,
+                "'. Will fall back to user cache.")
+      }
     } else if (nzchar(ext_dir) && !quiet) {
-      message("extdata not writable; skip downloading into extdata for ", fname)
+      message("extdata not writable; skip downloading into extdata for '", fname, "'.")
     }
 
-    # B2) fallback: cache (writable)
-    res2 <- try_download_to_dir(cache_dir, fname, can_resume = TRUE)
-    if (res2$ok) {
-      out[i] <- res2$path; if (!quiet) message("Saved to cache: ", res2$path)
+    # B2) fallback: cache (writable) -----------------------------------------
+    if (cache_writable) {
+      res2 <- try_download_to_dir(cache_dir, fname, can_resume = TRUE)
+      if (res2$ok) {
+        out[i] <- res2$path
+        if (!quiet) message("Saved to cache: ", res2$path)
+      } else {
+        out[i] <- NA_character_
+        # graceful: do NOT warning/stop, just message (or silent if quiet)
+        if (!quiet && online) {
+          message("Failed to obtain '", fname,
+                  "' from all mirrors; returning NA.")
+        }
+      }
     } else {
+      # cache is not writable; still return NA gracefully
       out[i] <- NA_character_
-      warning("Failed to obtain ", fname, " from all mirrors (extdata", if (tried_ext) "" else " not tried", " and cache).")
+      if (!quiet) {
+        message("Cache directory is not writable; cannot download '",
+                fname, "'. Returning NA.")
+      }
     }
   }
 
@@ -286,7 +414,9 @@ known_files <- function() {
     "boundary.rda"            = list(path = "boundary.rda",            sha256 = NA_character_),
     "buffer_line.rda"         = list(path = "buffer_line.rda",         sha256 = NA_character_),
     "China_mask.gpkg"         = list(path = "China_mask.gpkg",         sha256 = NA_character_),
-    "world.rda"               = list(path = "world.rda",               sha256 = NA_character_),
+    "world_countries.rda"     = list(path = "world_countries.rda",     sha256 = NA_character_),
+    "world_coastlines.rda"    = list(path = "world_coastlines.rda",    sha256 = NA_character_),
+    "world_boundaries.rda"    = list(path = "world_boundaries.rda",    sha256 = NA_character_),
     "gebco_2024_China.tif"    = list(path = "gebco_2024_China.tif",    sha256 = NA_character_),
     "vege_1km_projected.tif"  = list(path = "vege_1km_projected.tif",  sha256 = NA_character_)
   )

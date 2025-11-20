@@ -490,8 +490,17 @@ grob_scalebar <- function(params, style, location,
     tick_labels <- c("0", params$labeltext)
     tick_x_pos <- grid::unit.c(origin_x, origin_x + width)
 
-    all_tick_x <- origin_x + grid::unit((seq_len(params$majordivs + 1) - 1) * params$majordivnpc, "npc")
-    all_tick_y_heights <- grid::unit.c(height, rep(height * tick_height, max(0, params$majordivs - 1)), height)
+    all_tick_x <- origin_x + grid::unit(
+      (seq_len(params$majordivs + 1) - 1) * params$majordivnpc,
+      "npc"
+    )
+
+    if (params$majordivs > 1) {
+      inner_heights <- rep(height * tick_height, params$majordivs - 1)
+      all_tick_y_heights <- grid::unit.c(height, inner_heights, height)
+    } else {
+      all_tick_y_heights <- grid::unit.c(height, height)
+    }
 
     ticks <- grid::segmentsGrob(
       x0 = all_tick_x, y0 = origin_y,

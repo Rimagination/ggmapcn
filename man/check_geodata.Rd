@@ -57,12 +57,14 @@ If no valid local file is found (or \code{overwrite = TRUE}), the function
 downloads from mirrors \emph{in order}. By default, a China-friendly CDN
 (jsDelivr) is tried first, then GitHub raw.
 
-Robust features: multiple mirrors, atomic writes, resume, timeouts, retries,
-safe checksum checks, and correct \code{curl} progress callback.
+When internet access is unavailable or all mirrors fail, the function
+\emph{fails gracefully}: it returns \code{NA} for the corresponding files
+and prints an informative message (no error or warning is thrown unless
+invalid file names are requested).
 }
 \examples{
-\donttest{
-# Basic: ensure default files exist
+\dontshow{if (interactive() && curl::has_internet()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Basic: ensure default files exist (may download if not found locally)
 check_geodata()
 
 # Single file: reuse existing file if present (default overwrite = FALSE)
@@ -85,6 +87,5 @@ check_geodata(
     "https://raw.githubusercontent.com/Rimagination/ggmapcn-data/main/data/"
   )
 )
-}
-
+\dontshow{\}) # examplesIf}
 }

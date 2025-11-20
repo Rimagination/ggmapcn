@@ -33,6 +33,7 @@ library(ggmapcn)
 
 ggplot() +
   geom_mapcn() +
+  geom_boundary_cn()+
   theme_minimal()
 ```
 
@@ -45,7 +46,8 @@ If you want to try the Albers projection, you can customize it.
 ``` r
 ggplot() +
   geom_mapcn(crs = "+proj=aea +lat_1=25 +lat_2=47 +lat_0=0 +lon_0=105 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs", color = "black", fill = "white", size = 0.7) +
-  theme_minimal()
+  geom_boundary_cn()+
+  theme_bw()
 ```
 
 <img src="man/figures/README-example2-1.png" alt="Basic Map" width="100%" />
@@ -65,7 +67,7 @@ ggplot() +
     coastline_color = "skyblue",
     coastline_size = 0.5
   ) +
-  theme_minimal()
+  theme_bw()
 ```
 
 <img src="man/figures/README-example3-1.png" alt="Map with Boundary" width="100%" />
@@ -82,16 +84,43 @@ ggplot() +
   geom_buffer_cn(mainland_dist = 20000, fill = "#BBB3D8") +
   geom_mapcn(fill = "white") +
   geom_boundary_cn() +
-  theme_minimal()
+  theme_bw()
+#> Warning: attribute variables are assumed to be spatially constant throughout
+#> all geometries
+#> Warning: attribute variables are assumed to be spatially constant throughout
+#> all geometries
 ```
 
 <img src="man/figures/README-example4-1.png" alt="Map of China" width="100%" />
 
+## Basic world map in WGS84
+
+This example displays a simple world map using the standard WGS84
+geographic coordinate system (EPSG:4326), with country boundaries
+rendered by `geom_world()`.
+
+``` r
+ggplot() +
+  geom_world(show_ocean=FALSE) +
+  theme_bw()
+```
+
+<img src="man/figures/README-example5-1.png" alt="Map of world" width="100%" />
+
 ## Data Source
 
-The data used in this package is sourced from Tianditu
+The administrative boundary data for China is sourced from **Tianditu**
 (<https://cloudcenter.tianditu.gov.cn/administrativeDivision/>), a
-reliable provider of province-, city-, and county-level boundary
-information in China. This administrative division data has been
-processed into GeoJSON format for seamless integration into the package,
-enabling easy access and visualization.
+national geographic information platform that provides authoritative
+province-, city-, and county-level divisions. This data has been
+processed into GeoJSON format to ensure compatibility and ease of use
+within the package.
+
+The global (world) administrative boundary data, on the other hand, is
+developed by our team. It has been curated and simplified to support
+consistent cartographic styling and efficient rendering alongside the
+China-specific layers.
+
+# Learn More
+
+If you'd like to explore more advanced features—such as adding elevation or vegetation layers, overlaying point data, or working with custom projections—check out the **Articles**.

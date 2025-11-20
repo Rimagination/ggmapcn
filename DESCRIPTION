@@ -1,11 +1,14 @@
 Package: ggmapcn
 Title: Customizable China Map Visualizations
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: 
     person("Liang", "Ren", email = "rl23@mails.tsinghua.edu.cn", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-2360-7900"))
-Description: A 'ggplot2' extension for visualizing China’s map, offering customizable projections, boundary styles, and buffer zones for thematic maps. 
-    Suitable for spatial data analysis and enhancing map visualization with flexible styling options.
+Description: A 'ggplot2' extension centered on China’s map visualization, with
+    additional support for styled global basemaps. Provides customizable
+    projections, boundary styles, graticules, scale bars, and buffer zones
+    for thematic maps, suitable for spatial data analysis and cartographic
+    visualization.
 License: GPL-3
 Encoding: UTF-8
 Depends: 

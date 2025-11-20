@@ -2,87 +2,202 @@
 % Please edit documentation in R/geom_world.R
 \name{geom_world}
 \alias{geom_world}
-\title{Plot World Map with Customizable Options}
+\title{Convenient global basemap layer for ggplot2}
 \usage{
 geom_world(
-  data = NULL,
-  crs = "+proj=longlat +datum=WGS84",
-  color = "black",
-  fill = "white",
-  linewidth = 0.5,
+  crs = 4326,
   filter_attribute = "SOC",
   filter = NULL,
+  show_ocean = TRUE,
+  show_admin_boundaries = TRUE,
+  show_frame = FALSE,
+  ocean_fill = "#c7e8fb",
+  frame_color = "black",
+  frame_size = 0.2,
+  frame_linetype = "solid",
+  country_fill = "grey90",
+  country_boundary_color = "transparent",
+  country_boundary_size = 0.1,
+  country_boundary_linetype = "solid",
+  coastline_color = "#26ace7",
+  coastline_size = 0.1,
+  coastline_linetype = "solid",
+  international_boundary_color = "grey20",
+  international_boundary_size = 0.1,
+  international_boundary_linetype = "solid",
+  regional_boundary_color = "grey20",
+  regional_boundary_size = 0.1,
+  regional_boundary_linetype = "dashed",
+  undefined_boundary_color = "grey20",
+  undefined_boundary_size = 0.1,
+  undefined_boundary_linetype = "longdash",
+  military_boundary_color = "grey20",
+  military_boundary_size = 0.05,
+  military_boundary_linetype = "dotted",
   ...
 )
 }
 \arguments{
-\item{data}{An `sf` object containing world map data. If `NULL`, the default world map data
-from the package will be loaded from a `.rda` file.}
+\item{crs}{Coordinate reference system for the basemap. Accepts a numeric
+EPSG code, a PROJ string, or an `sf::crs` object. The default is `4326`,
+corresponding to WGS84 longitude–latitude.}
 
-\item{crs}{A character string specifying the target coordinate reference system (CRS) for the map projection.
-Defaults to `"+proj=longlat +datum=WGS84"`.}
+\item{filter_attribute}{Name of the column in the `countries` dataset used
+for filtering. Default `"SOC"`.}
 
-\item{color}{A character string specifying the border color for administrative boundaries. Default is `"black"`.}
+\item{filter}{Character vector specifying which values of `filter_attribute`
+to retain. If `NULL` (default), no filtering is applied. When non-`NULL`,
+only the selected countries are drawn, and the ocean, coastlines,
+administrative boundaries, and optional frame are all omitted.}
 
-\item{fill}{A character string specifying the fill color for administrative areas. Default is `"white"`.}
+\item{show_ocean}{Logical; draw an ocean background polygon. Default `TRUE`.
+Ignored when `filter` is not `NULL`.}
 
-\item{linewidth}{A numeric value specifying the line width for administrative boundaries. Default is `0.5`.}
+\item{show_admin_boundaries}{Logical; draw administrative and political
+boundaries (international, regional, undefined/disputed, and military
+demarcation lines). Default `TRUE`. Ignored when `filter` is not `NULL`.}
 
-\item{filter_attribute}{A character string specifying the column name used for filtering countries or regions.
-Default is `"SOC"`, which refers to the ISO 3166-1 alpha-3 country code in the default dataset.}
+\item{show_frame}{Logical; draw an outer frame following the projected
+outline of the world. Default `FALSE`. Ignored when `filter` is not `NULL`.}
 
-\item{filter}{A character vector specifying the values to filter specific countries or regions. Default is `NULL`.}
+\item{ocean_fill}{Fill colour for the ocean polygon. Default `"#c7e8fb"`.}
 
-\item{...}{Additional parameters passed to [ggplot2::geom_sf()], such as `size`, `alpha`, or `lty`.}
+\item{frame_color}{Colour of the outer frame line. Default `"grey20"`.}
+
+\item{frame_size}{Line width of the outer frame. Default `0.1`.}
+
+\item{frame_linetype}{Line type of the outer frame. Default `"solid"`.}
+
+\item{country_fill}{Fill colour for country polygons. Default `"grey90"`.}
+
+\item{country_boundary_color}{Colour of country boundary outlines.
+Default `"transparent"`.}
+
+\item{country_boundary_size}{Width of country boundary outlines.
+Default `0.1`.}
+
+\item{country_boundary_linetype}{Line type of country boundaries.
+Default `"solid"`.}
+
+\item{coastline_color}{Colour of the coastline layer. Default `"#26ace7"`.}
+
+\item{coastline_size}{Line width of coastlines. Default `0.1`.}
+
+\item{coastline_linetype}{Line type of coastlines. Default `"solid"`.}
+
+\item{international_boundary_color}{Colour for international boundary lines.
+Default `"grey20"`.}
+
+\item{international_boundary_size}{Width for international boundaries.
+Default `0.1`.}
+
+\item{international_boundary_linetype}{Line type for international
+boundaries. Default `"solid"`.}
+
+\item{regional_boundary_color}{Colour for regional boundaries (e.g. states).
+Default `"grey20"`.}
+
+\item{regional_boundary_size}{Width for regional boundaries. Default `0.1`.}
+
+\item{regional_boundary_linetype}{Line type for regional boundaries.
+Default `"dashed"`.}
+
+\item{undefined_boundary_color}{Colour for undefined or disputed boundaries.
+Default `"grey20"`.}
+
+\item{undefined_boundary_size}{Width for undefined boundaries. Default `0.1`.}
+
+\item{undefined_boundary_linetype}{Line type for undefined boundaries.
+Default `"longdash"`.}
+
+\item{military_boundary_color}{Colour for military demarcation lines.
+Default `"grey20"`.}
+
+\item{military_boundary_size}{Width for military demarcation lines.
+Default `0.05`.}
+
+\item{military_boundary_linetype}{Line type for military demarcation lines.
+Default `"dotted"`.}
+
+\item{...}{Additional arguments passed to `ggplot2::geom_sf()`.}
 }
 \value{
-A `ggplot2` layer for world map visualization.
+A list of `ggplot2` layers representing the world map (or a
+  filtered subset), ready to be added to a ggplot.
 }
 \description{
-A wrapper around [ggplot2::geom_sf()] for visualizing world maps with customizable options.
-This function allows for custom projections, filtering specific countries or regions, and detailed
-aesthetic customizations for borders and fills.
+`geom_world()` draws a styled global basemap using bundled country
+polygons, coastlines, and administrative boundary data. It automatically
+handles antimeridian splitting and CRS transformation, and supports
+optional country filtering for focused maps.
 }
 \details{
-This function simplifies the process of creating world maps by combining the functionality of `geom_sf`
-with user-friendly options for projections, filtering, and custom styling.
-Key features include:
-- **Custom projections**: Easily apply any CRS to the map.
-- **Filtering by attributes**: Quickly focus on specific countries or regions.
-- **Flexible aesthetics**: Customize fill, borders, transparency, and other visual properties.
+This function supersedes an earlier, much simpler version of `geom_world()`
+that was a thin wrapper around `ggplot2::geom_sf()` and required users to
+supply their own map data. The current implementation:
+
+- always uses bundled world map data (countries, coastlines, boundaries),
+- exposes dedicated arguments for ocean fill, coastlines, and different
+  types of administrative boundaries,
+- and has a different argument set and default behaviour compared to
+  the original version.
+
+If you are upgrading from an older development version of **ggmapcn**,
+please review your existing calls to `geom_world()` and the examples
+below, as some arguments have been renamed or removed.
+
+To silence the one-time redesign warning in a session, you can set:
+
+```r
+options(ggmapcn.geom_world_silence_redesign = TRUE)
+```
 }
 \examples{
-\donttest{
-  # Plot the default world map
-  ggplot() +
-    geom_world() +
-    theme_minimal()
+library(ggplot2)
 
-  # Using Robinson projection with central meridian at 0°
-  ggplot() +
-    geom_world(crs = "+proj=robin +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m") +
-    theme_minimal()
+# 1. Simplest world map
+ggplot() +
+  geom_world() +
+  theme_void()
 
-  # Filter specific countries (e.g., China and its neighbors)
-  china_neighbors <- c("CHN", "AFG", "BTN", "MMR", "LAO", "NPL", "PRK", "KOR",
-                       "KAZ", "KGZ", "MNG", "IND", "BGD", "TJK", "PAK", "LKA", "VNM")
-  ggplot() +
-    geom_world(filter = china_neighbors) +
-    theme_minimal()
+# 2. World map with long–lat axes
+ggplot() +
+  geom_world() +
+  coord_sf(
+    crs    = 4326,
+    expand = FALSE,
+    datum  = sf::st_crs(4326)
+  ) +
+  theme_minimal() +
+  theme(panel.ontop = TRUE)
 
-  # Background map + Highlight specific region
-  ggplot() +
-    geom_world(fill = "gray80", color = "gray50", alpha = 0.5) +
-    geom_world(filter = c("CHN"), fill = "red", color = "black", linewidth = 1.5) +
-    theme_minimal()
+# 3. Without ocean layer
+ggplot() +
+  geom_world(show_ocean = FALSE) +
+  theme_minimal()
 
-  # Customize styles with transparency and bold borders
-  ggplot() +
-    geom_world(fill = "lightblue", color = "darkblue", linewidth = 1, alpha = 0.8) +
-    theme_void()
-}
-}
-\seealso{
-[ggplot2::geom_sf()], [sf::st_transform()],
-[sf::st_read()]
+# 4. Without administrative boundaries
+ggplot() +
+  geom_world(show_admin_boundaries = FALSE) +
+  theme_minimal()
+
+# 5. Robinson projection centred at 150°E
+crs_robin_150 <- "+proj=robin +lon_0=150 +datum=WGS84"
+ggplot() +
+  geom_world(crs = crs_robin_150) +
+  coord_sf(crs = crs_robin_150) +
+  theme_void()
+
+# 6. Highlight China
+ggplot() +
+  geom_world(
+    country_fill = "grey95", show_frame   = TRUE) +
+  geom_world(
+    filter_attribute = "SOC",
+    filter           = "CHN",
+    country_fill     = "red",
+    country_boundary_color = "black"
+  ) +
+  theme_void()
+
 }
