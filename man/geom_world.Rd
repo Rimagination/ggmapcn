@@ -39,7 +39,7 @@ geom_world(
 }
 \arguments{
 \item{crs}{Coordinate reference system for the basemap. Accepts a numeric
-EPSG code, a PROJ string, or an `sf::crs` object. The default is `4326`,
+EPSG code, a PROJ string, or an [sf::crs] object. The default is `4326`,
 corresponding to WGS84 longitude–latitude.}
 
 \item{filter_attribute}{Name of the column in the `countries` dataset used
@@ -119,10 +119,11 @@ Default `0.05`.}
 \item{military_boundary_linetype}{Line type for military demarcation lines.
 Default `"dotted"`.}
 
-\item{...}{Additional arguments passed to `ggplot2::geom_sf()`.}
+\item{...}{Additional arguments passed to [ggplot2::geom_sf()] for the
+country polygons layer.}
 }
 \value{
-A list of `ggplot2` layers representing the world map (or a
+A list of [ggplot2] layers representing the world map (or a
   filtered subset), ready to be added to a ggplot.
 }
 \description{
@@ -133,24 +134,21 @@ optional country filtering for focused maps.
 }
 \details{
 This function supersedes an earlier, much simpler version of `geom_world()`
-that was a thin wrapper around `ggplot2::geom_sf()` and required users to
-supply their own map data. The current implementation:
+that was a thin wrapper around [ggplot2::geom_sf()] and required users to
+supply their own map data.
 
-- always uses bundled world map data (countries, coastlines, boundaries),
+The current implementation:
+
+- always uses bundled world map data (countries, coastlines, boundaries);
 - exposes dedicated arguments for ocean fill, coastlines, and different
-  types of administrative boundaries,
-- and has a different argument set and default behaviour compared to
-  the original version.
+  types of administrative boundaries;
+- builds a projection-aware global outline for the ocean/frame layer:
+  rectangular in geographic CRSs, and a convex “world hull” in projected
+  CRSs (e.g. Robinson, Mollweide).
 
-If you are upgrading from an older development version of **ggmapcn**,
-please review your existing calls to `geom_world()` and the examples
-below, as some arguments have been renamed or removed.
-
-To silence the one-time redesign warning in a session, you can set:
-
-```r
-options(ggmapcn.geom_world_silence_redesign = TRUE)
-```
+Compared to early development versions of **ggmapcn**, some arguments and
+defaults have changed. Please refer to this help page when upgrading old
+code that used `geom_world()`.
 }
 \examples{
 library(ggplot2)
@@ -168,8 +166,7 @@ ggplot() +
     expand = FALSE,
     datum  = sf::st_crs(4326)
   ) +
-  theme_minimal() +
-  theme(panel.ontop = TRUE)
+  theme_minimal()
 
 # 3. Without ocean layer
 ggplot() +
@@ -191,11 +188,13 @@ ggplot() +
 # 6. Highlight China
 ggplot() +
   geom_world(
-    country_fill = "grey95", show_frame   = TRUE) +
+    country_fill = "grey95",
+    show_frame   = TRUE
+  ) +
   geom_world(
-    filter_attribute = "SOC",
-    filter           = "CHN",
-    country_fill     = "red",
+    filter_attribute       = "SOC",
+    filter                 = "CHN",
+    country_fill           = "red",
     country_boundary_color = "black"
   ) +
   theme_void()
