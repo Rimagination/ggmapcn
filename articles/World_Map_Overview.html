@@ -31,11 +31,12 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item dropdown">
+<li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/Adding_Basic_Map.html">Adding Basic Map</a></li>
-    <li><a class="dropdown-item" href="../articles/Adding_Spatial_Data.html">Adding Spatial Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Advanced_Scalebar_and_Compass.html">Advanced Scalebar and Compass</a></li>
+    <li><a class="dropdown-item" href="../articles/World_Map_Overview.html">World Map Overview</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -67,12 +68,15 @@
 <div class="section level2">
 <h2 id="introduction">1. Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p><code><a href="../reference/geom_world.html">geom_world()</a></code> provides a convenient global basemap for
-<code>ggplot2</code>.<br>
-It uses bundled country polygons, coastlines, and
-political/administrative boundaries, and automatically handles CRS
-transformation and antimeridian splitting.</p>
-<hr>
+<p><code><a href="../reference/geom_world.html">geom_world()</a></code> provides a convenient global base map for
+<code>ggplot2</code>. It comes bundled with country polygons,
+coastlines, and political/administrative boundaries.</p>
+<p>Key features include: * <strong>Automatic CRS
+transformation</strong>: Seamlessly projects data to your desired
+Coordinate Reference System. * <strong>Antimeridian splitting</strong>:
+Handles the “Pacific wrap-around” issue automatically when changing
+central meridians. * <strong>Layer control</strong>: Toggles for ocean
+background and administrative boundaries.</p>
 </div>
 <div class="section level2">
 <h2 id="basic-usage">2. Basic usage<a class="anchor" aria-label="anchor" href="#basic-usage"></a>
@@ -80,27 +84,32 @@ transformation and antimeridian splitting.</p>
 <div class="section level3">
 <h3 id="default-wgs84-map">2.1 Default WGS84 map<a class="anchor" aria-label="anchor" href="#default-wgs84-map"></a>
 </h3>
+<p>By default, <code><a href="../reference/geom_world.html">geom_world()</a></code> plots the map using the WGS84
+standard.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/geom_world.html">geom_world</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: geom_world() has been redesigned; its interface and defaults have</span></span>
 <span><span class="co">#&gt; changed compared to earlier development versions. See ?geom_world for details.</span></span></code></pre></div>
-<p><img src="World_Map_Overview_files/figure-html/unnamed-chunk-1-1.png" class="r-plt" width="672"></p>
+<p><img src="World_Map_Overview_files/figure-html/basic_map-1.png" class="r-plt" alt="A standard world map using WGS84 projection with default styling." width="672"></p>
 </div>
 <div class="section level3">
 <h3 id="explicit-crs-specification">2.2 Explicit CRS specification<a class="anchor" aria-label="anchor" href="#explicit-crs-specification"></a>
 </h3>
+<p>You can specify the CRS directly within the function.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/geom_world.html">geom_world</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="World_Map_Overview_files/figure-html/unnamed-chunk-2-1.png" class="r-plt" width="672"></p>
+<p><img src="World_Map_Overview_files/figure-html/explicit_crs-1.png" class="r-plt" alt="A world map explicitly set to EPSG:4326 projection." width="672"></p>
 </div>
 <div class="section level3">
 <h3 id="hiding-the-ocean-layer">2.3 Hiding the ocean layer<a class="anchor" aria-label="anchor" href="#hiding-the-ocean-layer"></a>
 </h3>
+<p>For a cleaner look, you can remove the blue ocean background and
+change the land fill color.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/geom_world.html">geom_world</a></span><span class="op">(</span></span>
@@ -108,11 +117,13 @@ transformation and antimeridian splitting.</p>
 <span>    country_fill <span class="op">=</span> <span class="st">"grey90"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="World_Map_Overview_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" width="672"></p>
+<p><img src="World_Map_Overview_files/figure-html/hide_ocean-1.png" class="r-plt" alt="A world map with the blue ocean layer removed, showing grey countries on a white background." width="672"></p>
 </div>
 <div class="section level3">
 <h3 id="hiding-administrative-boundaries">2.4 Hiding administrative boundaries<a class="anchor" aria-label="anchor" href="#hiding-administrative-boundaries"></a>
 </h3>
+<p>If you only need continental landmasses without internal country
+borders, set <code>show_admin_boundaries = FALSE</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/geom_world.html">geom_world</a></span><span class="op">(</span></span>
@@ -120,8 +131,8 @@ transformation and antimeridian splitting.</p>
 <span>    country_fill          <span class="op">=</span> <span class="st">"white"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="World_Map_Overview_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" width="672"></p>
-<p>Combining both:</p>
+<p><img src="World_Map_Overview_files/figure-html/hide_admin-1.png" class="r-plt" alt="A world map showing continental landmasses without internal country borders." width="672"></p>
+<p>Combining both options creates a minimalist silhouette map:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/geom_world.html">geom_world</a></span><span class="op">(</span></span>
@@ -129,13 +140,14 @@ transformation and antimeridian splitting.</p>
 <span>    show_admin_boundaries <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="World_Map_Overview_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" width="672"></p>
-<hr>
+<p><img src="World_Map_Overview_files/figure-html/minimal_map-1.png" class="r-plt" alt="A minimalist world map showing only land shapes with no ocean or borders." width="672"></p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="projections">3. Projections<a class="anchor" aria-label="anchor" href="#projections"></a>
 </h2>
+<p><code><a href="../reference/geom_world.html">geom_world()</a></code> shines when working with different map
+projections. It automatically projects the underlying polygons.</p>
 <div class="section level3">
 <h3 id="robinson-projection">3.1 Robinson projection<a class="anchor" aria-label="anchor" href="#robinson-projection"></a>
 </h3>
@@ -148,11 +160,14 @@ transformation and antimeridian splitting.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Spherical geometry (s2) switched off</span></span>
 <span><span class="co">#&gt; Spherical geometry (s2) switched on</span></span></code></pre></div>
-<p><img src="World_Map_Overview_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" width="672"></p>
+<p><img src="World_Map_Overview_files/figure-html/robinson-1.png" class="r-plt" alt="A world map using the Robinson projection." width="672"></p>
 </div>
 <div class="section level3">
 <h3 id="robinson-projection-centred-at-150e">3.2 Robinson projection centred at 150°E<a class="anchor" aria-label="anchor" href="#robinson-projection-centred-at-150e"></a>
 </h3>
+<p>Changing the central meridian (centering the map on the Pacific) is
+often difficult in standard ggplot2. <code><a href="../reference/geom_world.html">geom_world()</a></code> handles
+the polygon splitting automatically.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">crs_robin_150</span> <span class="op">&lt;-</span> <span class="st">"+proj=robin +lon_0=150 +datum=WGS84"</span></span>
 <span></span>
@@ -162,7 +177,7 @@ transformation and antimeridian splitting.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Spherical geometry (s2) switched off</span></span>
 <span><span class="co">#&gt; Spherical geometry (s2) switched on</span></span></code></pre></div>
-<p><img src="World_Map_Overview_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" width="672"></p>
+<p><img src="World_Map_Overview_files/figure-html/robin_pacific-1.png" class="r-plt" alt="A Robinson projection world map centered on the Pacific Ocean (150 degrees East)." width="672"></p>
 </div>
 <div class="section level3">
 <h3 id="geographic-crs-with-shifted-central-meridian">3.3 Geographic CRS with shifted central meridian<a class="anchor" aria-label="anchor" href="#geographic-crs-with-shifted-central-meridian"></a>
@@ -174,34 +189,21 @@ transformation and antimeridian splitting.</p>
 <span>  <span class="fu"><a href="../reference/geom_world.html">geom_world</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="va">crs_wgs84_150</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="va">crs_wgs84_150</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="World_Map_Overview_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" width="672"></p>
-<hr>
+<p><img src="World_Map_Overview_files/figure-html/wgs84_pacific-1.png" class="r-plt" alt="A rectangular projection world map centered on 150 degrees East." width="672"></p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="axis-labels-and-gridlines">4. Axis labels and gridlines<a class="anchor" aria-label="anchor" href="#axis-labels-and-gridlines"></a>
 </h2>
-<p><code><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf()</a></code> may show gridlines but hide axis
-labels.<br>
-This often occurs when:</p>
-<ul>
-<li>
-<code>expand = TRUE</code> extends the map beyond ±180° or
-±90°<br>
-</li>
-<li>the CRS lacks a geographic <code>datum</code><br>
-</li>
-<li>layers (e.g., ocean polygons) are drawn above the panel grid</li>
-</ul>
-<p><strong>Recommended pattern for reliable axis labels:</strong></p>
-<pre><code><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span></span>
-<span>  crs    <span class="op">=</span> <span class="fl">4326</span>,</span>
-<span>  expand <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  datum  <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="fl">4326</span><span class="op">)</span></span>
-<span><span class="op">)</span> <span class="op">+</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.ontop <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre>
-<p>Example:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<p>A common issue with <code><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf()</a></code> is that gridlines appear,
+but axis labels (coordinates) disappear. This often occurs when: *
+<code>expand = TRUE</code> extends the map beyond ±180° or ±90°. * The
+CRS lacks a geographic datum. * Solid layers (like the ocean polygon)
+are drawn <em>on top</em> of the panel grid.</p>
+<p><strong>Recommended pattern for reliable axis labels:</strong> Use
+<code>expand = FALSE</code> inside <code>coord_sf</code> and set
+<code>panel.ontop = TRUE</code> in the theme.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/geom_world.html">geom_world</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span></span>
@@ -211,37 +213,20 @@ This often occurs when:</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.ontop <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="World_Map_Overview_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" width="672"></p>
-<hr>
+<p><img src="World_Map_Overview_files/figure-html/axis_labels-1.png" class="r-plt" alt="A world map with clear longitude and latitude axis labels and gridlines drawn on top of the land layer." width="672"></p>
 </div>
 <div class="section level2">
 <h2 id="graticule-annotation-meridians-parallels">5. Graticule annotation (meridians &amp; parallels)<a class="anchor" aria-label="anchor" href="#graticule-annotation-meridians-parallels"></a>
 </h2>
-<p><code><a href="../reference/annotation_graticule.html">annotation_graticule()</a></code> draws meridians and parallels as
-annotation layers.<br>
-The graticules are:</p>
-<ul>
-<li>generated in WGS84 (EPSG:4326)<br>
-</li>
-<li>optionally split at the antimeridian<br>
-</li>
-<li>then transformed to the map CRS</li>
-</ul>
-<p>This gives full control over:</p>
-<ul>
-<li>line spacing (<code>lon_step</code>, <code>lat_step</code>)<br>
-</li>
-<li>label placement<br>
-</li>
-<li>behaviour under different projections<br>
-</li>
-<li>regional windows defined by <code>xlim</code>/<code>ylim</code>
-</li>
-</ul>
+<p><code><a href="../reference/annotation_graticule.html">annotation_graticule()</a></code> provides precise control over
+meridians and parallels. Unlike standard gridlines, these are annotation
+layers that: * Are generated in WGS84 and transformed to your target
+CRS. * Allow for custom line spacing (<code>lon_step</code>,
+<code>lat_step</code>) and label placement.</p>
 <div class="section level3">
 <h3 id="global-wgs84-map-with-graticules">5.1 Global WGS84 map with graticules<a class="anchor" aria-label="anchor" href="#global-wgs84-map-with-graticules"></a>
 </h3>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/geom_world.html">geom_world</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/annotation_graticule.html">annotation_graticule</a></span><span class="op">(</span></span>
@@ -258,12 +243,13 @@ The graticules are:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.ontop <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Spherical geometry (s2) switched off</span></span>
 <span><span class="co">#&gt; Spherical geometry (s2) switched on</span></span></code></pre></div>
-<p><img src="World_Map_Overview_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" width="672"></p>
+<p><img src="World_Map_Overview_files/figure-html/graticule_global-1.png" class="r-plt" alt="A world map with custom graticule lines labeled every 60 degrees longitude and 30 degrees latitude." width="672"></p>
 </div>
 <div class="section level3">
 <h3 id="robinson-projection-1">5.2 Robinson projection<a class="anchor" aria-label="anchor" href="#robinson-projection-1"></a>
 </h3>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<p>Note how the graticules curve naturally with the projection.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">crs_robin</span> <span class="op">&lt;-</span> <span class="st">"+proj=robin +datum=WGS84"</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -280,22 +266,17 @@ The graticules are:</p>
 <span><span class="co">#&gt; Spherical geometry (s2) switched on</span></span>
 <span><span class="co">#&gt; Spherical geometry (s2) switched off</span></span>
 <span><span class="co">#&gt; Spherical geometry (s2) switched on</span></span></code></pre></div>
-<p><img src="World_Map_Overview_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" width="672"></p>
+<p><img src="World_Map_Overview_files/figure-html/graticule_robin-1.png" class="r-plt" alt="A Robinson projection map with curved graticule lines." width="672"></p>
 </div>
 <div class="section level3">
 <h3 id="regional-china-map-clean-axis-labels">5.3 Regional China map (clean axis labels)<a class="anchor" aria-label="anchor" href="#regional-china-map-clean-axis-labels"></a>
 </h3>
-<p>This is the recommended pattern for regional maps:</p>
-<ul>
-<li>show <strong>graticule lines</strong> only
-(<code>label_color = NA</code>)<br>
-</li>
-<li>show <strong>axis labels</strong> via <code><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs()</a></code><br>
-</li>
-<li>keep the region exact with <code>expand = FALSE</code>
-</li>
-</ul>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<p>For regional maps, the recommended pattern is to: 1. Use
+<code><a href="../reference/annotation_graticule.html">annotation_graticule()</a></code> to draw the lines but hide its
+internal labels (<code>label_color = NA</code>). 2. Use standard
+<code><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs()</a></code> or <code>coord_sf</code> labels for the axes. 3.
+Keep the region exact with <code>expand = FALSE</code>.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cn_xlim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">70</span>, <span class="fl">140</span><span class="op">)</span></span>
 <span><span class="va">cn_ylim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">60</span><span class="op">)</span></span>
 <span></span>
@@ -323,17 +304,19 @@ The graticules are:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Spherical geometry (s2) switched off</span></span>
 <span><span class="co">#&gt; Spherical geometry (s2) switched on</span></span></code></pre></div>
-<p><img src="World_Map_Overview_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" width="672"></p>
-<hr>
+<p><img src="World_Map_Overview_files/figure-html/region_cn-1.png" class="r-plt" alt="A regional map of China and surrounding areas with clean axis labels and specific graticule limits." width="672"></p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="highlighting-selected-countries">6. Highlighting selected countries<a class="anchor" aria-label="anchor" href="#highlighting-selected-countries"></a>
 </h2>
+<p>You can create “highlight” maps by layering <code><a href="../reference/geom_world.html">geom_world()</a></code>
+calls. The first call draws the base (e.g., white), and the second call
+filters for specific countries to color them.</p>
 <div class="section level3">
 <h3 id="highlighting-china">6.1 Highlighting China<a class="anchor" aria-label="anchor" href="#highlighting-china"></a>
 </h3>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/geom_world.html">geom_world</a></span><span class="op">(</span></span>
 <span>    country_fill <span class="op">=</span> <span class="st">"white"</span>,</span>
@@ -345,12 +328,13 @@ The graticules are:</p>
 <span>    country_fill     <span class="op">=</span> <span class="st">"red"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="World_Map_Overview_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" width="672"></p>
+<p><img src="World_Map_Overview_files/figure-html/highlight_cn-1.png" class="r-plt" alt="A world map with China highlighted in red." width="672"></p>
 </div>
 <div class="section level3">
 <h3 id="highlighting-multiple-countries">6.2 Highlighting multiple countries<a class="anchor" aria-label="anchor" href="#highlighting-multiple-countries"></a>
 </h3>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<p>Pass a vector of ISO codes to highlight multiple regions.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">focus</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CHN"</span>, <span class="st">"JPN"</span>, <span class="st">"KOR"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -364,28 +348,18 @@ The graticules are:</p>
 <span>    country_fill     <span class="op">=</span> <span class="st">"#f57f17"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="World_Map_Overview_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" width="672"></p>
-<hr>
+<p><img src="World_Map_Overview_files/figure-html/highlight_multi-1.png" class="r-plt" alt="A world map highlighting China, Japan, and South Korea in orange." width="672"></p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="summary">7. Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
 </h2>
-<p>This vignette introduced how to:</p>
-<ul>
-<li>draw global maps using <code><a href="../reference/geom_world.html">geom_world()</a></code><br>
-</li>
-<li>control ocean and administrative boundary layers<br>
-</li>
-<li>work with different projections<br>
-</li>
-<li>avoid missing axis labels in <code><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf()</a></code><br>
-</li>
-<li>add custom meridians/parallels with
-<code><a href="../reference/annotation_graticule.html">annotation_graticule()</a></code><br>
-</li>
-<li>highlight individual or groups of countries</li>
-</ul>
+<p>This vignette introduced how to: * Draw global maps using
+<code><a href="../reference/geom_world.html">geom_world()</a></code>. * Control ocean and administrative boundary
+layers. * Work with different projections. * Avoid missing axis labels
+in <code><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf()</a></code>. * Add custom meridians/parallels with
+<code><a href="../reference/annotation_graticule.html">annotation_graticule()</a></code>. * Highlight individual or groups of
+countries.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -31,11 +31,12 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item dropdown">
+<li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/Adding_Basic_Map.html">Adding Basic Map</a></li>
-    <li><a class="dropdown-item" href="../articles/Adding_Spatial_Data.html">Adding Spatial Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Advanced_Scalebar_and_Compass.html">Advanced Scalebar and Compass</a></li>
+    <li><a class="dropdown-item" href="../articles/World_Map_Overview.html">World Map Overview</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -67,91 +68,120 @@
 <div class="section level2">
 <h2 id="setup">1. Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
 </h2>
-<p>This vignette shows how to use the advanced options in
-<code><a href="../reference/annotation_scalebar.html">annotation_scalebar()</a></code> and <code><a href="../reference/annotation_compass.html">annotation_compass()</a></code>
-from <strong>ggmapcn</strong>.</p>
+<p>This vignette demonstrates how to use the advanced customization
+options available in <code><a href="../reference/annotation_scalebar.html">annotation_scalebar()</a></code> and
+<code><a href="../reference/annotation_compass.html">annotation_compass()</a></code> from the <strong>ggmapcn</strong>
+package.</p>
+<p>We will use the standard North Carolina shapefile provided by the
+<code>sf</code> package as our base map.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Linking to GEOS 3.12.1, GDAL 3.8.4, PROJ 9.4.0; sf_use_s2() is TRUE</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rimagination.github.io/ggmapcn/">ggmapcn</a></span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Load example data</span></span>
 <span><span class="va">nc</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"shape/nc.shp"</span>, package <span class="op">=</span> <span class="st">"sf"</span><span class="op">)</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Create a base map object</span></span>
 <span><span class="va">base_geo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">nc</span>, fill <span class="op">=</span> <span class="st">"grey90"</span>, color <span class="op">=</span> <span class="st">"grey40"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
 <span><span class="va">base_geo</span></span></code></pre></div>
-<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/unnamed-chunk-2-1.png" class="r-plt" width="576"></p>
+<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/setup-1.png" class="r-plt" alt="A base map of North Carolina with grey fill and minimal theme." width="576"></p>
 </div>
 <div class="section level2">
-<h2 id="basic-scale-bar-in-a-projected-crs">2. Basic scale bar in a projected CRS<a class="anchor" aria-label="anchor" href="#basic-scale-bar-in-a-projected-crs"></a>
+<h2 id="scale-bars-in-a-projected-crs">2. Scale bars in a projected CRS<a class="anchor" aria-label="anchor" href="#scale-bars-in-a-projected-crs"></a>
 </h2>
+<p>Scale bars are most accurate when used with a projected Coordinate
+Reference System (CRS). Here, we project the map to EPSG:32617 (UTM Zone
+17N).</p>
+<p>You can control the position using <code>location</code> (e.g.,
+<code>"bl"</code> for bottom-left, <code>"tr"</code> for top-right) and
+adjust the relative width using <code>width_hint</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">base_proj</span> <span class="op">&lt;-</span> <span class="va">base_geo</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">32617</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Default scale bar at bottom-left</span></span>
 <span><span class="va">base_proj</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/annotation_scalebar.html">annotation_scalebar</a></span><span class="op">(</span>location <span class="op">=</span> <span class="st">"bl"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" width="576"></p>
+<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/proj_scale-1.png" class="r-plt" alt="Two maps of North Carolina. The first shows a scale bar in the bottom left. The second shows a wider scale bar in the top right." width="576"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
+<span><span class="co"># Top-right scale bar with custom width hint</span></span>
 <span><span class="va">base_proj</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/annotation_scalebar.html">annotation_scalebar</a></span><span class="op">(</span></span>
 <span>    location   <span class="op">=</span> <span class="st">"tr"</span>,</span>
 <span>    width_hint <span class="op">=</span> <span class="fl">0.5</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/unnamed-chunk-3-2.png" class="r-plt" width="576"></p>
+<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/proj_scale-2.png" class="r-plt" alt="Two maps of North Carolina. The first shows a scale bar in the bottom left. The second shows a wider scale bar in the top right." width="576"></p>
 </div>
 <div class="section level2">
 <h2 id="scale-bar-styles">3. Scale bar styles<a class="anchor" aria-label="anchor" href="#scale-bar-styles"></a>
 </h2>
+<p><code><a href="../reference/annotation_scalebar.html">annotation_scalebar()</a></code> supports multiple styles:
+<code>"segment"</code>, <code>"ticks"</code>, and <code>"bar"</code>.
+You can also customize colors and text visibility.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p_segment</span> <span class="op">&lt;-</span> <span class="va">base_proj</span> <span class="op">+</span></span>
+<code class="sourceCode R"><span><span class="co"># 1. Segment style</span></span>
+<span><span class="va">p_segment</span> <span class="op">&lt;-</span> <span class="va">base_proj</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/annotation_scalebar.html">annotation_scalebar</a></span><span class="op">(</span></span>
 <span>    location <span class="op">=</span> <span class="st">"bl"</span>,</span>
 <span>    style    <span class="op">=</span> <span class="st">"segment"</span>,</span>
 <span>    label_show <span class="op">=</span> <span class="st">"all"</span></span>
 <span>  <span class="op">)</span></span>
-<span></span>
+<span><span class="va">p_segment</span></span></code></pre></div>
+<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/styles_1-1.png" class="r-plt" alt="A map showing the 'segment' style scale bar." width="576"></p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 2. Ticks style</span></span>
 <span><span class="va">p_ticks</span> <span class="op">&lt;-</span> <span class="va">base_proj</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/annotation_scalebar.html">annotation_scalebar</a></span><span class="op">(</span></span>
 <span>    location <span class="op">=</span> <span class="st">"br"</span>,</span>
 <span>    style    <span class="op">=</span> <span class="st">"ticks"</span></span>
 <span>  <span class="op">)</span></span>
-<span></span>
+<span><span class="va">p_ticks</span></span></code></pre></div>
+<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/styles_2-1.png" class="r-plt" alt="A map showing the 'ticks' style scale bar." width="576"></p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 3. Bar style with custom colors</span></span>
 <span><span class="va">p_bar</span> <span class="op">&lt;-</span> <span class="va">base_proj</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/annotation_scalebar.html">annotation_scalebar</a></span><span class="op">(</span></span>
 <span>    location <span class="op">=</span> <span class="st">"tl"</span>,</span>
 <span>    style    <span class="op">=</span> <span class="st">"bar"</span>,</span>
 <span>    bar_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"white"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
-<span></span>
-<span><span class="va">p_segment</span></span></code></pre></div>
-<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" width="576"></p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p_ticks</span></span></code></pre></div>
-<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/unnamed-chunk-4-2.png" class="r-plt" width="576"></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p_bar</span></span></code></pre></div>
-<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/unnamed-chunk-4-3.png" class="r-plt" width="576"></p>
+<span><span class="va">p_bar</span></span></code></pre></div>
+<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/styles_3-1.png" class="r-plt" alt="A map showing the 'bar' style scale bar with black and white blocks." width="576"></p>
+<p>You can also set a fixed distance width (e.g., 100km) and change the
+line colors:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">base_proj</span> <span class="op">+</span></span>
+<code class="sourceCode R"><span><span class="va">base_proj</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/annotation_scalebar.html">annotation_scalebar</a></span><span class="op">(</span></span>
 <span>    location     <span class="op">=</span> <span class="st">"bl"</span>,</span>
-<span>    fixed_width  <span class="op">=</span> <span class="fl">100000</span>,</span>
+<span>    fixed_width  <span class="op">=</span> <span class="fl">100000</span>,   <span class="co"># 100 km in meters</span></span>
 <span>    display_unit <span class="op">=</span> <span class="st">"km"</span>,</span>
 <span>    line_col     <span class="op">=</span> <span class="st">"red"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/unnamed-chunk-4-4.png" class="r-plt" width="576"></p>
+<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/styles_custom-1.png" class="r-plt" alt="A map with a red scale bar fixed to 100km length." width="576"></p>
 </div>
 <div class="section level2">
-<h2 id="geographic-crs-approx_m-vs-degrees">4. Geographic CRS: approx_m vs degrees<a class="anchor" aria-label="anchor" href="#geographic-crs-approx_m-vs-degrees"></a>
+<h2 id="geographic-crs-approx-distance-vs--degrees">4. Geographic CRS: Approx distance vs. Degrees<a class="anchor" aria-label="anchor" href="#geographic-crs-approx-distance-vs--degrees"></a>
 </h2>
+<p>When plotting unprojected data (Latitude/Longitude, EPSG:4326),
+accurate distance calculation is difficult.</p>
+<ul>
+<li>
+<code>geographic_mode = "approx_m"</code>: Attempts to calculate
+distances in meters (approximation).</li>
+<li>
+<code>geographic_mode = "degrees"</code>: Shows the scale in decimal
+degrees.</li>
+</ul>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">base_geo</span> <span class="op">+</span></span>
+<code class="sourceCode R"><span><span class="co"># Approximate meters</span></span>
+<span><span class="va">base_geo</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/annotation_scalebar.html">annotation_scalebar</a></span><span class="op">(</span></span>
 <span>    location        <span class="op">=</span> <span class="st">"bl"</span>,</span>
@@ -160,56 +190,69 @@ from <strong>ggmapcn</strong>.</p>
 <span><span class="co">#&gt; Warning: Scale bar is approximate in geographic CRS (degrees). Distances vary</span></span>
 <span><span class="co">#&gt; with latitude. For accuracy, use a projected CRS, or set `geographic_mode =</span></span>
 <span><span class="co">#&gt; "degrees"`.</span></span></code></pre></div>
-<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" width="576"></p>
+<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/geo_mode-1.png" class="r-plt" alt="Two maps comparing scale bars. One shows distance in kilometers, the other in degrees." width="576"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
+<span><span class="co"># Degrees</span></span>
 <span><span class="va">base_geo</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/annotation_scalebar.html">annotation_scalebar</a></span><span class="op">(</span></span>
 <span>    location        <span class="op">=</span> <span class="st">"bl"</span>,</span>
 <span>    geographic_mode <span class="op">=</span> <span class="st">"degrees"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/unnamed-chunk-5-2.png" class="r-plt" width="576"></p>
+<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/geo_mode-2.png" class="r-plt" alt="Two maps comparing scale bars. One shows distance in kilometers, the other in degrees." width="576"></p>
 </div>
 <div class="section level2">
-<h2 id="basic-compass-grid-north">5. Basic compass (grid north)<a class="anchor" aria-label="anchor" href="#basic-compass-grid-north"></a>
+<h2 id="basic-compass-grid-north">5. Basic compass (Grid North)<a class="anchor" aria-label="anchor" href="#basic-compass-grid-north"></a>
 </h2>
+<p>Add a north arrow using <code><a href="../reference/annotation_compass.html">annotation_compass()</a></code>. You can
+adjust the size and padding using <code><a href="https://rdrr.io/r/grid/unit.html" class="external-link">grid::unit()</a></code>.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">base_geo</span> <span class="op">+</span></span>
+<code class="sourceCode R"><span><span class="co"># Default classic arrow</span></span>
+<span><span class="va">base_geo</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/annotation_compass.html">annotation_compass</a></span><span class="op">(</span></span>
 <span>    location <span class="op">=</span> <span class="st">"tl"</span>,</span>
 <span>    style    <span class="op">=</span> <span class="fu"><a href="../reference/compass-styles.html">north_arrow_classic</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" width="576"></p>
+<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/compass_basic-1.png" class="r-plt" alt="Two maps showing basic north arrows. One is standard size, the other is larger with padding." width="576"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
+<span><span class="co"># Custom size and padding</span></span>
 <span><span class="va">base_geo</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/annotation_compass.html">annotation_compass</a></span><span class="op">(</span></span>
 <span>    location <span class="op">=</span> <span class="st">"tl"</span>,</span>
-<span>    height   <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">1.8</span>, <span class="st">"cm"</span><span class="op">)</span>,</span>
-<span>    width    <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">1.8</span>, <span class="st">"cm"</span><span class="op">)</span>,</span>
-<span>    pad_x    <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">0.7</span>, <span class="st">"cm"</span><span class="op">)</span>,</span>
-<span>    pad_y    <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">0.7</span>, <span class="st">"cm"</span><span class="op">)</span></span>
+<span>    height   <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="st">"cm"</span><span class="op">)</span>,</span>
+<span>    width    <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="st">"cm"</span><span class="op">)</span>,</span>
+<span>    pad_x    <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="st">"cm"</span><span class="op">)</span>,</span>
+<span>    pad_y    <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="st">"cm"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/unnamed-chunk-6-2.png" class="r-plt" width="576"></p>
+<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/compass_basic-2.png" class="r-plt" alt="Two maps showing basic north arrows. One is standard size, the other is larger with padding." width="576"></p>
 </div>
 <div class="section level2">
-<h2 id="true-north-requires-projection">6. True north (requires projection)<a class="anchor" aria-label="anchor" href="#true-north-requires-projection"></a>
+<h2 id="true-north-vs--grid-north">6. True North vs. Grid North<a class="anchor" aria-label="anchor" href="#true-north-vs--grid-north"></a>
 </h2>
+<p>In many projections (like Lambert Conformal Conic), “Grid North”
+(straight up on the page) is different from “True North” (the direction
+to the North Pole).</p>
+<p>Use <code>which_north = "true"</code> to automatically calculate the
+convergence angle and rotate the compass.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">base_lcc</span> <span class="op">&lt;-</span> <span class="va">base_geo</span> <span class="op">+</span></span>
+<code class="sourceCode R"><span><span class="co"># Define a Lambert Conformal Conic projection</span></span>
+<span><span class="va">base_lcc</span> <span class="op">&lt;-</span> <span class="va">base_geo</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="st">"+proj=lcc +lon_0=-100 +lat_1=33 +lat_2=45"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># True North (automatically rotated)</span></span>
 <span><span class="va">base_lcc</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/annotation_compass.html">annotation_compass</a></span><span class="op">(</span></span>
 <span>    which_north <span class="op">=</span> <span class="st">"true"</span>,</span>
 <span>    location    <span class="op">=</span> <span class="st">"br"</span>,</span>
 <span>    style       <span class="op">=</span> <span class="fu"><a href="../reference/compass-styles.html">compass_rose_simple</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" width="576"></p>
+<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/true_north-1.png" class="r-plt" alt="Two maps demonstrating north arrows. The first shows a rotated compass rose pointing to True North. The second shows a manually rotated Grid North arrow." width="576"></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
+<span><span class="co"># Grid North with manual rotation</span></span>
 <span><span class="va">base_lcc</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/annotation_compass.html">annotation_compass</a></span><span class="op">(</span></span>
 <span>    which_north <span class="op">=</span> <span class="st">"grid"</span>,</span>
@@ -217,11 +260,14 @@ from <strong>ggmapcn</strong>.</p>
 <span>    location    <span class="op">=</span> <span class="st">"tr"</span>,</span>
 <span>    style       <span class="op">=</span> <span class="fu"><a href="../reference/compass-styles.html">north_arrow_solid</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/unnamed-chunk-7-2.png" class="r-plt" width="576"></p>
+<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/true_north-2.png" class="r-plt" alt="Two maps demonstrating north arrows. The first shows a rotated compass rose pointing to True North. The second shows a manually rotated Grid North arrow." width="576"></p>
 </div>
 <div class="section level2">
 <h2 id="compass-styles">7. Compass styles<a class="anchor" aria-label="anchor" href="#compass-styles"></a>
 </h2>
+<p><strong>ggmapcn</strong> provides various styles, including the
+unique <code><a href="../reference/compass-styles.html">compass_sinan()</a></code> (referencing the ancient Chinese
+compass).</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p_classic</span> <span class="op">&lt;-</span> <span class="va">base_proj</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/annotation_compass.html">annotation_compass</a></span><span class="op">(</span></span>
@@ -242,17 +288,18 @@ from <strong>ggmapcn</strong>.</p>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">p_classic</span></span></code></pre></div>
-<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" width="576"></p>
+<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/compass_styles-1.png" class="r-plt" alt="Three maps showing different compass styles: Classic, Rose, and Sinan (Si Nan)." width="576"></p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p_rose</span></span></code></pre></div>
-<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/unnamed-chunk-8-2.png" class="r-plt" width="576"></p>
+<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/compass_styles-2.png" class="r-plt" alt="Three maps showing different compass styles: Classic, Rose, and Sinan (Si Nan)." width="576"></p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p_sinan</span></span></code></pre></div>
-<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/unnamed-chunk-8-3.png" class="r-plt" width="576"></p>
+<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/compass_styles-3.png" class="r-plt" alt="Three maps showing different compass styles: Classic, Rose, and Sinan (Si Nan)." width="576"></p>
 </div>
 <div class="section level2">
-<h2 id="combine-scale-bar-compass">8. Combine scale bar + compass<a class="anchor" aria-label="anchor" href="#combine-scale-bar-compass"></a>
+<h2 id="combining-scale-bar-and-compass">8. Combining scale bar and compass<a class="anchor" aria-label="anchor" href="#combining-scale-bar-and-compass"></a>
 </h2>
+<p>Finally, you can layer both annotations onto a single map.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">base_proj</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/annotation_scalebar.html">annotation_scalebar</a></span><span class="op">(</span></span>
@@ -264,7 +311,7 @@ from <strong>ggmapcn</strong>.</p>
 <span>    location <span class="op">=</span> <span class="st">"tl"</span>,</span>
 <span>    style    <span class="op">=</span> <span class="fu"><a href="../reference/compass-styles.html">compass_rose_circle</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" width="576"></p>
+<p><img src="Advanced_Scalebar_and_Compass_files/figure-html/combine-1.png" class="r-plt" alt="A final map combining a ticks-style scale bar at the bottom left and a compass rose at the top left." width="576"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
