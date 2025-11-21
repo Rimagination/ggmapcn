@@ -13,7 +13,7 @@
 - [`basemap_vege()`](https://rimagination.github.io/ggmapcn/reference/basemap_vege.md)
   : Vegetation Map of China Layer for ggplot2
 - [`check_geodata()`](https://rimagination.github.io/ggmapcn/reference/check_geodata.md)
-  : Check and Download Geospatial Data
+  : Check and retrieve required geodata files
 - [`north_arrow_classic()`](https://rimagination.github.io/ggmapcn/reference/compass-styles.md)
   [`compass_sinan()`](https://rimagination.github.io/ggmapcn/reference/compass-styles.md)
   [`north_arrow_solid()`](https://rimagination.github.io/ggmapcn/reference/compass-styles.md)
@@ -23,7 +23,8 @@
   [`compass_guiding_fish()`](https://rimagination.github.io/ggmapcn/reference/compass-styles.md)
   : Classic North Arrow Style (Minimal)
 - [`coord_proj()`](https://rimagination.github.io/ggmapcn/reference/coord_proj.md)
-  : Coordinate System with Transformed Limits for Custom Projections
+  : Coordinate System with Geographic Limits Automatically Transformed
+  to a Projection
 - [`geom_boundary_cn()`](https://rimagination.github.io/ggmapcn/reference/geom_boundary_cn.md)
   : Plot Boundaries of China
 - [`geom_buffer_cn()`](https://rimagination.github.io/ggmapcn/reference/geom_buffer_cn.md)
@@ -36,4 +37,5 @@
   : Convenient global basemap layer for ggplot2
 - [`ggmapcn`](https://rimagination.github.io/ggmapcn/reference/ggmapcn-package.md)
   [`ggmapcn-package`](https://rimagination.github.io/ggmapcn/reference/ggmapcn-package.md)
-  : ggmapcn: Customizable China and World Map Visualizations
+  : ggmapcn: China-Focused Mapping Tools with Optional Global Support
+  for ggplot2

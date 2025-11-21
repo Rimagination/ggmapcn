@@ -1,9 +1,9 @@
 # Add a Spatially-Aware Compass
 
-\`annotation_compass()\` adds a compass (north arrow) to a \`ggplot2\`
-map. It can be aligned to \*\*grid north\*\* (top of the plot) or
-\*\*true north\*\* (geographic north). Styles can be supplied as a grob
-or a function returning a grob (e.g., \`north_arrow_classic()\`,
+\`annotation_compass()\` adds a compass (north arrow) to a ggplot map.
+It can align to \*\*grid north\*\* (top of the panel) or \*\*true
+north\*\* (geographic north). Styles are provided as grobs or functions
+returning grobs (for example \`north_arrow_classic()\`,
 \`compass_sinan()\`).
 
 ## Usage
@@ -28,7 +28,7 @@ annotation_compass(
 
 - mapping, data:
 
-  Standard ggplot2 arguments (typically unused).
+  Standard ggplot2 layer arguments (typically unused).
 
 - ...:
 
@@ -36,12 +36,12 @@ annotation_compass(
 
 - location:
 
-  Character. One of \`"tl"\`, \`"tr"\`, \`"bl"\`, \`"br"\` indicating
-  top/bottom + left/right placement. Default: \`"bl"\`.
+  Character; one of \`"tl"\`, \`"tr"\`, \`"bl"\`, \`"br"\`, indicating
+  top/bottom and left/right placement. Default: \`"bl"\`.
 
 - which_north:
 
-  Character. \`"grid"\` (default) or \`"true"\`.
+  Character; \`"grid"\` (default) or \`"true"\`.
 
 - height, width:
 
@@ -53,27 +53,28 @@ annotation_compass(
 
 - rotation:
 
-  Numeric. Fixed rotation in degrees (counter-clockwise). When provided,
-  it overrides \`"grid"\`/\`"true"\` logic.
+  Numeric. Fixed rotation in degrees (counter-clockwise). When supplied,
+  it overrides \`"grid"\` / \`"true"\` behavior.
 
 - style:
 
-  A grob, \`gList\`/\`gTree\`, or a function returning a grob (e.g.,
-  \`north_arrow_classic()\`). Default: \`north_arrow_classic()\`.
+  A grob, \`gList\` / \`gTree\`, or a function returning a grob (for
+  example \`north_arrow_classic()\`). Default:
+  \`north_arrow_classic()\`.
 
 ## Value
 
-A \`ggplot2\` layer object.
+A ggplot2 layer object.
 
 ## Details
 
-\* \`"grid"\` north: compass points straight up in the plotting space
-(no CRS needed). \* \`"true"\` north: compass rotates toward geographic
-North Pole using the plot CRS. This requires a valid CRS available via
-\`coord_sf()\` or injected by setting \`layer\$geom_params\$crs\`. \*
-You can override any auto-rotation by providing \`rotation\` (degrees
-CCW). \* The layer is annotation-like: it draws once per panel using the
-panel bounds.
+\* \`"grid"\` north: the compass points straight up in plotting space
+(no CRS required). \* \`"true"\` north: the compass rotates toward the
+geographic North Pole using the plot CRS. This requires a valid CRS
+supplied by \`coord_sf()\` or injected via \`layer\$geom_params\$crs\`.
+\* A fixed \`rotation\` (degrees counter-clockwise) always overrides the
+automatic \`"grid"\` / \`"true"\` logic. \* The layer is
+annotation-like: it draws once per panel based on the panel bounds.
 
 ## See also
 
@@ -82,11 +83,11 @@ panel bounds.
 ## Examples
 
 ``` r
-nc <- sf::st_read(system.file("shape/nc.shp", package="sf"), quiet = TRUE)
+nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
 
-base <- ggplot2::ggplot() +
-  ggplot2::geom_sf(data = nc, fill = "grey90") +
-  ggplot2::theme_minimal()
+base <- ggplot() +
+  geom_sf(data = nc, fill = "grey90") +
+  theme_minimal()
 
 # Example 1: Grid north (no CRS required), bottom-left
 base + annotation_compass()
@@ -98,7 +99,6 @@ base + annotation_compass(location = "tl", style = compass_sinan())
 
 # Example 3: True north (requires a CRS)
 base +
-  ggplot2::coord_sf(crs = "+proj=lcc +lon_0=-100 +lat_1=33 +lat_2=45") +
-  annotation_compass(which_north = "true")
-
+  coord_sf(crs = "+proj=lcc +lon_0=-100 +lat_1=33 +lat_2=45") +
+  annotation_compass(location = "br", which_north = "true")
 ```

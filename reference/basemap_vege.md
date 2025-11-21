@@ -72,7 +72,6 @@ check_geodata(files = c("vege_1km_projected.tif"))
 #> cache   dir: /home/runner/.local/share/R/ggmapcn (writable = TRUE)
 #> Fetching 'vege_1km_projected.tif' into: /home/runner/work/_temp/Library/ggmapcn/extdata
 #>   Trying URL: https://cdn.jsdelivr.net/gh/Rimagination/ggmapcn-data@main/data/vege_1km_projected.tif
-#> 
 #> Saved to extdata: /home/runner/work/_temp/Library/ggmapcn/extdata/vege_1km_projected.tif
 #> [1] "/home/runner/work/_temp/Library/ggmapcn/extdata/vege_1km_projected.tif"
 

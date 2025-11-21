@@ -1,23 +1,11 @@
-# Check and Download Geospatial Data
+# Check and retrieve required geodata files
 
-Ensure required geodata files exist locally. The function searches and
-reuses existing files (when `overwrite = FALSE`) *before* attempting any
-network download, in the following order:
-
-1.  user-provided **local_dirs**
-
-2.  installed package **extdata** (even if not writable)
-
-3.  per-user cache **tools::R_user_dir("ggmapcn","data")**
-
-If no valid local file is found (or `overwrite = TRUE`), the function
-downloads from mirrors *in order*. By default, a China-friendly CDN
-(jsDelivr) is tried first, then GitHub raw.
-
-When internet access is unavailable or all mirrors fail, the function
-*fails gracefully*: it returns `NA` for the corresponding files and
-prints an informative message (no error or warning is thrown unless
-invalid file names are requested).
+Ensures that external geospatial data files required by ggmapcn are
+available locally. Existing files are reused when `overwrite = FALSE`;
+missing files are downloaded from remote mirrors when possible. If all
+mirrors fail (for example, due to network restrictions), the function
+fails gracefully by returning `NA` for the affected files without
+raising warnings or errors, in line with CRAN policy.
 
 ## Usage
 
@@ -39,77 +27,105 @@ check_geodata(
 
 - files:
 
-  Character vector of file names. If \`NULL\`, all known files are used.
+  Character vector of file names. If `NULL`, all known files are
+  processed.
 
 - overwrite:
 
-  Logical. Force re-download even if a non-empty file exists. Default
-  \`FALSE\`.
+  Logical; if `TRUE`, forces re-download even when a non-empty file
+  already exists.
 
 - quiet:
 
-  Logical. Suppress progress and messages. Default \`FALSE\`.
+  Logical; if `TRUE`, suppresses progress output and messages.
 
 - max_retries:
 
-  Integer. Max retry attempts per (mirror, file). Default \`3\`.
+  Integer; number of retry attempts per file and mirror.
 
 - mirrors:
 
-  Character vector of base URLs (end with \`/\`). Tried in order.
-  Default: jsDelivr first, then GitHub raw.
+  Character vector of base URLs ending with `/`. If `NULL`, package
+  defaults are used.
 
 - use_checksum:
 
-  Logical. Verify SHA-256 when available. Default \`TRUE\`.
+  Logical; if `TRUE`, verifies SHA-256 checksums when available.
 
 - checksums:
 
-  Named character vector of SHA-256 digests (names = file names). If
-  \`NULL\`, built-in defaults are used for known files; unknown files
-  skip verification.
+  Optional named character vector of SHA-256 digests. If `NULL`,
+  defaults derived from `known_files()` are used.
 
 - resume:
 
-  Logical. Try HTTP range resume if a \`.part\` exists (only for
-  writable dirs). Default \`TRUE\`.
+  Logical; whether to attempt HTTP range resume for partially downloaded
+  `.part` files.
 
 - local_dirs:
 
-  Character vector of directories to search *before* any download. If a
-  matching non-empty file is found and `overwrite = FALSE`, it is
-  returned immediately.
+  Character vector of directories to search prior to any download
+  attempt.
 
 ## Value
 
-Character vector of absolute file paths (NA for failures).
+A character vector of absolute file paths. Any file that cannot be
+obtained is returned as `NA`.
+
+## Details
+
+Because CRAN enforces strict limits on package size, several large
+datasets are hosted externally rather than bundled in the package.
+`check_geodata()` locates or retrieves these files using the following
+priority:
+
+1.  user-specified `local_dirs`
+
+2.  the package `extdata` directory
+
+3.  the per-user cache directory via
+    `tools::R_user_dir("ggmapcn", "data")`
+
+High-level mapping functions such as
+[`geom_mapcn()`](https://rimagination.github.io/ggmapcn/reference/geom_mapcn.md)
+and
+[`geom_world()`](https://rimagination.github.io/ggmapcn/reference/geom_world.md)
+call `check_geodata()` internally, so most users do not need to invoke
+it directly. However, running it explicitly can be useful to pre-fetch
+or verify required files.
+
+On networks that cannot reliably access `cdn.jsdelivr.net` or
+`raw.githubusercontent.com`, downloads may time out and the
+corresponding entries in the returned vector will be `NA`. In such
+cases, users may manually download the required files from the data
+repository and place them into a directory supplied through
+`local_dirs`, the package `extdata` directory, or the user cache
+directory so that downloads are skipped.
+
+Note: recent versions of
+[`geom_world()`](https://rimagination.github.io/ggmapcn/reference/geom_world.md)
+use the following world datasets: `world_countries.rda`,
+`world_coastlines.rda`, and `world_boundaries.rda`. The legacy
+`world.rda` file is no longer used.
 
 ## Examples
 
 ``` r
 if (FALSE) { # interactive() && curl::has_internet()
-# Basic: ensure default files exist (may download if not found locally)
+# Ensure that all default datasets are available (downloads only if needed)
 check_geodata()
 
-# Single file: reuse existing file if present (default overwrite = FALSE)
-check_geodata(files = "boundary.rda")
+# Datasets used by geom_world()
+check_geodata(c(
+  "world_countries.rda",
+  "world_coastlines.rda",
+  "world_boundaries.rda"
+))
 
-# Force re-download a file (e.g., suspected corruption)
-check_geodata(files = "boundary.rda", overwrite = TRUE)
+# China administrative boundaries
+check_geodata(c("China_sheng.rda", "China_shi.rda", "China_xian.rda"))
 
-# Search local folders first; skip download if a valid file is found there
-check_geodata(
-  files = c("boundary.rda", "world.rda"),
-  local_dirs = c(getwd())  # add more directories if needed
-)
-
-# Provide your own mirror order (first tried wins)
-check_geodata(
-  files = "boundary.rda",
-  mirrors = c(
-    "https://cdn.jsdelivr.net/gh/Rimagination/ggmapcn-data@main/data/",
-    "https://raw.githubusercontent.com/Rimagination/ggmapcn-data/main/data/"
-  )
-)
+# Reuse files manually placed in the working directory
+check_geodata("world_countries.rda", local_dirs = getwd())
 }
 ```

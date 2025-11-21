@@ -1,14 +1,13 @@
 # Add a Spatially-Aware Scale Bar
 
-\[annotation_scalebar()\] adds a projection-aware scale bar to a
-\[ggplot2::ggplot2-package\] map. It detects the map's CRS and chooses a
-readable width and units automatically. Robust fallbacks prevent
-"zero-length unit" errors and allow the scale bar to render even when
-CRS information is limited.
+\`annotation_scalebar()\` adds a projection-aware scale bar to a ggplot
+map. It reads the map's CRS (from \`coord_sf()\` or from the \`crs\`
+argument), chooses a readable width and units, and uses robust fallbacks
+so that the scale bar still draws even when CRS information is limited.
 
-Supported styles: - \`"segment"\` (minimal horizontal bar with ticks and
-labels) - \`"ticks"\` (baseline + vertical ticks) - \`"bar"\`
-(alternating black/white blocks)
+Supported styles: \* \`"segment"\` – minimal horizontal bar with ticks
+and labels (default) \* \`"ticks"\` – baseline with vertical ticks \*
+\`"bar"\` – alternating black/white blocks
 
 ## Usage
 
@@ -49,7 +48,7 @@ annotation_scalebar(
 
 - mapping, data:
 
-  Standard \`ggplot2\` layer arguments (typically unused).
+  Standard ggplot2 layer arguments (typically unused).
 
 - ...:
 
@@ -57,7 +56,7 @@ annotation_scalebar(
 
 - location:
 
-  Character. One of \`"bl"\`, \`"br"\`, \`"tr"\`, \`"tl"\`. Placement
+  Character. One of \`"bl"\`, \`"br"\`, \`"tr"\`, \`"tl"\`; placement
   relative to panel edges. Default: \`"bl"\`.
 
 - style:
@@ -67,47 +66,47 @@ annotation_scalebar(
 
 - fixed_width:
 
-  Numeric. Force the bar width in \*native CRS units\* (e.g., meters).
+  Numeric. Bar width in \*native CRS units\* (for example, meters).
   Overrides automatic width selection.
 
 - crs_unit:
 
-  Character. Units of the CRS (e.g., \`"m"\`, \`"ft"\`, \`"°"\`).
-  Usually auto-detected; set only when auto-detection is not possible.
+  Character. CRS units (for example \`"m"\`, \`"ft"\`, \`"°"\`). Usually
+  auto-detected; set only when auto-detection is not possible.
 
 - crs:
 
-  \[sf::st_crs\] object or proj string. Fallback CRS if the plot does
-  not provide one (e.g., when not using \[ggplot2::coord_sf()\]).
+  An \[sf::st_crs\] object or a PROJ string. Fallback CRS when the plot
+  does not provide one (for example, when not using \`coord_sf()\`).
 
 - display_unit:
 
-  Character. Force display units (e.g., \`"m"\`, \`"km"\`). Ignored when
-  \`geographic_mode = "degrees"\`.
+  Character. Display units for labels (for example \`"m"\`, \`"km"\`).
+  Ignored when \`geographic_mode = "degrees"\`.
 
 - unit_labels:
 
-  Named character vector for i18n, e.g., \`c(km = "Kilometers", m =
-  "Meters", "°" = "°")\`.
+  Named character vector for custom unit labels, e.g. \`c(km =
+  "Kilometers", m = "Meters", "°" = "°")\`.
 
 - width_hint:
 
-  Numeric in (0, 1\]. Target fraction of panel width used by the bar.
-  Default: \`0.25\`.
+  Numeric in (0, 1\]. Target fraction of the panel width used by the
+  bar. Default: \`0.25\`.
 
 - unit_category:
 
-  Character: \`"metric"\` (default) or \`"imperial"\`. Affects
-  auto-promotion (m→km, ft→mi).
+  Character. \`"metric"\` (default) or \`"imperial"\`. Affects automatic
+  promotion of units (m → km, ft → mi).
 
 - bar_cols:
 
-  Character(2). Colors for \`"bar"\` style alternating blocks. Default:
-  \`c("black", "white")\`.
+  Character vector of length two. Fill colours for \`"bar"\` style
+  blocks. Default: \`c("black", "white")\`.
 
 - line_width:
 
-  Numeric. Line thickness for outlines/ticks. Default: \`1\`.
+  Numeric. Line width for outlines and ticks. Default: \`1\`.
 
 - height:
 
@@ -120,8 +119,8 @@ annotation_scalebar(
 
 - text_pad:
 
-  \[grid::unit\]. Gap between bar and labels. Default: \`unit(0.15,
-  "cm")\`.
+  \[grid::unit\]. Gap between the bar and text labels. Default:
+  \`unit(0.15, "cm")\`.
 
 - text_cex, text_face, text_family:
 
@@ -129,83 +128,88 @@ annotation_scalebar(
 
 - tick_height:
 
-  Numeric in \[0,1\]. Relative height of interior ticks for \`"ticks"\`
+  Numeric in \[0, 1\]. Relative height of interior ticks for \`"ticks"\`
   style. Default: \`0.6\`.
 
 - segments:
 
-  Integer. For \`"segment"\` style, number of major divisions; if
+  Integer. For \`"segment"\` style, number of major divisions. If
   \`NULL\`, an automatic, readable choice is used.
 
 - label_show:
 
   Which ticks get labels: \`"ends"\` (default), \`"all"\`, \`"major"\`,
-  numeric frequency (e.g., \`2\`), or a numeric vector of indices
-  (1-based).
+  a numeric frequency (for example \`2\`), or a numeric vector of
+  1-based indices.
 
 - minor_tick_height:
 
-  Numeric in \[0,1\]. For \`"segment"\` style, minor ticks’ relative
-  height. Default: \`0\`.
+  Numeric in \[0, 1\]. For \`"segment"\` style, relative height of minor
+  ticks. Default: \`0\`.
 
 - geographic_mode:
 
-  Character. For \*\*geographic CRS\*\* only: - \`"approx_m"\`:
-  approximate meters/kilometers (default; warns about approximation) -
-  \`"degrees"\`: display degrees directly (no metric conversion)
+  Character, for \*\*geographic CRS\*\* only: \* \`"approx_m"\`:
+  approximate meters/kilometers (default; warns about approximation). \*
+  \`"degrees"\`: show raw degrees (no metric conversion).
 
 - text_col, line_col:
 
-  Colors for labels and outlines/ticks. Defaults: \`"black"\`,
+  Colours for text labels and outlines/ticks. Defaults: \`"black"\`,
   \`"black"\`.
 
 ## Value
 
-A \`ggplot2\` layer object representing the scale bar.
+A ggplot2 layer representing a scale bar.
 
 ## Details
 
-\* If a \*\*projected CRS\*\* is in use (e.g., UTM/AEQD with meters),
-the scale bar is accurate in native units. \* If a \*\*geographic
-CRS\*\* (EPSG:4326, degrees) is in use, distances vary with latitude.
-The \`geographic_mode\` parameter controls how to display the scale: -
-\`"approx_m"\` (default): approximate meters/kilometers using
-great-circle distance at the panel's center latitude. A warning is
-issued. - \`"degrees"\`: display raw degree units (e.g., \`1°\`) without
-converting to meters. \* You can also override the width with
-\`fixed_width\` (in native CRS units).
-
-## Dependencies
-
-Requires \*\*ggplot2\*\*, \*\*sf\*\*, and \*\*grid\*\*.
+\* With a \*\*projected CRS\*\* (for example UTM or AEQD in meters), the
+scale bar is measured in native map units and is as accurate as the
+projection. \* With a \*\*geographic CRS\*\* (EPSG:4326, degrees),
+distance depends on latitude. The \`geographic_mode\` argument controls
+how degrees are handled: - \`"approx_m"\` (default): approximate
+meters/kilometers using a great-circle distance at the panel’s
+mid-latitude (a warning is issued). - \`"degrees"\`: display raw degree
+units (for example \`1°\`) without converting. \* You can override the
+automatically chosen width with \`fixed_width\`, which is interpreted in
+native CRS units.
 
 ## Examples
 
 ``` r
 nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
 
-base_plot <- ggplot2::ggplot() +
-  ggplot2::geom_sf(data = nc, fill = "grey90") +
-  ggplot2::theme_minimal()
+base_plot <- ggplot() +
+  geom_sf(data = nc, fill = "grey90") +
+  theme_minimal()
 
 # Example 1: Projected CRS with a longer scale bar
-base_plot + ggplot2::coord_sf(crs = 32617) +
+base_plot +
+  coord_sf(crs = 32617) +
   annotation_scalebar(location = "bl", width_hint = 0.5)
 
 
-# Example 2: Ticks style, top-right (now correctly rendered)
-base_plot + ggplot2::coord_sf(crs = 32617) +
+# Example 2: Ticks style, top-right
+base_plot +
+  coord_sf(crs = 32617) +
   annotation_scalebar(location = "tr", style = "ticks")
 
 
 # Example 3: Geographic CRS (EPSG:4326), approximate meters (warns)
-base_plot + ggplot2::coord_sf(crs = 4326) +
+base_plot +
+  coord_sf(crs = 4326) +
   annotation_scalebar(location = "bl", geographic_mode = "approx_m")
 #> Warning: Scale bar is approximate in geographic CRS (degrees). Distances vary with latitude. For accuracy, use a projected CRS, or set `geographic_mode = "degrees"`.
 
 
-# Example 4: Force a 100 km bar with red lines (now works correctly)
-base_plot + ggplot2::coord_sf(crs = 32617) +
-  annotation_scalebar(location = "bl", fixed_width = 100000, display_unit = "km",
-                      line_col = "red")
+# Example 4: Force a 100 km bar with red outlines
+base_plot +
+  coord_sf(crs = 32617) +
+  annotation_scalebar(
+    location     = "bl",
+    fixed_width  = 100000,
+    display_unit = "km",
+    line_col     = "red"
+  )
 ```

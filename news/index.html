@@ -41,27 +41,23 @@
 <h2 class="pkg-version" data-toc-text="0.3.0" id="ggmapcn-030">ggmapcn 0.3.0<a class="anchor" aria-label="anchor" href="#ggmapcn-030"></a></h2>
 <div class="section level3">
 <h3 id="new-features-0-3-0">NEW FEATURES<a class="anchor" aria-label="anchor" href="#new-features-0-3-0"></a></h3>
-<p>Major upgrade to geom_world():</p>
-<ul><li>geom_world() is now a complete global basemap generator with bundled country polygons, coastlines, ocean layers, and administrative boundaries.</li>
-<li>Automatic antimeridian splitting using st_break_antimeridian(), respecting the central meridian of the target CRS.</li>
-<li>Projection-aware world outline generation for both geographic and projected CRS.</li>
-<li>Fully customizable visual components, including ocean, coastlines, country fill, administrative boundaries, and outer frame.</li>
-<li>Improved country filtering mode: when filter is supplied, only the selected countries are drawn, without ocean or background layers.</li>
-<li>More robust behavior under non-zero lon_0 and complex projections.</li>
-</ul><p>New annotation_graticule():</p>
-<ul><li>Adds a flexible global graticule generator with meridians, parallels, and edge labels.</li>
-<li>Graticules are generated in WGS84 and then transformed into the map CRS.</li>
-<li>Supports antimeridian splitting when lon_0 is non-zero.</li>
-<li>Labels can be placed on any combination of edges: left, right, top, bottom.</li>
-<li>Fine control over spacing, offsets, units, and line style.</li>
-<li>Works for both global and regional extents.</li>
+<ul><li>
+<strong>New function: <code><a href="../reference/annotation_graticule.html">annotation_graticule()</a></code></strong><br>
+Adds a projection-aware global graticule system with customizable spacing, labeling, and automatic antimeridian handling.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="major-improvements-0-3-0">MAJOR IMPROVEMENTS<a class="anchor" aria-label="anchor" href="#major-improvements-0-3-0"></a></h3>
+<ul><li><p><strong>Major redesign of <code><a href="../reference/geom_world.html">geom_world()</a></code></strong><br>
+Fully rebuilt global basemap system with bundled world polygons, coastlines, and boundaries; improved antimeridian handling; more reliable behavior under complex projections; and clearer, more consistent styling controls.</p></li>
+<li><p><strong>Major redesign of the external data workflow (<code><a href="../reference/check_geodata.html">check_geodata()</a></code>)</strong><br>
+The data-management system has been rewritten to meet CRAN size limits and improve reliability. Required datasets are now located or retrieved automatically using a priority search (local directories → package extdata → user cache), with retry, resume, mirror fallbacks, and fully graceful failure. All mapping functions now call this workflow internally.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="improvements-0-3-0">IMPROVEMENTS<a class="anchor" aria-label="anchor" href="#improvements-0-3-0"></a></h3>
-<ul><li>Improved CRS parsing and detection across functions, including robust extraction of lon_0 from PROJ strings.</li>
-<li>More stable interaction with coord_sf(), especially for global maps where expand and datum previously caused missing axis labels.</li>
-<li>Documentation has been expanded with clearer examples, including projection usage, filtering behaviour, and styling controls.</li>
-<li>Improved rendering reliability when handling projections such as Robinson, Mollweide, and shifted long-lat systems.</li>
+<ul><li>More robust CRS parsing, including reliable extraction of <code>lon_0</code> from PROJ strings.</li>
+<li>Better stability with <code><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf()</a></code>, especially for global projections and shifted central meridians.</li>
+<li>Updated documentation and examples, including usage of the new world dataset (<code>world_countries.rda</code>, <code>world_coastlines.rda</code>, <code>world_boundaries.rda</code>).</li>
+<li>More consistent rendering across projections such as Robinson, Mollweide, and shifted longitude systems.</li>
 </ul></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

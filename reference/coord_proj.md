@@ -1,15 +1,20 @@
-# Coordinate System with Transformed Limits for Custom Projections
+# Coordinate System with Geographic Limits Automatically Transformed to a Projection
 
-\`coord_proj\` is a wrapper around
-[`ggplot2::coord_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html).
-It simplifies specifying map limits (\`xlim\`, \`ylim\`) in longitude
-and latitude (WGS84 CRS) and automatically transforms them into the
-specified CRS for accurate projections.
+\`coord_proj()\` extends
+[`ggplot2::coord_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html)
+by allowing users to specify map limits (\`xlim\`, \`ylim\`) in
+geographic coordinates (longitude/latitude, WGS84). These limits are
+automatically transformed into the target projected CRS, ensuring that
+maps display the intended region correctly under any projection.
 
-This function extends the functionality of
-[`coord_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html) to
-seamlessly handle user-specified geographic boundaries in any
-projection, ensuring accurate mapping.
+This wrapper is particularly useful because
+[`coord_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html)
+interprets \`xlim\` and \`ylim\` as \*projected\* coordinates. Passing
+longitude/latitude directly to
+[`coord_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html)
+results in incorrect map extents unless the CRS is WGS84.
+\`coord_proj()\` provides a safe, projection-aware workflow that
+requires no manual calculation of projected bounding boxes.
 
 ## Usage
 
@@ -28,80 +33,74 @@ coord_proj(
 
 - crs:
 
-  A character string specifying the coordinate reference system (CRS)
-  for the projection (e.g., \`"EPSG:4326"\` or custom projections like
-  \`"+proj=merc"\`).
+  Character string specifying the output coordinate reference system
+  (e.g., \`"EPSG:4326"\`, \`"EPSG:3857"\`, or a PROJ string such as
+  \`"+proj=aeqd +lat_0=35 +lon_0=105"\`). Required.
 
 - xlim:
 
-  Longitude range (in degrees) to display, as a numeric vector of length
-  2.
+  Numeric vector of length 2. Longitude limits in degrees (WGS84).
 
 - ylim:
 
-  Latitude range (in degrees) to display, as a numeric vector of length
-  2.
+  Numeric vector of length 2. Latitude limits in degrees (WGS84).
 
 - expand:
 
-  Logical, whether to expand the plot limits. Default is \`TRUE\`.
+  Logical. Passed to
+  [`coord_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html).
+  Default: \`TRUE\`.
 
 - default_crs:
 
-  A character string specifying the CRS of the input \`xlim\` and
-  \`ylim\`. Default is \`"EPSG:4326"\`.
+  Character. CRS of \`xlim\` and \`ylim\`. Default: \`"EPSG:4326"\`.
 
 - ...:
 
   Additional arguments passed to
-  [`ggplot2::coord_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html).
+  [`coord_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html).
 
 ## Value
 
-A ggplot2 `coord_sf` object with the transformed limits.
+A
+[`ggplot2::coord_sf`](https://ggplot2.tidyverse.org/reference/ggsf.html)
+object with automatically transformed limits.
 
 ## See also
 
 [`ggplot2::coord_sf`](https://ggplot2.tidyverse.org/reference/ggsf.html),
-[`geom_world`](https://rimagination.github.io/ggmapcn/reference/geom_world.md)
+[`geom_world`](https://rimagination.github.io/ggmapcn/reference/geom_world.md),
+[`geom_mapcn`](https://rimagination.github.io/ggmapcn/reference/geom_mapcn.md)
 
 ## Examples
 
 ``` r
-# World map with default projection and limits
-ggplot() +
-  geom_world() +
-  coord_proj(
-    crs = "+proj=longlat +datum=WGS84",
-    xlim = c(-180, 180),
-    ylim = c(-90, 90),
-    expand=FALSE
-  ) +
-  theme_minimal()
-
-
-# Focused view with Azimuthal Equidistant projection
+# Example 1: China (AEQD projection) with geographic limits
 china_proj <- "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs"
+
 ggplot() +
-  geom_world(fill = "lightblue") +
+  geom_world(crs = china_proj) +
   coord_proj(
     crs = china_proj,
     xlim = c(60, 140),
     ylim = c(-10, 50)
   ) +
   theme_minimal()
-#> Warning: Duplicated aesthetics after name standardisation: fill
+#> Spherical geometry (s2) switched off
+#> Spherical geometry (s2) switched on
 
 
-# Display a small map of the South China Sea Islands with a custom projection
+
+# Example 2: South China Sea region using geom_mapcn + geom_boundary_cn
 ggplot() +
+  geom_mapcn(fill = "white") +
   geom_boundary_cn() +
   theme_bw() +
   coord_proj(
     crs = china_proj,
     expand = FALSE,
-    xlim = c(105, 123),
-    ylim = c(2, 23)
+    xlim = c(105, 126),   # lon range
+    ylim = c(2, 23)       # lat range
   )
 
 ```

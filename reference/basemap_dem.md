@@ -74,20 +74,15 @@ check_geodata(files = c("gebco_2024_China.tif", "China_mask.gpkg"))
 #> cache   dir: /home/runner/.local/share/R/ggmapcn (writable = TRUE)
 #> Fetching 'gebco_2024_China.tif' into: /home/runner/work/_temp/Library/ggmapcn/extdata
 #>   Trying URL: https://cdn.jsdelivr.net/gh/Rimagination/ggmapcn-data@main/data/gebco_2024_China.tif
-#> 
 #> Download attempt 1 for 'gebco_2024_China.tif' failed: HTTP response code said error [cdn.jsdelivr.net]:
 #> The requested URL returned error: 403
-#> 
 #> Download attempt 2 for 'gebco_2024_China.tif' failed: HTTP response code said error [cdn.jsdelivr.net]:
 #> The requested URL returned error: 403
-#> 
 #> Download attempt 3 for 'gebco_2024_China.tif' failed: HTTP response code said error [cdn.jsdelivr.net]:
 #> The requested URL returned error: 403
-#> 
 #> Giving up on 'gebco_2024_China.tif' from URL: https://cdn.jsdelivr.net/gh/Rimagination/ggmapcn-data@main/data/gebco_2024_China.tif (last error: HTTP response code said error [cdn.jsdelivr.net]:
 #> The requested URL returned error: 403).
 #>   Trying URL: https://raw.githubusercontent.com/Rimagination/ggmapcn-data/main/data/gebco_2024_China.tif
-#> 
 #> Saved to extdata: /home/runner/work/_temp/Library/ggmapcn/extdata/gebco_2024_China.tif
 #> Using existing extdata file: /home/runner/work/_temp/Library/ggmapcn/extdata/China_mask.gpkg
 #> [1] "/home/runner/work/_temp/Library/ggmapcn/extdata/gebco_2024_China.tif"

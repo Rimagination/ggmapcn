@@ -2,8 +2,8 @@
 
 Draw China's administrative boundaries and optional map decorations
 (compass and scale bar). Each boundary category (mainland, coastline,
-provinces, etc.) can be styled independently. The data are reprojected
-to the specified CRS before plotting.
+provinces, etc.) can be styled independently. The boundary data are
+reprojected to the specified CRS before plotting.
 
 ## Usage
 
@@ -13,22 +13,22 @@ geom_boundary_cn(
   compass = FALSE,
   scale = FALSE,
   mainland_color = "black",
-  mainland_size = 0.5,
+  mainland_size = 0.2,
   mainland_linetype = "solid",
   coastline_color = "blue",
-  coastline_size = 0.3,
+  coastline_size = 0.1,
   coastline_linetype = "solid",
   ten_segment_line_color = "black",
-  ten_segment_line_size = 0.5,
+  ten_segment_line_size = 0.2,
   ten_segment_line_linetype = "solid",
   SAR_boundary_color = "grey40",
-  SAR_boundary_size = 0.5,
+  SAR_boundary_size = 0.1,
   SAR_boundary_linetype = "dashed",
   undefined_boundary_color = "black",
-  undefined_boundary_size = 0.5,
+  undefined_boundary_size = 0.2,
   undefined_boundary_linetype = "longdash",
   province_color = "transparent",
-  province_size = 0.3,
+  province_size = 0.1,
   province_linetype = "solid",
   ...
 )
@@ -59,7 +59,7 @@ geom_boundary_cn(
 
 - mainland_size:
 
-  Numeric. Line width for the mainland boundary. Default: \`0.5\`.
+  Numeric. Line width for the mainland boundary. Default: \`0.2\`.
 
 - mainland_linetype:
 
@@ -71,7 +71,7 @@ geom_boundary_cn(
 
 - coastline_size:
 
-  Numeric. Line width for coastlines. Default: \`0.3\`.
+  Numeric. Line width for coastlines. Default: \`0.1\`.
 
 - coastline_linetype:
 
@@ -84,7 +84,7 @@ geom_boundary_cn(
 
 - ten_segment_line_size:
 
-  Numeric. Line width for the ten-segment line. Default: \`0.5\`.
+  Numeric. Line width for the ten-segment line. Default: \`0.2\`.
 
 - ten_segment_line_linetype:
 
@@ -97,7 +97,7 @@ geom_boundary_cn(
 
 - SAR_boundary_size:
 
-  Numeric. Line width for SAR boundaries. Default: \`0.5\`.
+  Numeric. Line width for SAR boundaries. Default: \`0.1\`.
 
 - SAR_boundary_linetype:
 
@@ -110,7 +110,7 @@ geom_boundary_cn(
 
 - undefined_boundary_size:
 
-  Numeric. Line width for undefined boundaries. Default: \`0.5\`.
+  Numeric. Line width for undefined boundaries. Default: \`0.2\`.
 
 - undefined_boundary_linetype:
 
@@ -124,7 +124,7 @@ geom_boundary_cn(
 
 - province_size:
 
-  Numeric. Line width for provincial boundaries. Default: \`0.3\`.
+  Numeric. Line width for provincial boundaries. Default: \`0.1\`.
 
 - province_linetype:
 
@@ -137,7 +137,8 @@ geom_boundary_cn(
 
 ## Value
 
-A list of \`ggplot2\` layers.
+A list of \`ggplot2\` layers. If the boundary dataset cannot be
+obtained, an empty list is returned.
 
 ## Examples
 
@@ -157,21 +158,20 @@ ggplot() +
 # Example 3: Custom styling
 ggplot() +
   geom_boundary_cn(
-    coastline_color = "steelblue",
-    province_color = "grey70",
+    coastline_color  = "steelblue",
+    province_color   = "grey70",
     province_linetype = "dashed"
   ) +
   theme_minimal()
 
 
-# Example 4: Advanced usage with a custom projected CRS
-Albers <-  "+proj=aea +lat_1=25 +lat_2=47 +lat_0=0 +lon_0=105 +x_0=0 +y_0=0 +
-+ datum=WGS84 +units=m +no_defs"
+# Example 4: Advanced usage with a custom projected CRS (Albers)
+albers_cn <- "+proj=aea +lat_1=25 +lat_2=47 +lat_0=0 +lon_0=105 +datum=WGS84 +units=m +no_defs"
 
 ggplot() +
-  geom_boundary_cn(crs = Albers) +
+  geom_boundary_cn(crs = albers_cn) +
   annotation_compass(location = "tl", which_north = "true") +
   annotation_scalebar(location = "bl", fixed_width = 500000, display_unit = "km") +
-  coord_sf(crs = Albers) +
+  coord_sf(crs = albers_cn) +
   theme_minimal()
 ```
