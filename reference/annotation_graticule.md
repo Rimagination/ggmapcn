@@ -144,7 +144,6 @@ ggplot() +
   ) +
   coord_sf(crs = "+proj=longlat +datum=WGS84") +
   theme_void()
-#> Warning: geom_world() has been redesigned; its interface and defaults have changed compared to earlier development versions. See ?geom_world for details.
 #> Spherical geometry (s2) switched off
 #> Spherical geometry (s2) switched on
 
@@ -162,8 +161,6 @@ ggplot() +
   ) +
   coord_sf(crs = crs_robin_150) +
   theme_void()
-#> Spherical geometry (s2) switched off
-#> Spherical geometry (s2) switched on
 #> Spherical geometry (s2) switched off
 #> although coordinates are longitude/latitude, st_intersection assumes that they
 #> are planar

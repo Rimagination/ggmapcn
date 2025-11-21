@@ -25,8 +25,6 @@ plots the map using the WGS84 standard.
 ggplot() +
   geom_world() +
   theme_void()
-#> Warning: geom_world() has been redesigned; its interface and defaults have
-#> changed compared to earlier development versions. See ?geom_world for details.
 ```
 
 ![A standard world map using WGS84 projection with default
@@ -110,8 +108,6 @@ ggplot() +
   geom_world(crs = crs_robin) +
   coord_sf(crs = crs_robin) +
   theme_void()
-#> Spherical geometry (s2) switched off
-#> Spherical geometry (s2) switched on
 ```
 
 ![A world map using the Robinson
@@ -131,8 +127,6 @@ ggplot() +
   geom_world(crs = crs_robin_150) +
   coord_sf(crs = crs_robin_150) +
   theme_void()
-#> Spherical geometry (s2) switched off
-#> Spherical geometry (s2) switched on
 ```
 
 ![A Robinson projection world map centered on the Pacific Ocean (150
@@ -231,8 +225,6 @@ ggplot() +
   ) +
   coord_sf(crs = crs_robin) +
   theme_void()
-#> Spherical geometry (s2) switched off
-#> Spherical geometry (s2) switched on
 #> Spherical geometry (s2) switched off
 #> Spherical geometry (s2) switched on
 ```

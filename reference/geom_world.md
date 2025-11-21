@@ -47,7 +47,7 @@ geom_world(
 - crs:
 
   Coordinate reference system for the basemap. Accepts a numeric EPSG
-  code, a PROJ string, or an \`sf::crs\` object. The default is
+  code, a PROJ string, or an \[sf::crs\] object. The default is
   \`4326\`, corresponding to WGS84 longitude–latitude.
 
 - filter_attribute:
@@ -173,32 +173,32 @@ geom_world(
 
 - ...:
 
-  Additional arguments passed to \`ggplot2::geom_sf()\`.
+  Additional arguments passed to \[ggplot2::geom_sf()\] for the country
+  polygons layer.
 
 ## Value
 
-A list of \`ggplot2\` layers representing the world map (or a filtered
+A list of \[ggplot2\] layers representing the world map (or a filtered
 subset), ready to be added to a ggplot.
 
 ## Details
 
 This function supersedes an earlier, much simpler version of
-\`geom_world()\` that was a thin wrapper around \`ggplot2::geom_sf()\`
-and required users to supply their own map data. The current
-implementation:
+\`geom_world()\` that was a thin wrapper around \[ggplot2::geom_sf()\]
+and required users to supply their own map data.
+
+The current implementation:
 
 \- always uses bundled world map data (countries, coastlines,
-boundaries), - exposes dedicated arguments for ocean fill, coastlines,
-and different types of administrative boundaries, - and has a different
-argument set and default behaviour compared to the original version.
+boundaries); - exposes dedicated arguments for ocean fill, coastlines,
+and different types of administrative boundaries; - builds a
+projection-aware global outline for the ocean/frame layer: rectangular
+in geographic CRSs, and a convex “world hull” in projected CRSs (e.g.
+Robinson, Mollweide).
 
-If you are upgrading from an older development version of
-\*\*ggmapcn\*\*, please review your existing calls to \`geom_world()\`
-and the examples below, as some arguments have been renamed or removed.
-
-To silence the one-time redesign warning in a session, you can set:
-
-“\`r options(ggmapcn.geom_world_silence_redesign = TRUE) “\`
+Compared to early development versions of \*\*ggmapcn\*\*, some
+arguments and defaults have changed. Please refer to this help page when
+upgrading old code that used \`geom_world()\`.
 
 ## Examples
 
@@ -219,8 +219,7 @@ ggplot() +
     expand = FALSE,
     datum  = sf::st_crs(4326)
   ) +
-  theme_minimal() +
-  theme(panel.ontop = TRUE)
+  theme_minimal()
 
 
 # 3. Without ocean layer
@@ -241,18 +240,18 @@ ggplot() +
   geom_world(crs = crs_robin_150) +
   coord_sf(crs = crs_robin_150) +
   theme_void()
-#> Spherical geometry (s2) switched off
-#> Spherical geometry (s2) switched on
 
 
 # 6. Highlight China
 ggplot() +
   geom_world(
-    country_fill = "grey95", show_frame   = TRUE) +
+    country_fill = "grey95",
+    show_frame   = TRUE
+  ) +
   geom_world(
-    filter_attribute = "SOC",
-    filter           = "CHN",
-    country_fill     = "red",
+    filter_attribute       = "SOC",
+    filter                 = "CHN",
+    country_fill           = "red",
     country_boundary_color = "black"
   ) +
   theme_void()

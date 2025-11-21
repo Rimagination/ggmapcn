@@ -86,8 +86,6 @@ ggplot() +
     ylim = c(-10, 50)
   ) +
   theme_minimal()
-#> Spherical geometry (s2) switched off
-#> Spherical geometry (s2) switched on
 
 
 

@@ -89,9 +89,7 @@ standard.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/geom_world.html">geom_world</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: geom_world() has been redesigned; its interface and defaults have</span></span>
-<span><span class="co">#&gt; changed compared to earlier development versions. See ?geom_world for details.</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="World_Map_Overview_files/figure-html/basic_map-1.png" class="r-plt" alt="A standard world map using WGS84 projection with default styling." width="672"></p>
 </div>
 <div class="section level3">
@@ -157,9 +155,7 @@ projections. It automatically projects the underlying polygons.</p>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/geom_world.html">geom_world</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="va">crs_robin</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="va">crs_robin</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Spherical geometry (s2) switched off</span></span>
-<span><span class="co">#&gt; Spherical geometry (s2) switched on</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="World_Map_Overview_files/figure-html/robinson-1.png" class="r-plt" alt="A world map using the Robinson projection." width="672"></p>
 </div>
 <div class="section level3">
@@ -174,9 +170,7 @@ the polygon splitting automatically.</p>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/geom_world.html">geom_world</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="va">crs_robin_150</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="va">crs_robin_150</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Spherical geometry (s2) switched off</span></span>
-<span><span class="co">#&gt; Spherical geometry (s2) switched on</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="World_Map_Overview_files/figure-html/robin_pacific-1.png" class="r-plt" alt="A Robinson projection world map centered on the Pacific Ocean (150 degrees East)." width="672"></p>
 </div>
 <div class="section level3">
@@ -262,8 +256,6 @@ CRS. * Allow for custom line spacing (<code>lon_step</code>,
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="va">crs_robin</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Spherical geometry (s2) switched off</span></span>
-<span><span class="co">#&gt; Spherical geometry (s2) switched on</span></span>
 <span><span class="co">#&gt; Spherical geometry (s2) switched off</span></span>
 <span><span class="co">#&gt; Spherical geometry (s2) switched on</span></span></code></pre></div>
 <p><img src="World_Map_Overview_files/figure-html/graticule_robin-1.png" class="r-plt" alt="A Robinson projection map with curved graticule lines." width="672"></p>
