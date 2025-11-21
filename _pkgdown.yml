@@ -17,8 +17,10 @@ navbar:
       menu:
         - text: Adding Basic Map
           href: articles/Adding_Basic_Map.html
-        - text: Adding Spatial Data
-          href: articles/Adding_Spatial_Data.html
+        - text: Advanced Scalebar and Compass
+          href: articles/Advanced_Scalebar_and_Compass.html
+        - text: World Map Overview
+          href: articles/World_Map_Overview.html
     - text: News
       href: news/index.html
   right:

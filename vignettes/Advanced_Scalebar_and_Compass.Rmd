@@ -2,9 +2,9 @@
 title: "Advanced scale bar and compass annotations"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Advanced scale bar and compass}
+  %\VignetteIndexEntry{Advanced scale bar and compass annotations}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}
@@ -18,32 +18,42 @@ knitr::opts_chunk$set(
 
 ## 1. Setup
 
-This vignette shows how to use the advanced options in
-`annotation_scalebar()` and `annotation_compass()` from **ggmapcn**.
+This vignette demonstrates how to use the advanced customization options available in `annotation_scalebar()` and `annotation_compass()` from the **ggmapcn** package. 
 
-```{r}
+We will use the standard North Carolina shapefile provided by the `sf` package as our base map.
+
+```{r setup, fig.alt="A base map of North Carolina with grey fill and minimal theme."}
 library(ggplot2)
 library(sf)
 library(ggmapcn)
 
+# Load example data
 nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
 
+# Create a base map object
 base_geo <- ggplot() +
   geom_sf(data = nc, fill = "grey90", color = "grey40") +
   theme_minimal()
+
 base_geo
 ```
 
-## 2. Basic scale bar in a projected CRS
+## 2. Scale bars in a projected CRS
 
-```{r}
+Scale bars are most accurate when used with a projected Coordinate Reference System (CRS). Here, we project the map to EPSG:32617 (UTM Zone 17N).
+
+You can control the position using `location` (e.g., `"bl"` for bottom-left, `"tr"` for top-right) and adjust the relative width using `width_hint`.
+
+```{r proj_scale, fig.alt="Two maps of North Carolina. The first shows a scale bar in the bottom left. The second shows a wider scale bar in the top right."}
 base_proj <- base_geo +
   coord_sf(crs = 32617) +
   theme(axis.title = element_blank())
 
+# Default scale bar at bottom-left
 base_proj +
   annotation_scalebar(location = "bl")
 
+# Top-right scale bar with custom width hint
 base_proj +
   annotation_scalebar(
     location   = "tr",
@@ -52,42 +62,62 @@ base_proj +
 ```
 
 ## 3. Scale bar styles
-```{r}
+
+`annotation_scalebar()` supports multiple styles: `"segment"`, `"ticks"`, and `"bar"`. You can also customize colors and text visibility.
+
+```{r styles_1, fig.alt="A map showing the 'segment' style scale bar."}
+# 1. Segment style
 p_segment <- base_proj +
   annotation_scalebar(
     location = "bl",
     style    = "segment",
     label_show = "all"
   )
+p_segment
+```
 
+```{r styles_2, fig.alt="A map showing the 'ticks' style scale bar."}
+# 2. Ticks style
 p_ticks <- base_proj +
   annotation_scalebar(
     location = "br",
     style    = "ticks"
   )
+p_ticks
+```
 
+```{r styles_3, fig.alt="A map showing the 'bar' style scale bar with black and white blocks."}
+# 3. Bar style with custom colors
 p_bar <- base_proj +
   annotation_scalebar(
     location = "tl",
     style    = "bar",
     bar_cols = c("black", "white")
   )
-
-p_segment
-p_ticks
 p_bar
+```
 
+You can also set a fixed distance width (e.g., 100km) and change the line colors:
+
+```{r styles_custom, fig.alt="A map with a red scale bar fixed to 100km length."}
 base_proj +
   annotation_scalebar(
     location     = "bl",
-    fixed_width  = 100000,
+    fixed_width  = 100000,   # 100 km in meters
     display_unit = "km",
     line_col     = "red"
   )
 ```
 
-## 4. Geographic CRS: approx_m vs degrees
-```{r}
+## 4. Geographic CRS: Approx distance vs. Degrees
+
+When plotting unprojected data (Latitude/Longitude, EPSG:4326), accurate distance calculation is difficult.
+
+* `geographic_mode = "approx_m"`: Attempts to calculate distances in meters (approximation).
+* `geographic_mode = "degrees"`: Shows the scale in decimal degrees.
+
+```{r geo_mode, fig.alt="Two maps comparing scale bars. One shows distance in kilometers, the other in degrees."}
+# Approximate meters
 base_geo +
   coord_sf(crs = 4326) +
   annotation_scalebar(
@@ -95,6 +125,7 @@ base_geo +
     geographic_mode = "approx_m"
   )
 
+# Degrees
 base_geo +
   coord_sf(crs = 4326) +
   annotation_scalebar(
@@ -103,30 +134,42 @@ base_geo +
   )
 ```
 
-## 5. Basic compass (grid north)
-```{r}
+## 5. Basic compass (Grid North)
+
+Add a north arrow using `annotation_compass()`. You can adjust the size and padding using `grid::unit()`.
+
+```{r compass_basic, fig.alt="Two maps showing basic north arrows. One is standard size, the other is larger with padding."}
+# Default classic arrow
 base_geo +
   annotation_compass(
     location = "tl",
     style    = north_arrow_classic()
   )
 
+# Custom size and padding
 base_geo +
   annotation_compass(
     location = "tl",
-    height   = grid::unit(1.8, "cm"),
-    width    = grid::unit(1.8, "cm"),
-    pad_x    = grid::unit(0.7, "cm"),
-    pad_y    = grid::unit(0.7, "cm")
+    height   = grid::unit(0.8, "cm"),
+    width    = grid::unit(0.8, "cm"),
+    pad_x    = grid::unit(0.3, "cm"),
+    pad_y    = grid::unit(0.3, "cm")
   )
 ```
 
-## 6. True north (requires projection)
-```{r}
+## 6. True North vs. Grid North
+
+In many projections (like Lambert Conformal Conic), "Grid North" (straight up on the page) is different from "True North" (the direction to the North Pole).
+
+Use `which_north = "true"` to automatically calculate the convergence angle and rotate the compass.
+
+```{r true_north, fig.alt="Two maps demonstrating north arrows. The first shows a rotated compass rose pointing to True North. The second shows a manually rotated Grid North arrow."}
+# Define a Lambert Conformal Conic projection
 base_lcc <- base_geo +
   coord_sf(crs = "+proj=lcc +lon_0=-100 +lat_1=33 +lat_2=45") +
   theme(axis.title = element_blank())
 
+# True North (automatically rotated)
 base_lcc +
   annotation_compass(
     which_north = "true",
@@ -134,6 +177,7 @@ base_lcc +
     style       = compass_rose_simple()
   )
 
+# Grid North with manual rotation
 base_lcc +
   annotation_compass(
     which_north = "grid",
@@ -144,7 +188,10 @@ base_lcc +
 ```
 
 ## 7. Compass styles
-```{r}
+
+**ggmapcn** provides various styles, including the unique `compass_sinan()` (referencing the ancient Chinese compass).
+
+```{r compass_styles, fig.alt="Three maps showing different compass styles: Classic, Rose, and Sinan (Si Nan)."}
 p_classic <- base_proj +
   annotation_compass(
     location = "tl",
@@ -168,8 +215,11 @@ p_rose
 p_sinan
 ```
 
-## 8. Combine scale bar + compass
-```{r}
+## 8. Combining scale bar and compass
+
+Finally, you can layer both annotations onto a single map.
+
+```{r combine, fig.alt="A final map combining a ticks-style scale bar at the bottom left and a compass rose at the top left."}
 base_proj +
   annotation_scalebar(
     location   = "bl",

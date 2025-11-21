@@ -2,9 +2,9 @@
 title: "World map overview with geom_world()"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{World map overview}
+  %\VignetteIndexEntry{World map overview with geom_world()}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include = FALSE}
@@ -21,18 +21,20 @@ library(ggmapcn)
 
 ## 1. Introduction
 
-`geom_world()` provides a convenient global basemap for `ggplot2`.  
-It uses bundled country polygons, coastlines, and political/administrative
-boundaries, and automatically handles CRS transformation and antimeridian
-splitting.
+`geom_world()` provides a convenient global base map for `ggplot2`. It comes bundled with country polygons, coastlines, and political/administrative boundaries. 
 
----
+Key features include:
+* **Automatic CRS transformation**: Seamlessly projects data to your desired Coordinate Reference System.
+* **Antimeridian splitting**: Handles the "Pacific wrap-around" issue automatically when changing central meridians.
+* **Layer control**: Toggles for ocean background and administrative boundaries.
 
 ## 2. Basic usage
 
 ### 2.1 Default WGS84 map
 
-```{r}
+By default, `geom_world()` plots the map using the WGS84 standard.
+
+```{r basic_map, fig.alt="A standard world map using WGS84 projection with default styling."}
 ggplot() +
   geom_world() +
   theme_void()
@@ -40,7 +42,9 @@ ggplot() +
 
 ### 2.2 Explicit CRS specification
 
-```{r}
+You can specify the CRS directly within the function.
+
+```{r explicit_crs, fig.alt="A world map explicitly set to EPSG:4326 projection."}
 ggplot() +
   geom_world(crs = 4326) +
   coord_sf(crs = 4326) +
@@ -49,7 +53,9 @@ ggplot() +
 
 ### 2.3 Hiding the ocean layer
 
-```{r}
+For a cleaner look, you can remove the blue ocean background and change the land fill color.
+
+```{r hide_ocean, fig.alt="A world map with the blue ocean layer removed, showing grey countries on a white background."}
 ggplot() +
   geom_world(
     show_ocean   = FALSE,
@@ -60,7 +66,9 @@ ggplot() +
 
 ### 2.4 Hiding administrative boundaries
 
-```{r}
+If you only need continental landmasses without internal country borders, set `show_admin_boundaries = FALSE`.
+
+```{r hide_admin, fig.alt="A world map showing continental landmasses without internal country borders."}
 ggplot() +
   geom_world(
     show_admin_boundaries = FALSE,
@@ -69,9 +77,9 @@ ggplot() +
   theme_minimal()
 ```
 
-Combining both:
+Combining both options creates a minimalist silhouette map:
 
-```{r}
+```{r minimal_map, fig.alt="A minimalist world map showing only land shapes with no ocean or borders."}
 ggplot() +
   geom_world(
     show_ocean            = FALSE,
@@ -80,13 +88,13 @@ ggplot() +
   theme_minimal()
 ```
 
----
-
 ## 3. Projections
+
+`geom_world()` shines when working with different map projections. It automatically projects the underlying polygons.
 
 ### 3.1 Robinson projection
 
-```{r}
+```{r robinson, fig.alt="A world map using the Robinson projection."}
 crs_robin <- "+proj=robin +datum=WGS84"
 
 ggplot() +
@@ -97,7 +105,9 @@ ggplot() +
 
 ### 3.2 Robinson projection centred at 150°E
 
-```{r}
+Changing the central meridian (centering the map on the Pacific) is often difficult in standard ggplot2. `geom_world()` handles the polygon splitting automatically.
+
+```{r robin_pacific, fig.alt="A Robinson projection world map centered on the Pacific Ocean (150 degrees East)."}
 crs_robin_150 <- "+proj=robin +lon_0=150 +datum=WGS84"
 
 ggplot() +
@@ -108,7 +118,7 @@ ggplot() +
 
 ### 3.3 Geographic CRS with shifted central meridian
 
-```{r}
+```{r wgs84_pacific, fig.alt="A rectangular projection world map centered on 150 degrees East."}
 crs_wgs84_150 <- "+proj=longlat +datum=WGS84 +lon_0=150"
 
 ggplot() +
@@ -117,31 +127,17 @@ ggplot() +
   theme_void()
 ```
 
----
-
 ## 4. Axis labels and gridlines
 
-`coord_sf()` may show gridlines but hide axis labels.  
-This often occurs when:
-
-- `expand = TRUE` extends the map beyond ±180° or ±90°  
-- the CRS lacks a geographic `datum`  
-- layers (e.g., ocean polygons) are drawn above the panel grid  
+A common issue with `coord_sf()` is that gridlines appear, but axis labels (coordinates) disappear. This often occurs when:
+* `expand = TRUE` extends the map beyond ±180° or ±90°.
+* The CRS lacks a geographic datum.
+* Solid layers (like the ocean polygon) are drawn *on top* of the panel grid.
 
 **Recommended pattern for reliable axis labels:**
+Use `expand = FALSE` inside `coord_sf` and set `panel.ontop = TRUE` in the theme.
 
-```
-coord_sf(
-  crs    = 4326,
-  expand = FALSE,
-  datum  = sf::st_crs(4326)
-) +
-theme(panel.ontop = TRUE)
-```
-
-Example:
-
-```{r}
+```{r axis_labels, fig.alt="A world map with clear longitude and latitude axis labels and gridlines drawn on top of the land layer."}
 ggplot() +
   geom_world() +
   coord_sf(
@@ -153,28 +149,15 @@ ggplot() +
   theme(panel.ontop = TRUE)
 ```
 
----
-
 ## 5. Graticule annotation (meridians & parallels)
 
-`annotation_graticule()` draws meridians and parallels as annotation
-layers.  
-The graticules are:
-
-- generated in WGS84 (EPSG:4326)  
-- optionally split at the antimeridian  
-- then transformed to the map CRS  
-
-This gives full control over:
-
-- line spacing (`lon_step`, `lat_step`)  
-- label placement  
-- behaviour under different projections  
-- regional windows defined by `xlim`/`ylim`  
+`annotation_graticule()` provides precise control over meridians and parallels. Unlike standard gridlines, these are annotation layers that:
+* Are generated in WGS84 and transformed to your target CRS.
+* Allow for custom line spacing (`lon_step`, `lat_step`) and label placement.
 
 ### 5.1 Global WGS84 map with graticules
 
-```{r}
+```{r graticule_global, fig.alt="A world map with custom graticule lines labeled every 60 degrees longitude and 30 degrees latitude."}
 ggplot() +
   geom_world() +
   annotation_graticule(
@@ -193,7 +176,9 @@ ggplot() +
 
 ### 5.2 Robinson projection
 
-```{r}
+Note how the graticules curve naturally with the projection.
+
+```{r graticule_robin, fig.alt="A Robinson projection map with curved graticule lines."}
 crs_robin <- "+proj=robin +datum=WGS84"
 
 ggplot() +
@@ -210,13 +195,12 @@ ggplot() +
 
 ### 5.3 Regional China map (clean axis labels)
 
-This is the recommended pattern for regional maps:
+For regional maps, the recommended pattern is to:
+1.  Use `annotation_graticule()` to draw the lines but hide its internal labels (`label_color = NA`).
+2.  Use standard `labs()` or `coord_sf` labels for the axes.
+3.  Keep the region exact with `expand = FALSE`.
 
-- show **graticule lines** only (`label_color = NA`)  
-- show **axis labels** via `labs()`  
-- keep the region exact with `expand = FALSE`  
-
-```{r}
+```{r region_cn, fig.alt="A regional map of China and surrounding areas with clean axis labels and specific graticule limits."}
 cn_xlim <- c(70, 140)
 cn_ylim <- c(0, 60)
 
@@ -244,13 +228,13 @@ ggplot() +
   theme_bw()
 ```
 
----
-
 ## 6. Highlighting selected countries
+
+You can create "highlight" maps by layering `geom_world()` calls. The first call draws the base (e.g., white), and the second call filters for specific countries to color them.
 
 ### 6.1 Highlighting China
 
-```{r}
+```{r highlight_cn, fig.alt="A world map with China highlighted in red."}
 ggplot() +
   geom_world(
     country_fill = "white",
@@ -266,7 +250,9 @@ ggplot() +
 
 ### 6.2 Highlighting multiple countries
 
-```{r}
+Pass a vector of ISO codes to highlight multiple regions.
+
+```{r highlight_multi, fig.alt="A world map highlighting China, Japan, and South Korea in orange."}
 focus <- c("CHN", "JPN", "KOR")
 
 ggplot() +
@@ -282,15 +268,12 @@ ggplot() +
   theme_void()
 ```
 
----
-
 ## 7. Summary
 
 This vignette introduced how to:
-
-- draw global maps using `geom_world()`  
-- control ocean and administrative boundary layers  
-- work with different projections  
-- avoid missing axis labels in `coord_sf()`  
-- add custom meridians/parallels with `annotation_graticule()`  
-- highlight individual or groups of countries  
+* Draw global maps using `geom_world()`.
+* Control ocean and administrative boundary layers.
+* Work with different projections.
+* Avoid missing axis labels in `coord_sf()`.
+* Add custom meridians/parallels with `annotation_graticule()`.
+* Highlight individual or groups of countries.

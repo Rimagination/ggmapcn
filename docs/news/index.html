@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ggmapcn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,7 +20,8 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/Adding_Basic_Map.html">Adding Basic Map</a></li>
-    <li><a class="dropdown-item" href="../articles/Adding_Spatial_Data.html">Adding Spatial Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Advanced_Scalebar_and_Compass.html">Advanced Scalebar and Compass</a></li>
+    <li><a class="dropdown-item" href="../articles/World_Map_Overview.html">World Map Overview</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/Rimagination/ggmapcn">GitHub</a></li>
@@ -37,22 +38,30 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.0" id="ggmapcn-020">ggmapcn 0.2.0<a class="anchor" aria-label="anchor" href="#ggmapcn-020"></a></h2><p class="text-muted">CRAN release: 2025-10-10</p>
+<h2 class="pkg-version" data-toc-text="0.3.0" id="ggmapcn-030">ggmapcn 0.3.0<a class="anchor" aria-label="anchor" href="#ggmapcn-030"></a></h2>
 <div class="section level3">
-<h3 id="new-features-0-2-0">NEW FEATURES<a class="anchor" aria-label="anchor" href="#new-features-0-2-0"></a></h3>
-<ul><li>Added the <code><a href="../reference/annotation_compass.html">annotation_compass()</a></code> function to add a powerful and highly customizable compass/north arrow to maps.
-<ul><li>Supports alignment to “grid” north or “true” north via the which_north argument.</li>
-<li>Can be easily placed in any corner of the plot panel using the location argument.</li>
-</ul></li>
-<li>Introduced a family of built-in style constructors (compass-styles) for <code><a href="../reference/annotation_compass.html">annotation_compass()</a></code> to support a wide range of visual appearances:
-<ul><li>Classic Styles: <code><a href="../reference/compass-styles.html">north_arrow_classic()</a></code> and <code><a href="../reference/compass-styles.html">north_arrow_solid()</a></code>.</li>
-<li>Compass Rose Styles: <code><a href="../reference/compass-styles.html">compass_rose_simple()</a></code>, <code><a href="../reference/compass-styles.html">compass_rose_classic()</a></code>, and <code><a href="../reference/compass-styles.html">compass_rose_circle()</a></code>.</li>
-<li>Original Chinese-Themed Styles: Added two unique styles, <code><a href="../reference/compass-styles.html">compass_guiding_fish()</a></code> (Guiding Fish) and <code><a href="../reference/compass-styles.html">compass_sinan()</a></code> (Sinan), inspired by ancient Chinese navigational instruments to add a cultural touch to maps.</li>
-</ul></li>
-<li>Added the annotation_scalebar() function to add a projection-aware and intelligent scale bar.
-<ul><li>The function automatically detects the map’s Coordinate Reference System (CRS) to select appropriate units and breaks.</li>
-<li>Supports several common styles, including “segment”, “bar”, and “ticks”.</li>
-</ul></li>
+<h3 id="new-features-0-3-0">NEW FEATURES<a class="anchor" aria-label="anchor" href="#new-features-0-3-0"></a></h3>
+<p>Major upgrade to geom_world():</p>
+<ul><li>geom_world() is now a complete global basemap generator with bundled country polygons, coastlines, ocean layers, and administrative boundaries.</li>
+<li>Automatic antimeridian splitting using st_break_antimeridian(), respecting the central meridian of the target CRS.</li>
+<li>Projection-aware world outline generation for both geographic and projected CRS.</li>
+<li>Fully customizable visual components, including ocean, coastlines, country fill, administrative boundaries, and outer frame.</li>
+<li>Improved country filtering mode: when filter is supplied, only the selected countries are drawn, without ocean or background layers.</li>
+<li>More robust behavior under non-zero lon_0 and complex projections.</li>
+</ul><p>New annotation_graticule():</p>
+<ul><li>Adds a flexible global graticule generator with meridians, parallels, and edge labels.</li>
+<li>Graticules are generated in WGS84 and then transformed into the map CRS.</li>
+<li>Supports antimeridian splitting when lon_0 is non-zero.</li>
+<li>Labels can be placed on any combination of edges: left, right, top, bottom.</li>
+<li>Fine control over spacing, offsets, units, and line style.</li>
+<li>Works for both global and regional extents.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="improvements-0-3-0">IMPROVEMENTS<a class="anchor" aria-label="anchor" href="#improvements-0-3-0"></a></h3>
+<ul><li>Improved CRS parsing and detection across functions, including robust extraction of lon_0 from PROJ strings.</li>
+<li>More stable interaction with coord_sf(), especially for global maps where expand and datum previously caused missing axis labels.</li>
+<li>Documentation has been expanded with clearer examples, including projection usage, filtering behaviour, and styling controls.</li>
+<li>Improved rendering reliability when handling projections such as Robinson, Mollweide, and shifted long-lat systems.</li>
 </ul></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
