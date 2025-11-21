@@ -1,44 +1,49 @@
 #' Add a Spatially-Aware Compass
 #'
 #' @description
-#' `annotation_compass()` adds a compass (north arrow) to a `ggplot2` map.
-#' It can be aligned to **grid north** (top of the plot) or **true north**
-#' (geographic north). Styles can be supplied as a grob or a function returning
-#' a grob (e.g., `north_arrow_classic()`, `compass_sinan()`).
+#' `annotation_compass()` adds a compass (north arrow) to a ggplot map.
+#' It can align to **grid north** (top of the panel) or **true north**
+#' (geographic north). Styles are provided as grobs or functions returning
+#' grobs (for example `north_arrow_classic()`, `compass_sinan()`).
 #'
 #' @details
-#' * `"grid"` north: compass points straight up in the plotting space (no CRS needed).
-#' * `"true"` north: compass rotates toward geographic North Pole using the plot CRS.
-#'   This requires a valid CRS available via `coord_sf()` or injected by setting
-#'   `layer$geom_params$crs`.
-#' * You can override any auto-rotation by providing `rotation` (degrees CCW).
-#' * The layer is annotation-like: it draws once per panel using the panel bounds.
+#' * `"grid"` north: the compass points straight up in plotting space
+#'   (no CRS required).
+#' * `"true"` north: the compass rotates toward the geographic North Pole
+#'   using the plot CRS. This requires a valid CRS supplied by `coord_sf()`
+#'   or injected via `layer$geom_params$crs`.
+#' * A fixed `rotation` (degrees counter-clockwise) always overrides the
+#'   automatic `"grid"` / `"true"` logic.
+#' * The layer is annotation-like: it draws once per panel based on the
+#'   panel bounds.
 #'
-#' @param mapping,data Standard ggplot2 arguments (typically unused).
+#' @param mapping,data Standard ggplot2 layer arguments (typically unused).
 #' @param ... Additional parameters passed to the layer (rarely needed).
-#' @param location Character. One of `"tl"`, `"tr"`, `"bl"`, `"br"` indicating
-#'   top/bottom + left/right placement. Default: `"bl"`.
-#' @param which_north Character. `"grid"` (default) or `"true"`.
+#' @param location Character; one of `"tl"`, `"tr"`, `"bl"`, `"br"`, indicating
+#'   top/bottom and left/right placement. Default: `"bl"`.
+#' @param which_north Character; `"grid"` (default) or `"true"`.
 #' @param height,width `grid::unit`. Compass box dimensions. Defaults: `1.5 cm`.
 #' @param pad_x,pad_y `grid::unit`. Padding from panel edges. Defaults: `0.5 cm`.
 #' @param rotation Numeric. Fixed rotation in degrees (counter-clockwise).
-#'   When provided, it overrides `"grid"`/`"true"` logic.
-#' @param style A grob, `gList`/`gTree`, or a function returning a grob
-#'   (e.g., `north_arrow_classic()`). Default: `north_arrow_classic()`.
+#'   When supplied, it overrides `"grid"` / `"true"` behavior.
+#' @param style A grob, `gList` / `gTree`, or a function returning a grob
+#'   (for example `north_arrow_classic()`). Default: `north_arrow_classic()`.
 #'
-#' @return A `ggplot2` layer object.
+#' @return A ggplot2 layer object.
+#'
 #' @seealso [compass-styles]
+#'
 #' @export
 #' @import ggplot2
 #' @importFrom grid unit gList gTree viewport is.grob rectGrob circleGrob polygonGrob textGrob gpar nullGrob
 #' @importFrom sf st_is_longlat st_coordinates st_transform st_as_sf st_crs st_sfc st_point
 #'
-#' @examples
-#' nc <- sf::st_read(system.file("shape/nc.shp", package="sf"), quiet = TRUE)
+#' @examplesIf requireNamespace("sf", quietly = TRUE)
+#' nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
 #'
-#' base <- ggplot2::ggplot() +
-#'   ggplot2::geom_sf(data = nc, fill = "grey90") +
-#'   ggplot2::theme_minimal()
+#' base <- ggplot() +
+#'   geom_sf(data = nc, fill = "grey90") +
+#'   theme_minimal()
 #'
 #' # Example 1: Grid north (no CRS required), bottom-left
 #' base + annotation_compass()
@@ -48,8 +53,8 @@
 #'
 #' # Example 3: True north (requires a CRS)
 #' base +
-#'   ggplot2::coord_sf(crs = "+proj=lcc +lon_0=-100 +lat_1=33 +lat_2=45") +
-#'   annotation_compass(which_north = "true")
+#'   coord_sf(crs = "+proj=lcc +lon_0=-100 +lat_1=33 +lat_2=45") +
+#'   annotation_compass(location = "br", which_north = "true")
 #'
 annotation_compass <- function(mapping = NULL, data = NULL, ...,
                                location = "bl",
@@ -76,12 +81,12 @@ annotation_compass <- function(mapping = NULL, data = NULL, ...,
     inherit.aes = FALSE,
     params = list(
       ...,
-      height = height,
-      width  = width,
-      pad_x  = pad_x,
-      pad_y  = pad_y,
+      height   = height,
+      width    = width,
+      pad_x    = pad_x,
+      pad_y    = pad_y,
       rotation = rotation,
-      style = style
+      style    = style
     )
   )
 }
@@ -116,6 +121,7 @@ GeomCompass <- ggplot2::ggproto(
            "or a function returning a grob.", call. = FALSE)
     }
 
+    # Determine rotation
     if (is.null(rotation)) {
       rotation <- 0
       if (identical(which_north, "true")) {
@@ -136,6 +142,7 @@ GeomCompass <- ggplot2::ggproto(
       }
     }
 
+    # Anchor and padding
     adj_x <- as.numeric(grepl("r", location))
     adj_y <- as.numeric(grepl("t", location))
     origin_x <- grid::unit(adj_x, "npc") +
@@ -164,24 +171,29 @@ is_grob_like <- function(x) {
 #' @noRd
 # Compute the angle (degrees CCW) from grid-north to true-north
 true_north <- function(x, y, crs, delta_crs = 0.1, delta_lat = 0.1) {
-  pt_crs <- sf::st_sfc(sf::st_point(c(x, y)), crs = crs)
-  pt_ll <- sf::st_transform(pt_crs, crs = 4326)
-  ll <- as.data.frame(sf::st_coordinates(pt_ll))
-  pt_ll_north <- sf::st_sfc(sf::st_point(c(ll$X, ll$Y + delta_lat)), crs = 4326)
+  pt_crs       <- sf::st_sfc(sf::st_point(c(x, y)), crs = crs)
+  pt_ll        <- sf::st_transform(pt_crs, crs = 4326)
+  ll           <- as.data.frame(sf::st_coordinates(pt_ll))
+  pt_ll_north  <- sf::st_sfc(sf::st_point(c(ll$X, ll$Y + delta_lat)), crs = 4326)
   pt_crs_north <- sf::st_transform(pt_ll_north, crs = crs)
-  a0 <- as.data.frame(sf::st_coordinates(pt_crs))
-  a1 <- as.data.frame(sf::st_coordinates(pt_crs_north))
+  a0           <- as.data.frame(sf::st_coordinates(pt_crs))
+  a1           <- as.data.frame(sf::st_coordinates(pt_crs_north))
+
   a <- c(x = a1$X - a0$X, y = a1$Y - a0$Y)
-  b <- c(x = 0, y = delta_crs)
+  b <- c(x = 0,          y = delta_crs)
+
   num <- sum(a * b)
   den <- sqrt(sum(a * a)) * sqrt(sum(b * b))
   if (!is.finite(num) || !is.finite(den) || den == 0) return(0)
+
   theta <- acos(max(-1, min(1, num / den)))
   cross <- a[1] * b[2] - a[2] * b[1]
+
   theta * 180 / pi * sign(cross)[1]
 }
 
 #' Classic North Arrow Style (Minimal)
+#'
 #' @rdname compass-styles
 #' @export
 north_arrow_classic <- function() {
@@ -196,6 +208,7 @@ north_arrow_classic <- function() {
 }
 
 #' Sinan (Ancient Chinese Compass) Style (Simplified)
+#'
 #' @rdname compass-styles
 #' @export
 compass_sinan <- function() {

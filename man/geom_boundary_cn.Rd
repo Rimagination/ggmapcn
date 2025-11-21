@@ -9,22 +9,22 @@ geom_boundary_cn(
   compass = FALSE,
   scale = FALSE,
   mainland_color = "black",
-  mainland_size = 0.5,
+  mainland_size = 0.2,
   mainland_linetype = "solid",
   coastline_color = "blue",
-  coastline_size = 0.3,
+  coastline_size = 0.1,
   coastline_linetype = "solid",
   ten_segment_line_color = "black",
-  ten_segment_line_size = 0.5,
+  ten_segment_line_size = 0.2,
   ten_segment_line_linetype = "solid",
   SAR_boundary_color = "grey40",
-  SAR_boundary_size = 0.5,
+  SAR_boundary_size = 0.1,
   SAR_boundary_linetype = "dashed",
   undefined_boundary_color = "black",
-  undefined_boundary_size = 0.5,
+  undefined_boundary_size = 0.2,
   undefined_boundary_linetype = "longdash",
   province_color = "transparent",
-  province_size = 0.3,
+  province_size = 0.1,
   province_linetype = "solid",
   ...
 )
@@ -44,7 +44,7 @@ Default: `FALSE`.}
 Default: `"black"`.}
 
 \item{mainland_size}{Numeric. Line width for the mainland boundary.
-Default: `0.5`.}
+Default: `0.2`.}
 
 \item{mainland_linetype}{Character. Line type for the mainland boundary.
 Default: `"solid"`.}
@@ -53,7 +53,7 @@ Default: `"solid"`.}
 Default: `"blue"`.}
 
 \item{coastline_size}{Numeric. Line width for coastlines.
-Default: `0.3`.}
+Default: `0.1`.}
 
 \item{coastline_linetype}{Character. Line type for coastlines.
 Default: `"solid"`.}
@@ -62,7 +62,7 @@ Default: `"solid"`.}
 ten-segment line. Default: `"black"`.}
 
 \item{ten_segment_line_size}{Numeric. Line width for the ten-segment line.
-Default: `0.5`.}
+Default: `0.2`.}
 
 \item{ten_segment_line_linetype}{Character. Line type for the ten-segment line.
 Default: `"solid"`.}
@@ -71,7 +71,7 @@ Default: `"solid"`.}
 boundaries. Default: `"grey40"`.}
 
 \item{SAR_boundary_size}{Numeric. Line width for SAR boundaries.
-Default: `0.5`.}
+Default: `0.1`.}
 
 \item{SAR_boundary_linetype}{Character. Line type for SAR boundaries.
 Default: `"dashed"`.}
@@ -80,7 +80,7 @@ Default: `"dashed"`.}
 disputed boundaries. Default: `"black"`.}
 
 \item{undefined_boundary_size}{Numeric. Line width for undefined boundaries.
-Default: `0.5`.}
+Default: `0.2`.}
 
 \item{undefined_boundary_linetype}{Character. Line type for undefined
 boundaries. Default: `"longdash"`.}
@@ -89,7 +89,7 @@ boundaries. Default: `"longdash"`.}
 Default: `"transparent"`.}
 
 \item{province_size}{Numeric. Line width for provincial boundaries.
-Default: `0.3`.}
+Default: `0.1`.}
 
 \item{province_linetype}{Character. Line type for provincial boundaries.
 Default: `"solid"`.}
@@ -97,16 +97,18 @@ Default: `"solid"`.}
 \item{...}{Additional arguments passed to `ggplot2::geom_sf()` (e.g., `alpha`).}
 }
 \value{
-A list of `ggplot2` layers.
+A list of `ggplot2` layers. If the boundary dataset cannot be
+  obtained, an empty list is returned.
 }
 \description{
 Draw China's administrative boundaries and optional map decorations
 (compass and scale bar). Each boundary category (mainland, coastline,
-provinces, etc.) can be styled independently. The data are reprojected
-to the specified CRS before plotting.
+provinces, etc.) can be styled independently. The boundary data are
+reprojected to the specified CRS before plotting.
 }
 \examples{
-\dontshow{if (require("ggplot2") && require("sf")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (requireNamespace("sf", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+
 # Example 1: Basic China map
 ggplot() +
   geom_boundary_cn() +
@@ -120,21 +122,20 @@ ggplot() +
 # Example 3: Custom styling
 ggplot() +
   geom_boundary_cn(
-    coastline_color = "steelblue",
-    province_color = "grey70",
+    coastline_color  = "steelblue",
+    province_color   = "grey70",
     province_linetype = "dashed"
   ) +
   theme_minimal()
 
-# Example 4: Advanced usage with a custom projected CRS
-Albers <-  "+proj=aea +lat_1=25 +lat_2=47 +lat_0=0 +lon_0=105 +x_0=0 +y_0=0 +
-+ datum=WGS84 +units=m +no_defs"
+# Example 4: Advanced usage with a custom projected CRS (Albers)
+albers_cn <- "+proj=aea +lat_1=25 +lat_2=47 +lat_0=0 +lon_0=105 +datum=WGS84 +units=m +no_defs"
 
 ggplot() +
-  geom_boundary_cn(crs = Albers) +
+  geom_boundary_cn(crs = albers_cn) +
   annotation_compass(location = "tl", which_north = "true") +
   annotation_scalebar(location = "bl", fixed_width = 500000, display_unit = "km") +
-  coord_sf(crs = Albers) +
+  coord_sf(crs = albers_cn) +
   theme_minimal()
 \dontshow{\}) # examplesIf}
 }

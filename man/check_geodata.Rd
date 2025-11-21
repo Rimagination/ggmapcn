@@ -2,7 +2,7 @@
 % Please edit documentation in R/check_geodata.R
 \name{check_geodata}
 \alias{check_geodata}
-\title{Check and Download Geospatial Data}
+\title{Check and retrieve required geodata files}
 \usage{
 check_geodata(
   files = NULL,
@@ -17,75 +17,87 @@ check_geodata(
 )
 }
 \arguments{
-\item{files}{Character vector of file names. If `NULL`, all known files are used.}
+\item{files}{Character vector of file names. If \code{NULL}, all known files
+are processed.}
 
-\item{overwrite}{Logical. Force re-download even if a non-empty file exists.
-Default `FALSE`.}
+\item{overwrite}{Logical; if \code{TRUE}, forces re-download even when a
+non-empty file already exists.}
 
-\item{quiet}{Logical. Suppress progress and messages. Default `FALSE`.}
+\item{quiet}{Logical; if \code{TRUE}, suppresses progress output and
+messages.}
 
-\item{max_retries}{Integer. Max retry attempts per (mirror, file). Default `3`.}
+\item{max_retries}{Integer; number of retry attempts per file and mirror.}
 
-\item{mirrors}{Character vector of base URLs (end with `/`). Tried in order.
-Default: jsDelivr first, then GitHub raw.}
+\item{mirrors}{Character vector of base URLs ending with \code{/}. If
+\code{NULL}, package defaults are used.}
 
-\item{use_checksum}{Logical. Verify SHA-256 when available. Default `TRUE`.}
+\item{use_checksum}{Logical; if \code{TRUE}, verifies SHA-256 checksums when
+available.}
 
-\item{checksums}{Named character vector of SHA-256 digests (names = file names).
-If `NULL`, built-in defaults are used for known files; unknown files skip verification.}
+\item{checksums}{Optional named character vector of SHA-256 digests.
+If \code{NULL}, defaults derived from \code{known_files()} are used.}
 
-\item{resume}{Logical. Try HTTP range resume if a `.part` exists (only for
-writable dirs). Default `TRUE`.}
+\item{resume}{Logical; whether to attempt HTTP range resume for partially
+downloaded \code{.part} files.}
 
-\item{local_dirs}{Character vector of directories to search \emph{before}
-any download. If a matching non-empty file is found and \code{overwrite = FALSE},
-it is returned immediately.}
+\item{local_dirs}{Character vector of directories to search prior to any
+download attempt.}
 }
 \value{
-Character vector of absolute file paths (NA for failures).
+A character vector of absolute file paths. Any file that cannot be obtained
+is returned as \code{NA}.
 }
 \description{
-Ensure required geodata files exist locally. The function searches and reuses
-existing files (when \code{overwrite = FALSE}) \emph{before} attempting any
-network download, in the following order:
-\enumerate{
-  \item user-provided \strong{local_dirs}
-  \item installed package \strong{extdata} (even if not writable)
-  \item per-user cache \strong{tools::R_user_dir("ggmapcn","data")}
+Ensures that external geospatial data files required by \pkg{ggmapcn} are
+available locally. Existing files are reused when \code{overwrite = FALSE};
+missing files are downloaded from remote mirrors when possible. If all
+mirrors fail (for example, due to network restrictions), the function fails
+gracefully by returning \code{NA} for the affected files without raising
+warnings or errors, in line with CRAN policy.
 }
-If no valid local file is found (or \code{overwrite = TRUE}), the function
-downloads from mirrors \emph{in order}. By default, a China-friendly CDN
-(jsDelivr) is tried first, then GitHub raw.
+\details{
+Because CRAN enforces strict limits on package size, several large datasets
+are hosted externally rather than bundled in the package. \code{check_geodata()}
+locates or retrieves these files using the following priority:
+\enumerate{
+  \item user-specified \code{local_dirs}
+  \item the package \code{extdata} directory
+  \item the per-user cache directory via \code{tools::R_user_dir("ggmapcn", "data")}
+}
 
-When internet access is unavailable or all mirrors fail, the function
-\emph{fails gracefully}: it returns \code{NA} for the corresponding files
-and prints an informative message (no error or warning is thrown unless
-invalid file names are requested).
+High-level mapping functions such as \code{geom_mapcn()} and \code{geom_world()}
+call \code{check_geodata()} internally, so most users do not need to invoke it
+directly. However, running it explicitly can be useful to pre-fetch or verify
+required files.
+
+On networks that cannot reliably access \code{cdn.jsdelivr.net} or
+\code{raw.githubusercontent.com}, downloads may time out and the corresponding
+entries in the returned vector will be \code{NA}. In such cases, users may
+manually download the required files from the data repository and place them
+into a directory supplied through \code{local_dirs}, the package \code{extdata}
+directory, or the user cache directory so that downloads are skipped.
+
+Note: recent versions of \code{geom_world()} use the following world datasets:
+\code{world_countries.rda}, \code{world_coastlines.rda}, and
+\code{world_boundaries.rda}. The legacy \code{world.rda} file is no longer
+used.
 }
 \examples{
 \dontshow{if (interactive() && curl::has_internet()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
-# Basic: ensure default files exist (may download if not found locally)
+# Ensure that all default datasets are available (downloads only if needed)
 check_geodata()
 
-# Single file: reuse existing file if present (default overwrite = FALSE)
-check_geodata(files = "boundary.rda")
+# Datasets used by geom_world()
+check_geodata(c(
+  "world_countries.rda",
+  "world_coastlines.rda",
+  "world_boundaries.rda"
+))
 
-# Force re-download a file (e.g., suspected corruption)
-check_geodata(files = "boundary.rda", overwrite = TRUE)
+# China administrative boundaries
+check_geodata(c("China_sheng.rda", "China_shi.rda", "China_xian.rda"))
 
-# Search local folders first; skip download if a valid file is found there
-check_geodata(
-  files = c("boundary.rda", "world.rda"),
-  local_dirs = c(getwd())  # add more directories if needed
-)
-
-# Provide your own mirror order (first tried wins)
-check_geodata(
-  files = "boundary.rda",
-  mirrors = c(
-    "https://cdn.jsdelivr.net/gh/Rimagination/ggmapcn-data@main/data/",
-    "https://raw.githubusercontent.com/Rimagination/ggmapcn-data/main/data/"
-  )
-)
+# Reuse files manually placed in the working directory
+check_geodata("world_countries.rda", local_dirs = getwd())
 \dontshow{\}) # examplesIf}
 }

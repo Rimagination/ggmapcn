@@ -1,68 +1,81 @@
-#' Check and Download Geospatial Data
+#' Check and retrieve required geodata files
 #'
 #' @description
-#' Ensure required geodata files exist locally. The function searches and reuses
-#' existing files (when \code{overwrite = FALSE}) \emph{before} attempting any
-#' network download, in the following order:
+#' Ensures that external geospatial data files required by \pkg{ggmapcn} are
+#' available locally. Existing files are reused when \code{overwrite = FALSE};
+#' missing files are downloaded from remote mirrors when possible. If all
+#' mirrors fail (for example, due to network restrictions), the function fails
+#' gracefully by returning \code{NA} for the affected files without raising
+#' warnings or errors, in line with CRAN policy.
+#'
+#' @details
+#' Because CRAN enforces strict limits on package size, several large datasets
+#' are hosted externally rather than bundled in the package. \code{check_geodata()}
+#' locates or retrieves these files using the following priority:
 #' \enumerate{
-#'   \item user-provided \strong{local_dirs}
-#'   \item installed package \strong{extdata} (even if not writable)
-#'   \item per-user cache \strong{tools::R_user_dir("ggmapcn","data")}
+#'   \item user-specified \code{local_dirs}
+#'   \item the package \code{extdata} directory
+#'   \item the per-user cache directory via \code{tools::R_user_dir("ggmapcn", "data")}
 #' }
-#' If no valid local file is found (or \code{overwrite = TRUE}), the function
-#' downloads from mirrors \emph{in order}. By default, a China-friendly CDN
-#' (jsDelivr) is tried first, then GitHub raw.
 #'
-#' When internet access is unavailable or all mirrors fail, the function
-#' \emph{fails gracefully}: it returns \code{NA} for the corresponding files
-#' and prints an informative message (no error or warning is thrown unless
-#' invalid file names are requested).
+#' High-level mapping functions such as \code{geom_mapcn()} and \code{geom_world()}
+#' call \code{check_geodata()} internally, so most users do not need to invoke it
+#' directly. However, running it explicitly can be useful to pre-fetch or verify
+#' required files.
 #'
-#' @param files Character vector of file names. If `NULL`, all known files are used.
-#' @param overwrite Logical. Force re-download even if a non-empty file exists.
-#'   Default `FALSE`.
-#' @param quiet Logical. Suppress progress and messages. Default `FALSE`.
-#' @param max_retries Integer. Max retry attempts per (mirror, file). Default `3`.
-#' @param mirrors Character vector of base URLs (end with `/`). Tried in order.
-#'   Default: jsDelivr first, then GitHub raw.
-#' @param use_checksum Logical. Verify SHA-256 when available. Default `TRUE`.
-#' @param checksums Named character vector of SHA-256 digests (names = file names).
-#'   If `NULL`, built-in defaults are used for known files; unknown files skip verification.
-#' @param resume Logical. Try HTTP range resume if a `.part` exists (only for
-#'   writable dirs). Default `TRUE`.
-#' @param local_dirs Character vector of directories to search \emph{before}
-#'   any download. If a matching non-empty file is found and \code{overwrite = FALSE},
-#'   it is returned immediately.
+#' On networks that cannot reliably access \code{cdn.jsdelivr.net} or
+#' \code{raw.githubusercontent.com}, downloads may time out and the corresponding
+#' entries in the returned vector will be \code{NA}. In such cases, users may
+#' manually download the required files from the data repository and place them
+#' into a directory supplied through \code{local_dirs}, the package \code{extdata}
+#' directory, or the user cache directory so that downloads are skipped.
 #'
-#' @return Character vector of absolute file paths (NA for failures).
+#' Note: recent versions of \code{geom_world()} use the following world datasets:
+#' \code{world_countries.rda}, \code{world_coastlines.rda}, and
+#' \code{world_boundaries.rda}. The legacy \code{world.rda} file is no longer
+#' used.
+#'
+#' @param files Character vector of file names. If \code{NULL}, all known files
+#'   are processed.
+#' @param overwrite Logical; if \code{TRUE}, forces re-download even when a
+#'   non-empty file already exists.
+#' @param quiet Logical; if \code{TRUE}, suppresses progress output and
+#'   messages.
+#' @param max_retries Integer; number of retry attempts per file and mirror.
+#' @param mirrors Character vector of base URLs ending with \code{/}. If
+#'   \code{NULL}, package defaults are used.
+#' @param use_checksum Logical; if \code{TRUE}, verifies SHA-256 checksums when
+#'   available.
+#' @param checksums Optional named character vector of SHA-256 digests.
+#'   If \code{NULL}, defaults derived from \code{known_files()} are used.
+#' @param resume Logical; whether to attempt HTTP range resume for partially
+#'   downloaded \code{.part} files.
+#' @param local_dirs Character vector of directories to search prior to any
+#'   download attempt.
+#'
+#' @return
+#' A character vector of absolute file paths. Any file that cannot be obtained
+#' is returned as \code{NA}.
 #'
 #' @examplesIf interactive() && curl::has_internet()
-#' # Basic: ensure default files exist (may download if not found locally)
+#' # Ensure that all default datasets are available (downloads only if needed)
 #' check_geodata()
 #'
-#' # Single file: reuse existing file if present (default overwrite = FALSE)
-#' check_geodata(files = "boundary.rda")
+#' # Datasets used by geom_world()
+#' check_geodata(c(
+#'   "world_countries.rda",
+#'   "world_coastlines.rda",
+#'   "world_boundaries.rda"
+#' ))
 #'
-#' # Force re-download a file (e.g., suspected corruption)
-#' check_geodata(files = "boundary.rda", overwrite = TRUE)
+#' # China administrative boundaries
+#' check_geodata(c("China_sheng.rda", "China_shi.rda", "China_xian.rda"))
 #'
-#' # Search local folders first; skip download if a valid file is found there
-#' check_geodata(
-#'   files = c("boundary.rda", "world.rda"),
-#'   local_dirs = c(getwd())  # add more directories if needed
-#' )
-#'
-#' # Provide your own mirror order (first tried wins)
-#' check_geodata(
-#'   files = "boundary.rda",
-#'   mirrors = c(
-#'     "https://cdn.jsdelivr.net/gh/Rimagination/ggmapcn-data@main/data/",
-#'     "https://raw.githubusercontent.com/Rimagination/ggmapcn-data/main/data/"
-#'   )
-#' )
+#' # Reuse files manually placed in the working directory
+#' check_geodata("world_countries.rda", local_dirs = getwd())
 #'
 #' @export
-#' @importFrom curl curl_download new_handle handle_setopt has_internet
+#' @importFrom curl curl_download new_handle handle_setopt
 #' @importFrom tools R_user_dir
 #' @importFrom digest digest
 #' @importFrom stats runif
@@ -76,15 +89,19 @@ check_geodata <- function(files = NULL,
                           resume = TRUE,
                           local_dirs = NULL) {
 
-  # ---- helpers --------------------------------------------------------------
+  # ---- known files ---------------------------------------------------------
   known <- known_files()
-  if (is.null(files)) files <- names(known)
+  if (is.null(files)) {
+    files <- names(known)
+  }
+
   invalid <- setdiff(files, names(known))
   if (length(invalid)) {
+    # Only invalid names cause an error; network failures do not.
     stop("Invalid file names requested: ", paste(invalid, collapse = ", "))
   }
 
-  # mirrors: CDN (CN) first
+  # ---- mirrors -------------------------------------------------------------
   if (is.null(mirrors)) {
     mirrors <- c(
       "https://cdn.jsdelivr.net/gh/Rimagination/ggmapcn-data@main/data/",
@@ -92,17 +109,24 @@ check_geodata <- function(files = NULL,
     )
   }
 
-  # checksums (safe getter)
+  # ---- checksums -----------------------------------------------------------
   if (is.null(checksums)) {
     checksums <- vapply(known, `[[`, character(1), "sha256")
     names(checksums) <- names(known)
   }
+
   has_checksum <- function(f) {
     x <- checksums[[f]]
     is.character(x) && length(x) == 1L && !is.na(x) && nzchar(x)
   }
 
-  # canonical dirs
+  verify_file <- function(path, fname) {
+    if (!use_checksum || !has_checksum(fname)) return(TRUE)
+    got <- digest::digest(path, algo = "sha256", file = TRUE)
+    identical(tolower(got), tolower(checksums[[fname]]))
+  }
+
+  # ---- canonical directories -----------------------------------------------
   ext_dir   <- system.file("extdata", package = "ggmapcn")
   cache_dir <- tools::R_user_dir("ggmapcn", "data")
   if (!dir.exists(cache_dir)) {
@@ -115,42 +139,24 @@ check_geodata <- function(files = NULL,
     ok <- tryCatch({
       file.create(tf)
       file.exists(tf)
-    }, warning = function(w) FALSE, error = function(e) FALSE)
+    }, warning = function(w) FALSE,
+    error   = function(e) FALSE)
     if (ok) unlink(tf)
     isTRUE(ok)
   }
+
   ext_writable   <- nzchar(ext_dir) && is_writable(ext_dir)
   cache_writable <- is_writable(cache_dir)
 
   if (!quiet) {
     message(sprintf("extdata dir: %s (writable = %s)",
                     if (nzchar(ext_dir)) ext_dir else "<none>", ext_writable))
-    message(sprintf("cache   dir: %s (writable = %s)", cache_dir, cache_writable))
+    message(sprintf("cache   dir: %s (writable = %s)",
+                    cache_dir, cache_writable))
   }
 
-  # safe internet check: never error, only TRUE/FALSE
-  has_internet_safe <- function() {
-    out <- FALSE
-    try({
-      out <- isTRUE(curl::has_internet())
-    }, silent = TRUE)
-    isTRUE(out)
-  }
-  online <- has_internet_safe()
-  if (!online && !quiet) {
-    message("No internet connectivity detected; will not attempt downloads. ",
-            "Only existing local files (if any) will be used.")
-  }
-
-  # verify checksum if provided
-  verify_file <- function(path, fname) {
-    if (!use_checksum || !has_checksum(fname)) return(TRUE)
-    got <- digest::digest(path, algo = "sha256", file = TRUE)
-    identical(tolower(got), tolower(checksums[[fname]]))
-  }
-
-  # try reuse in a list of dirs (no download)
-  try_reuse_in_dirs <- function(fname, dirs) {
+  # ---- reuse existing local files ------------------------------------------
+  find_local <- function(fname, dirs) {
     for (d in dirs) {
       if (!nzchar(d) || !dir.exists(d)) next
       cand <- file.path(d, fname)
@@ -166,7 +172,7 @@ check_geodata <- function(files = NULL,
     NA_character_
   }
 
-  # curl plumbing -------------------------------------------------------------
+  # ---- curl helpers --------------------------------------------------------
   mk_handle <- function(resume_from = NULL) {
     h <- curl::new_handle(
       noprogress       = FALSE,
@@ -183,40 +189,31 @@ check_geodata <- function(files = NULL,
     h
   }
 
-  prog_cb <- function(file_name, quiet) {
-    function(dt, dn, ut, un) {
-      if (!quiet) {
-        pct <- if (is.finite(dt) && dt > 0) {
-          sprintf("%6.2f%%", 100 * dn / dt)
-        } else {
-          "  ..  "
-        }
-        cat(sprintf("\rDownloading %-28s %s",
-                    substr(file_name, 1, 28), pct))
-      }
-      0
-    }
-  }
-
   backoff <- function(k) {
     base   <- 2^(k - 1)
     jitter <- runif(1, 0, 1)
     min(30, base + jitter)
   }
 
-  # low-level fetch of a single URL to dest (with checksum)
-  fetch_one <- function(url, dest, fname, can_resume) {
+  # Download a single URL to dest (with optional resume and checksum)
+  fetch_one <- function(url, dest, fname, allow_resume) {
     dir.create(dirname(dest), recursive = TRUE, showWarnings = FALSE)
     part <- paste0(dest, ".part")
-    if (!can_resume && file.exists(part)) unlink(part)
-    resume_from <- if (can_resume && file.exists(part)) file.info(part)$size else NULL
+
+    if (!allow_resume && file.exists(part)) {
+      unlink(part)
+    }
+    resume_from <- if (allow_resume && file.exists(part)) {
+      file.info(part)$size
+    } else {
+      NULL
+    }
 
     ok <- FALSE
     last_err <- NULL
 
     for (k in seq_len(max_retries)) {
-      h <- mk_handle(resume_from = resume_from)
-      curl::handle_setopt(h, progressfunction = prog_cb(basename(dest), quiet))
+      h <- mk_handle(resume_from)
       err <- try(
         curl::curl_download(url, destfile = part, handle = h, quiet = TRUE),
         silent = TRUE
@@ -226,7 +223,7 @@ check_geodata <- function(files = NULL,
         last_err <- conditionMessage(attr(err, "condition"))
       } else if (!file.exists(part) || file.info(part)$size == 0) {
         last_err <- "empty file / zero size"
-      } else if (has_checksum(fname) && use_checksum) {
+      } else if (use_checksum && has_checksum(fname)) {
         got <- digest::digest(part, algo = "sha256", file = TRUE)
         if (!identical(tolower(got), tolower(checksums[[fname]]))) {
           last_err <- sprintf(
@@ -246,44 +243,38 @@ check_geodata <- function(files = NULL,
       }
 
       if (!quiet) {
-        cat("\n")
         message(sprintf("Download attempt %d for '%s' failed: %s",
                         k, fname, last_err))
       }
 
       if (k < max_retries) {
         Sys.sleep(backoff(k))
+        # Next attempt starts from scratch to avoid issues with unsupported range.
         resume_from <- NULL
       }
     }
 
-    if (!quiet) cat("\n")
-
     if (!ok) {
       if (!quiet) {
-        message("Giving up on '", fname,
-                "' from URL: ", url,
-                " (last error: ", last_err, ").")
+        message(
+          "Giving up on '", fname,
+          "' from URL: ", url,
+          " (last error: ", last_err, ")."
+        )
       }
       return(FALSE)
     }
 
-    if (file.exists(dest)) unlink(dest)
+    if (file.exists(dest)) {
+      unlink(dest)
+    }
     file.rename(part, dest)
     TRUE
   }
 
-  try_download_to_dir <- function(target_dir, fname, can_resume) {
+  # Try to download into a target directory ----------------------------------
+  try_download <- function(target_dir, fname, allow_resume) {
     dest <- file.path(target_dir, fname)
-
-    if (!online) {
-      # no internet: graceful failure
-      if (!quiet) {
-        message("Skipping download of '", fname,
-                "' (no internet connection).")
-      }
-      return(list(ok = FALSE, path = NA_character_))
-    }
 
     if (!quiet) {
       message("Fetching '", fname, "' into: ", target_dir)
@@ -292,103 +283,103 @@ check_geodata <- function(files = NULL,
     success <- FALSE
     for (m in mirrors) {
       url <- paste0(m, fname)
-      if (!quiet) message("  Trying URL: ", url)
-      if (fetch_one(url, dest, fname, can_resume)) {
+      if (!quiet) {
+        message("  Trying URL: ", url)
+      }
+      if (fetch_one(url, dest, fname, allow_resume)) {
         success <- TRUE
         break
       }
     }
 
     if (!success && !quiet) {
-      message("All mirrors failed for '", fname,
-              "'. Returning NA (no error is thrown).")
+      message(
+        "All mirrors failed for '", fname, "'. Returning NA.\n",
+        "If downloads remain unavailable, you can place the file manually into:\n",
+        "  - a directory supplied via local_dirs,\n",
+        "  - the extdata directory: ", ext_dir, ",\n",
+        "  - or the user cache directory: ", cache_dir
+      )
     }
 
     list(ok = success, path = if (success) dest else NA_character_)
   }
 
-  # ---- main loop ------------------------------------------------------------
+  # ---- main loop -----------------------------------------------------------
   out <- character(length(files))
 
   for (i in seq_along(files)) {
     fname <- files[i]
 
-    # A) pre-check & reuse when overwrite = FALSE -----------------------------
+    # A) reuse: local_dirs -> extdata -> cache -------------------------------
     if (!overwrite) {
-      # A1) user local dirs
       if (length(local_dirs)) {
-        hit <- try_reuse_in_dirs(fname, local_dirs)
-        if (!is.na(hit)) {
-          out[i] <- hit
+        loc <- find_local(fname, local_dirs)
+        if (!is.na(loc)) {
+          out[i] <- loc
           if (!quiet) {
-            message("Using existing local file (local_dirs): ", hit)
+            message("Using existing local file (local_dirs): ", loc)
           }
           next
         }
       }
 
-      # A2) extdata
       if (nzchar(ext_dir)) {
-        hit <- try_reuse_in_dirs(fname, ext_dir)
-        if (!is.na(hit)) {
-          out[i] <- hit
+        loc <- find_local(fname, ext_dir)
+        if (!is.na(loc)) {
+          out[i] <- loc
           if (!quiet) {
-            message("Using existing extdata file: ", hit)
+            message("Using existing extdata file: ", loc)
           }
           next
         }
       }
 
-      # A3) cache
-      hit <- try_reuse_in_dirs(fname, cache_dir)
-      if (!is.na(hit)) {
-        out[i] <- hit
+      loc <- find_local(fname, cache_dir)
+      if (!is.na(loc)) {
+        out[i] <- loc
         if (!quiet) {
-          message("Using existing cache file: ", hit)
+          message("Using existing cache file: ", loc)
         }
         next
       }
     }
 
-    # B) need download (either overwrite = TRUE or not found/invalid) --------
-    # B1) prefer extdata if writable
-    tried_ext <- FALSE
+    # B) download if needed --------------------------------------------------
     if (ext_writable) {
-      tried_ext <- TRUE
-      res <- try_download_to_dir(ext_dir, fname, can_resume = resume)
+      res <- try_download(ext_dir, fname, allow_resume = resume)
       if (res$ok) {
         out[i] <- res$path
-        if (!quiet) message("Saved to extdata: ", res$path)
+        if (!quiet) {
+          message("Saved to extdata: ", res$path)
+        }
         next
-      } else if (!quiet && online) {
-        # only mention failure if we actually tried to download
-        message("Download into extdata failed for '", fname,
-                "'. Will fall back to user cache.")
+      } else if (!quiet) {
+        message(
+          "Download into extdata failed for '", fname,
+          "'. Falling back to user cache."
+        )
       }
     } else if (nzchar(ext_dir) && !quiet) {
-      message("extdata not writable; skip downloading into extdata for '", fname, "'.")
+      message(
+        "extdata not writable; skip downloading into extdata for '",
+        fname, "'."
+      )
     }
 
-    # B2) fallback: cache (writable) -----------------------------------------
     if (cache_writable) {
-      res2 <- try_download_to_dir(cache_dir, fname, can_resume = TRUE)
-      if (res2$ok) {
-        out[i] <- res2$path
-        if (!quiet) message("Saved to cache: ", res2$path)
-      } else {
-        out[i] <- NA_character_
-        # graceful: do NOT warning/stop, just message (or silent if quiet)
-        if (!quiet && online) {
-          message("Failed to obtain '", fname,
-                  "' from all mirrors; returning NA.")
-        }
+      res2 <- try_download(cache_dir, fname, allow_resume = TRUE)
+      out[i] <- res2$path
+      if (res2$ok && !quiet) {
+        message("Saved to cache: ", res2$path)
       }
     } else {
-      # cache is not writable; still return NA gracefully
       out[i] <- NA_character_
       if (!quiet) {
-        message("Cache directory is not writable; cannot download '",
-                fname, "'. Returning NA.")
+        message(
+          "Cache directory is not writable; cannot download '",
+          fname, "'. Returning NA."
+        )
       }
     }
   }
@@ -396,28 +387,23 @@ check_geodata <- function(files = NULL,
   out
 }
 
-#' Known geodata files and metadata
+
+#' Known geodata files
 #'
-#' @return A named list. Each element is a list with fields:
-#'   \itemize{
-#'     \item \code{path}   File name (same as the element's name)
-#'     \item \code{sha256} SHA-256 digest or \code{NA_character_} if unknown
-#'   }
 #' @keywords internal
 #' @noRd
 known_files <- function() {
-  # TODO: Fill official SHA-256 values when available
   list(
-    "China_sheng.rda"         = list(path = "China_sheng.rda",         sha256 = NA_character_),
-    "China_shi.rda"           = list(path = "China_shi.rda",           sha256 = NA_character_),
-    "China_xian.rda"          = list(path = "China_xian.rda",          sha256 = NA_character_),
-    "boundary.rda"            = list(path = "boundary.rda",            sha256 = NA_character_),
-    "buffer_line.rda"         = list(path = "buffer_line.rda",         sha256 = NA_character_),
-    "China_mask.gpkg"         = list(path = "China_mask.gpkg",         sha256 = NA_character_),
-    "world_countries.rda"     = list(path = "world_countries.rda",     sha256 = NA_character_),
-    "world_coastlines.rda"    = list(path = "world_coastlines.rda",    sha256 = NA_character_),
-    "world_boundaries.rda"    = list(path = "world_boundaries.rda",    sha256 = NA_character_),
-    "gebco_2024_China.tif"    = list(path = "gebco_2024_China.tif",    sha256 = NA_character_),
-    "vege_1km_projected.tif"  = list(path = "vege_1km_projected.tif",  sha256 = NA_character_)
+    "China_sheng.rda"        = list(path = "China_sheng.rda",        sha256 = NA_character_),
+    "China_shi.rda"          = list(path = "China_shi.rda",          sha256 = NA_character_),
+    "China_xian.rda"         = list(path = "China_xian.rda",         sha256 = NA_character_),
+    "boundary.rda"           = list(path = "boundary.rda",           sha256 = NA_character_),
+    "buffer_line.rda"        = list(path = "buffer_line.rda",        sha256 = NA_character_),
+    "China_mask.gpkg"        = list(path = "China_mask.gpkg",        sha256 = NA_character_),
+    "world_countries.rda"    = list(path = "world_countries.rda",    sha256 = NA_character_),
+    "world_coastlines.rda"   = list(path = "world_coastlines.rda",   sha256 = NA_character_),
+    "world_boundaries.rda"   = list(path = "world_boundaries.rda",   sha256 = NA_character_),
+    "gebco_2024_China.tif"   = list(path = "gebco_2024_China.tif",   sha256 = NA_character_),
+    "vege_1km_projected.tif" = list(path = "vege_1km_projected.tif", sha256 = NA_character_)
   )
 }

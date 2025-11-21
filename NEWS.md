@@ -1,39 +1,35 @@
 ggmapcn 0.3.0
-==============
+=============
 
 NEW FEATURES
 ------------
 
-Major upgrade to geom_world():
+- **New function: `annotation_graticule()`**  
+  Adds a projection-aware global graticule system with customizable spacing, labeling,
+  and automatic antimeridian handling.
 
-- geom_world() is now a complete global basemap generator with bundled country polygons,
-  coastlines, ocean layers, and administrative boundaries.
-- Automatic antimeridian splitting using st_break_antimeridian(), respecting the central
-  meridian of the target CRS.
-- Projection-aware world outline generation for both geographic and projected CRS.
-- Fully customizable visual components, including ocean, coastlines, country fill,
-  administrative boundaries, and outer frame.
-- Improved country filtering mode: when filter is supplied, only the selected countries
-  are drawn, without ocean or background layers.
-- More robust behavior under non-zero lon_0 and complex projections.
+MAJOR IMPROVEMENTS
+-------------------
 
-New annotation_graticule():
+- **Major redesign of `geom_world()`**  
+  Fully rebuilt global basemap system with bundled world polygons, coastlines, and
+  boundaries; improved antimeridian handling; more reliable behavior under complex
+  projections; and clearer, more consistent styling controls.
 
-- Adds a flexible global graticule generator with meridians, parallels, and edge labels.
-- Graticules are generated in WGS84 and then transformed into the map CRS.
-- Supports antimeridian splitting when lon_0 is non-zero.
-- Labels can be placed on any combination of edges: left, right, top, bottom.
-- Fine control over spacing, offsets, units, and line style.
-- Works for both global and regional extents.
+- **Major redesign of the external data workflow (`check_geodata()`)**  
+  The data-management system has been rewritten to meet CRAN size limits and improve
+  reliability. Required datasets are now located or retrieved automatically using a
+  priority search (local directories → package extdata → user cache), with retry,
+  resume, mirror fallbacks, and fully graceful failure. All mapping functions now
+  call this workflow internally.
 
 IMPROVEMENTS
 ------------
 
-- Improved CRS parsing and detection across functions, including robust extraction of
-  lon_0 from PROJ strings.
-- More stable interaction with coord_sf(), especially for global maps where expand and
-  datum previously caused missing axis labels.
-- Documentation has been expanded with clearer examples, including projection usage,
-  filtering behaviour, and styling controls.
-- Improved rendering reliability when handling projections such as Robinson, Mollweide,
-  and shifted long-lat systems.
+- More robust CRS parsing, including reliable extraction of `lon_0` from PROJ strings.
+- Better stability with `coord_sf()`, especially for global projections and shifted
+  central meridians.
+- Updated documentation and examples, including usage of the new world dataset
+  (`world_countries.rda`, `world_coastlines.rda`, `world_boundaries.rda`).
+- More consistent rendering across projections such as Robinson, Mollweide, and
+  shifted longitude systems.

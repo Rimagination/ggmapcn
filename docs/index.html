@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Customizable China Map Visualizations • ggmapcn</title>
+<title>China-Focused Mapping Tools with Optional Global Support for ggplot2 • ggmapcn</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Customizable China Map Visualizations">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="China-Focused Mapping Tools with Optional Global Support for ggplot2">
 <meta name="description" content="A ggplot2 extension centered on China’s map visualization, with additional support for styled global basemaps. Provides customizable projections, boundary styles, graticules, scale bars, and buffer zones for thematic maps, suitable for spatial data analysis and cartographic visualization.">
 <meta property="og:description" content="A ggplot2 extension centered on China’s map visualization, with additional support for styled global basemaps. Provides customizable projections, boundary styles, graticules, scale bars, and buffer zones for thematic maps, suitable for spatial data analysis and cartographic visualization.">
 </head>
@@ -55,51 +55,90 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="ggmapcn">ggmapcn<a class="anchor" aria-label="anchor" href="#ggmapcn"></a>
 </h1></div>
-<!-- badges: start -->
-<!-- badges: end -->
-<p><code>ggmapcn</code> is a <code>ggplot2</code> extension package for visualizing China’s map with customizable projections and styling. This package includes province-level map data and supports adding mainland borders, coastlines, and buffer areas, making it easy to create geographic visualizations of China.</p>
-</div>
-<div class="section level1">
-<h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h1>
-<p>Install the development version of ggmapcn from GitHub with:</p>
+<p><code>ggmapcn</code> is a <code>ggplot2</code> extension package for visualizing maps of China and the world with customizable projections and cartographic styling.</p>
+<p>Because CRAN imposes strict size limits on package data, certain large geospatial datasets used by <code>ggmapcn</code> cannot be bundled directly. These datasets are stored externally and retrieved automatically using <code><a href="reference/check_geodata.html">check_geodata()</a></code>. All high-level functions—such as <code><a href="reference/geom_mapcn.html">geom_mapcn()</a></code> and <code><a href="reference/geom_world.html">geom_world()</a></code>—internally call <code><a href="reference/check_geodata.html">check_geodata()</a></code> to ensure that required data files exist locally.</p>
+<p>If the network is unavailable or remote mirrors cannot be reached, <code><a href="reference/check_geodata.html">check_geodata()</a></code> fails gracefully by returning <code>NA</code> paths. This behavior is fully compliant with CRAN’s policy for optional network resources.</p>
+<hr>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>Install the development version from GitHub:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"Rimagination/ggmapcn"</span>, force <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<hr>
+</div>
 </div>
 <div class="section level1">
-<h1 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+<h1 id="data-management-with-check_geodata">Data Management with <code>check_geodata()</code>
+<a class="anchor" aria-label="anchor" href="#data-management-with-check_geodata"></a>
+</h1>
+<p>Several datasets—such as <code>world_countries.rda</code>, <code>China_sheng.rda</code>, and <code>gebco_2024_China.tif</code>—are hosted externally.<br><code><a href="reference/check_geodata.html">check_geodata()</a></code> automatically:</p>
+<ul>
+<li>searches for existing files in:
+<ul>
+<li>user-specified <code>local_dirs</code>
+</li>
+<li>the package <code>extdata</code> directory</li>
+<li>the per-user cache directory via <code>tools::R_user_dir("ggmapcn", "data")</code>
+</li>
+</ul>
+</li>
+<li>downloads missing files from mirrors (jsDelivr and GitHub)</li>
+<li>verifies checksums when available</li>
+<li>retries on failure and supports resume capability</li>
+<li>returns <code>NA</code> instead of errors when mirrors cannot be reached</li>
+</ul>
+<p>To check and retrieve all files:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/check_geodata.html">check_geodata</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>To retrieve explicitly the datasets used by <code><a href="reference/geom_world.html">geom_world()</a></code>:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/check_geodata.html">check_geodata</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"world_countries.rda"</span>,</span>
+<span>  <span class="st">"world_coastlines.rda"</span>,</span>
+<span>  <span class="st">"world_boundaries.rda"</span></span>
+<span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>If your network cannot access <code>cdn.jsdelivr.net</code> or <code>raw.githubusercontent.com</code>, you may manually download the files and place them in a directory passed to <code>local_dirs</code>.</p>
+<hr>
+</div>
+<div class="section level1">
+<h1 id="usage-examples">Usage Examples<a class="anchor" aria-label="anchor" href="#usage-examples"></a>
 </h1>
 <div class="section level2">
-<h2 id="plotting-a-map-of-china">Plotting a Map of China<a class="anchor" aria-label="anchor" href="#plotting-a-map-of-china"></a>
+<h2 id="id_1-basic-map-of-china">1. Basic Map of China<a class="anchor" aria-label="anchor" href="#id_1-basic-map-of-china"></a>
 </h2>
-<p>To plot a map of China with province boundaries, use <code><a href="reference/geom_mapcn.html">geom_mapcn()</a></code>:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rimagination.github.io/ggmapcn/">ggmapcn</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="reference/geom_mapcn.html">geom_mapcn</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="reference/geom_boundary_cn.html">geom_boundary_cn</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="reference/geom_boundary_cn.html">geom_boundary_cn</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-example1-1.png" alt="Province Map" width="100%"></p>
+<p><img src="reference/figures/README-example-cn-basic-1.png" alt="Figure" width="100%"></p>
+<hr>
 </div>
 <div class="section level2">
-<h2 id="custom-projection-and-styling">Custom Projection and Styling<a class="anchor" aria-label="anchor" href="#custom-projection-and-styling"></a>
+<h2 id="id_2-custom-projection-albers">2. Custom Projection (Albers)<a class="anchor" aria-label="anchor" href="#id_2-custom-projection-albers"></a>
 </h2>
-<p>If you want to try the Albers projection, you can customize it.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="reference/geom_mapcn.html">geom_mapcn</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="st">"+proj=aea +lat_1=25 +lat_2=47 +lat_0=0 +lon_0=105 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs"</span>, color <span class="op">=</span> <span class="st">"black"</span>, fill <span class="op">=</span> <span class="st">"white"</span>, size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="reference/geom_boundary_cn.html">geom_boundary_cn</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="reference/geom_mapcn.html">geom_mapcn</a></span><span class="op">(</span></span>
+<span>    crs <span class="op">=</span> <span class="st">"+proj=aea +lat_1=25 +lat_2=47 +lat_0=0 +lon_0=105 +datum=WGS84"</span>,</span>
+<span>    fill <span class="op">=</span> <span class="st">"white"</span>,</span>
+<span>    color <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>    size <span class="op">=</span> <span class="fl">0.7</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="reference/geom_boundary_cn.html">geom_boundary_cn</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-example2-1.png" alt="Basic Map" width="100%"></p>
+<p><img src="reference/figures/README-example-cn-albers-1.png" alt="Figure" width="100%"></p>
+<hr>
 </div>
 <div class="section level2">
-<h2 id="adding-mainland-borders-and-coastlines">Adding Mainland Borders and Coastlines<a class="anchor" aria-label="anchor" href="#adding-mainland-borders-and-coastlines"></a>
+<h2 id="id_3-adding-mainland-borders-and-coastlines">3. Adding Mainland Borders and Coastlines<a class="anchor" aria-label="anchor" href="#id_3-adding-mainland-borders-and-coastlines"></a>
 </h2>
-<p>Use <code><a href="reference/geom_boundary_cn.html">geom_boundary_cn()</a></code> to add mainland borders and coastlines to the map. You can set colors and line widths for both the mainland and coastline boundaries:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="reference/geom_mapcn.html">geom_mapcn</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="reference/geom_boundary_cn.html">geom_boundary_cn</a></span><span class="op">(</span></span>
@@ -109,13 +148,13 @@
 <span>    coastline_size <span class="op">=</span> <span class="fl">0.5</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-example3-1.png" alt="Map with Boundary" width="100%"></p>
+<p><img src="reference/figures/README-example-cn-boundaries-1.png" alt="Figure" width="100%"></p>
+<hr>
 </div>
 <div class="section level2">
-<h2 id="adding-buffer-zones">Adding Buffer Zones<a class="anchor" aria-label="anchor" href="#adding-buffer-zones"></a>
+<h2 id="id_4-buffer-zones">4. Buffer Zones<a class="anchor" aria-label="anchor" href="#id_4-buffer-zones"></a>
 </h2>
-<p>The <code><a href="reference/geom_buffer_cn.html">geom_buffer_cn()</a></code> function adds buffer zones around China’s borders. You can specify buffer distances, colors, and projections. The example below shows buffer zones with varying distances:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="reference/geom_buffer_cn.html">geom_buffer_cn</a></span><span class="op">(</span>mainland_dist <span class="op">=</span> <span class="fl">40000</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="reference/geom_buffer_cn.html">geom_buffer_cn</a></span><span class="op">(</span>mainland_dist <span class="op">=</span> <span class="fl">20000</span>, fill <span class="op">=</span> <span class="st">"#BBB3D8"</span><span class="op">)</span> <span class="op">+</span></span>
@@ -126,35 +165,59 @@
 <span><span class="co">#&gt; all geometries</span></span>
 <span><span class="co">#&gt; Warning: attribute variables are assumed to be spatially constant throughout</span></span>
 <span><span class="co">#&gt; all geometries</span></span></code></pre></div>
-<p><img src="reference/figures/README-example4-1.png" alt="Map of China" width="100%"></p>
+<p><img src="reference/figures/README-example-cn-buffer-1.png" alt="Figure" width="100%"></p>
+<hr>
 </div>
 <div class="section level2">
-<h2 id="basic-world-map-in-wgs84">Basic world map in WGS84<a class="anchor" aria-label="anchor" href="#basic-world-map-in-wgs84"></a>
+<h2 id="id_5-world-map-wgs84">5. World Map (WGS84)<a class="anchor" aria-label="anchor" href="#id_5-world-map-wgs84"></a>
 </h2>
-<p>This example displays a simple world map using the standard WGS84 geographic coordinate system (EPSG:4326), with country boundaries rendered by <code><a href="reference/geom_world.html">geom_world()</a></code>.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="reference/geom_world.html">geom_world</a></span><span class="op">(</span>show_ocean<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-example5-1.png" alt="Map of world" width="100%"></p>
+<span>  <span class="fu"><a href="reference/geom_world.html">geom_world</a></span><span class="op">(</span>show_ocean <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: geom_world() has been redesigned; its interface and defaults have</span></span>
+<span><span class="co">#&gt; changed compared to earlier development versions. See ?geom_world for details.</span></span></code></pre></div>
+<p><img src="reference/figures/README-example-world-1.png" alt="Figure" width="100%"></p>
+<hr>
+</div>
+</div>
+<div class="section level1">
+<h1 id="data-sources">Data Sources<a class="anchor" aria-label="anchor" href="#data-sources"></a>
+</h1>
+<div class="section level2">
+<h2 id="china-administrative-boundaries">China administrative boundaries<a class="anchor" aria-label="anchor" href="#china-administrative-boundaries"></a>
+</h2>
+<p>Provided by <strong>Tianditu</strong><br><a href="https://cloudcenter.tianditu.gov.cn/administrativeDivision/" class="external-link uri">https://cloudcenter.tianditu.gov.cn/administrativeDivision/</a></p>
+<p>Province-, prefecture-, and county-level boundaries are preprocessed and simplified for efficient rendering in <code>ggplot2</code>.</p>
 </div>
 <div class="section level2">
-<h2 id="data-source">Data Source<a class="anchor" aria-label="anchor" href="#data-source"></a>
+<h2 id="global-administrative-boundaries">Global administrative boundaries<a class="anchor" aria-label="anchor" href="#global-administrative-boundaries"></a>
 </h2>
-<p>The administrative boundary data for China is sourced from <strong>Tianditu</strong> (<a href="https://cloudcenter.tianditu.gov.cn/administrativeDivision/" class="external-link uri">https://cloudcenter.tianditu.gov.cn/administrativeDivision/</a>), a national geographic information platform that provides authoritative province-, city-, and county-level divisions. This data has been processed into GeoJSON format to ensure compatibility and ease of use within the package.</p>
-<p>The global (world) administrative boundary data, on the other hand, is developed by our team. It has been curated and simplified to support consistent cartographic styling and efficient rendering alongside the China-specific layers.</p>
+<p>The global dataset (countries, coastlines, and political boundaries) is curated and maintained by the package authors. It is optimized for consistent cartographic outputs across world projections and supports antimeridian splitting.</p>
+<hr>
 </div>
 </div>
 <div class="section level1">
 <h1 id="learn-more">Learn More<a class="anchor" aria-label="anchor" href="#learn-more"></a>
 </h1>
-<p>If you’d like to explore more advanced features—such as adding elevation or vegetation layers, overlaying point data, or working with custom projections—check out the <strong>Articles</strong>.</p>
+<p>See the Articles for tutorials on:</p>
+<ul>
+<li>global projections and antimeridian handling<br>
+</li>
+<li>elevation and raster overlays<br>
+</li>
+<li>vegetation and environmental data<br>
+</li>
+<li>styling world and China maps<br>
+</li>
+<li>regional vs. global map workflows</li>
+</ul>
+<hr>
 </div>
 
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li><a href="https://cloud.r-project.org/package=ggmapcn" class="external-link">View on CRAN</a></li>
 <li><a href="https://github.com/Rimagination/ggmapcn/" class="external-link">Browse source code</a></li>
 <li><a href="https://github.com/Rimagination/ggmapcn/issues" class="external-link">Report a bug</a></li>
 </ul>
