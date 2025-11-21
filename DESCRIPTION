@@ -12,8 +12,8 @@ Description: A 'ggplot2' extension centered on China’s map visualization, with
 License: GPL-3
 Encoding: UTF-8
 Depends: 
-    R (>= 3.5.0),
-    ggplot2 (>= 3.3.0)
+    R (>= 4.3.0),
+    ggplot2 (>= 3.5.0)
 Imports: 
     sf (>= 1.0.0),
     dplyr (>= 1.1.0),
