@@ -36,7 +36,7 @@ geom_world(
   undefined_boundary_size = 0.1,
   undefined_boundary_linetype = "longdash",
   military_boundary_color = "grey20",
-  military_boundary_size = 0.05,
+  military_boundary_size = 0.1,
   military_boundary_linetype = "dotted",
   ...
 )
@@ -164,7 +164,7 @@ geom_world(
 
 - military_boundary_size:
 
-  Width for military demarcation lines. Default \`0.05\`.
+  Width for military demarcation lines. Default \`0.1\`.
 
 - military_boundary_linetype:
 
