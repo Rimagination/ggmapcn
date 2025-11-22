@@ -1,4 +1,4 @@
-# Convenient global basemap layer for ggplot2
+# Convenient Global Basemap Layer for ggplot2
 
 \`geom_world()\` draws a styled global basemap using bundled country
 polygons, coastlines, and administrative boundary data. It automatically
@@ -47,8 +47,8 @@ geom_world(
 - crs:
 
   Coordinate reference system for the basemap. Accepts a numeric EPSG
-  code, a PROJ string, or an \[sf::crs\] object. The default is
-  \`4326\`, corresponding to WGS84 longitude–latitude.
+  code, a PROJ string, or an \[sf::crs\] object. The default is \`4326\`
+  (WGS84).
 
 - filter_attribute:
 
@@ -60,8 +60,7 @@ geom_world(
   Character vector specifying which values of \`filter_attribute\` to
   retain. If \`NULL\` (default), no filtering is applied. When
   non-\`NULL\`, only the selected countries are drawn, and the ocean,
-  coastlines, administrative boundaries, and optional frame are all
-  omitted.
+  coastlines, administrative boundaries, and frame are omitted.
 
 - show_ocean:
 
@@ -81,11 +80,11 @@ geom_world(
 
 - ocean_fill:
 
-  Fill colour for the ocean polygon. Default \`"#c7e8fb"\`.
+  Fill color for the ocean polygon. Default \`"#c7e8fb"\`.
 
 - frame_color:
 
-  Colour of the outer frame line. Default \`"grey20"\`.
+  Color of the outer frame line. Default \`"grey20"\`.
 
 - frame_size:
 
@@ -97,11 +96,11 @@ geom_world(
 
 - country_fill:
 
-  Fill colour for country polygons. Default \`"grey90"\`.
+  Fill color for country polygons. Default \`"grey90"\`.
 
 - country_boundary_color:
 
-  Colour of country boundary outlines. Default \`"transparent"\`.
+  Color of country boundary outlines. Default \`"transparent"\`.
 
 - country_boundary_size:
 
@@ -113,7 +112,7 @@ geom_world(
 
 - coastline_color:
 
-  Colour of the coastline layer. Default \`"#26ace7"\`.
+  Color of the coastline layer. Default \`"#26ace7"\`.
 
 - coastline_size:
 
@@ -125,7 +124,7 @@ geom_world(
 
 - international_boundary_color:
 
-  Colour for international boundary lines. Default \`"grey20"\`.
+  Color for international boundary lines. Default \`"grey20"\`.
 
 - international_boundary_size:
 
@@ -137,7 +136,7 @@ geom_world(
 
 - regional_boundary_color:
 
-  Colour for regional boundaries (e.g. states). Default \`"grey20"\`.
+  Color for regional boundaries (e.g. states). Default \`"grey20"\`.
 
 - regional_boundary_size:
 
@@ -149,7 +148,7 @@ geom_world(
 
 - undefined_boundary_color:
 
-  Colour for undefined or disputed boundaries. Default \`"grey20"\`.
+  Color for undefined or disputed boundaries. Default \`"grey20"\`.
 
 - undefined_boundary_size:
 
@@ -161,7 +160,7 @@ geom_world(
 
 - military_boundary_color:
 
-  Colour for military demarcation lines. Default \`"grey20"\`.
+  Color for military demarcation lines. Default \`"grey20"\`.
 
 - military_boundary_size:
 
@@ -183,49 +182,44 @@ subset), ready to be added to a ggplot.
 
 ## Details
 
-This function supersedes an earlier, much simpler version of
-\`geom_world()\` that was a thin wrapper around \[ggplot2::geom_sf()\]
-and required users to supply their own map data.
+This function supersedes early development versions that required users
+to supply their own map data.
 
 The current implementation:
 
-\- always uses bundled world map data (countries, coastlines,
-boundaries); - exposes dedicated arguments for ocean fill, coastlines,
-and different types of administrative boundaries; - builds a
-projection-aware global outline for the ocean/frame layer: rectangular
-in geographic CRSs, and a convex “world hull” in projected CRSs (e.g.
-Robinson, Mollweide).
-
-Compared to early development versions of \*\*ggmapcn\*\*, some
-arguments and defaults have changed. Please refer to this help page when
-upgrading old code that used \`geom_world()\`.
+\- Always uses bundled world map data (countries, coastlines,
+boundaries). - Exposes dedicated arguments for ocean fill, coastlines,
+and administrative boundaries. - Builds a projection-aware global
+outline for the ocean/frame layer. For \*\*geographic CRSs\*\*
+(including those with a shifted central meridian, e.g., \`+lon_0=150\`),
+it creates a seamless rectangular bounding box directly in the target
+CRS to avoid topological splitting artifacts (vertical lines). For
+\*\*projected CRSs\*\* (e.g., Robinson, Mollweide), it computes the
+convex hull of the projected graticule.
 
 ## Examples
 
 ``` r
 library(ggplot2)
 
-# 1. Simplest world map
+# 1. Simple World Map (WGS84)
 ggplot() +
   geom_world() +
   theme_void()
 
 
-# 2. World map with long–lat axes
+# 2. Pacific-Centered View (Shifted LongLat)
+crs_longlat_150 <- "+proj=longlat +datum=WGS84 +lon_0=150"
 ggplot() +
-  geom_world() +
-  coord_sf(
-    crs    = 4326,
-    expand = FALSE,
-    datum  = sf::st_crs(4326)
-  ) +
-  theme_minimal()
+  geom_world(crs = crs_longlat_150, show_frame = TRUE, show_ocean = FALSE) +
+  theme_void()
 
 
-# 3. Without ocean layer
+# 3. Robinson Projection (Projected CRS)
+crs_robin <- "+proj=robin +lon_0=0 +datum=WGS84"
 ggplot() +
-  geom_world(show_ocean = FALSE) +
-  theme_minimal()
+  geom_world(crs = crs_robin, show_frame = TRUE) +
+  theme_void()
 
 
 # 4. Without administrative boundaries
@@ -234,24 +228,13 @@ ggplot() +
   theme_minimal()
 
 
-# 5. Robinson projection centred at 150°E
-crs_robin_150 <- "+proj=robin +lon_0=150 +datum=WGS84"
+# 5. Highlighting specific countries (China)
 ggplot() +
-  geom_world(crs = crs_robin_150) +
-  coord_sf(crs = crs_robin_150) +
-  theme_void()
-
-
-# 6. Highlight China
-ggplot() +
+  geom_world(country_fill = "grey95") +
   geom_world(
-    country_fill = "grey95",
-    show_frame   = TRUE
-  ) +
-  geom_world(
-    filter_attribute       = "SOC",
-    filter                 = "CHN",
-    country_fill           = "red",
+    filter_attribute = "SOC",
+    filter = "CHN",
+    country_fill = "red",
     country_boundary_color = "black"
   ) +
   theme_void()

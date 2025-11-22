@@ -7,11 +7,14 @@ provides a convenient global base map for `ggplot2`. It comes bundled
 with country polygons, coastlines, and political/administrative
 boundaries.
 
-Key features include: \* **Automatic CRS transformation**: Seamlessly
-projects data to your desired Coordinate Reference System. \*
-**Antimeridian splitting**: Handles the “Pacific wrap-around” issue
-automatically when changing central meridians. \* **Layer control**:
-Toggles for ocean background and administrative boundaries.
+Key features include:
+
+- **Automatic CRS transformation**: Seamlessly projects data to your
+  desired Coordinate Reference System.
+- **Antimeridian splitting**: Handles the “Pacific wrap-around” issue
+  automatically when changing central meridians.
+- **Layer control**: Toggles for ocean background and administrative
+  boundaries.
 
 ## 2. Basic usage
 
@@ -152,9 +155,12 @@ East.](World_Map_Overview_files/figure-html/wgs84_pacific-1.png)
 A common issue with
 [`coord_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html) is
 that gridlines appear, but axis labels (coordinates) disappear. This
-often occurs when: \* `expand = TRUE` extends the map beyond ±180° or
-±90°. \* The CRS lacks a geographic datum. \* Solid layers (like the
-ocean polygon) are drawn *on top* of the panel grid.
+often occurs when:
+
+- `expand = TRUE` extends the map beyond ±180° or ±90°.
+- The CRS lacks a geographic datum.
+- Solid layers (like the ocean polygon) are drawn *on top* of the panel
+  grid.
 
 **Recommended pattern for reliable axis labels:** Use `expand = FALSE`
 inside `coord_sf` and set `panel.ontop = TRUE` in the theme.
@@ -179,9 +185,11 @@ layer.](World_Map_Overview_files/figure-html/axis_labels-1.png)
 
 [`annotation_graticule()`](https://rimagination.github.io/ggmapcn/reference/annotation_graticule.md)
 provides precise control over meridians and parallels. Unlike standard
-gridlines, these are annotation layers that: \* Are generated in WGS84
-and transformed to your target CRS. \* Allow for custom line spacing
-(`lon_step`, `lat_step`) and label placement.
+gridlines, these are annotation layers that:
+
+- Are generated in WGS84 and transformed to your target CRS.
+- Allow for custom line spacing (`lon_step`, `lat_step`) and label
+  placement.
 
 ### 5.1 Global WGS84 map with graticules
 
@@ -200,8 +208,6 @@ ggplot() +
   ) +
   theme_void() +
   theme(panel.ontop = TRUE)
-#> Spherical geometry (s2) switched off
-#> Spherical geometry (s2) switched on
 ```
 
 ![A world map with custom graticule lines labeled every 60 degrees
@@ -225,8 +231,6 @@ ggplot() +
   ) +
   coord_sf(crs = crs_robin) +
   theme_void()
-#> Spherical geometry (s2) switched off
-#> Spherical geometry (s2) switched on
 ```
 
 ![A Robinson projection map with curved graticule
@@ -234,13 +238,15 @@ lines.](World_Map_Overview_files/figure-html/graticule_robin-1.png)
 
 ### 5.3 Regional China map (clean axis labels)
 
-For regional maps, the recommended pattern is to: 1. Use
-[`annotation_graticule()`](https://rimagination.github.io/ggmapcn/reference/annotation_graticule.md)
-to draw the lines but hide its internal labels (`label_color = NA`). 2.
-Use standard
-[`labs()`](https://ggplot2.tidyverse.org/reference/labs.html) or
-`coord_sf` labels for the axes. 3. Keep the region exact with
-`expand = FALSE`.
+For regional maps, the recommended pattern is to:
+
+1.  Use
+    [`annotation_graticule()`](https://rimagination.github.io/ggmapcn/reference/annotation_graticule.md)
+    to draw the lines but hide its internal labels (`label_color = NA`).
+2.  Use standard
+    [`labs()`](https://ggplot2.tidyverse.org/reference/labs.html) or
+    `coord_sf` labels for the axes.
+3.  Keep the region exact with `expand = FALSE`.
 
 ``` r
 cn_xlim <- c(70, 140)
@@ -268,8 +274,6 @@ ggplot() +
     y = "Latitude"
   ) +
   theme_bw()
-#> Spherical geometry (s2) switched off
-#> Spherical geometry (s2) switched on
 ```
 
 ![A regional map of China and surrounding areas with clean axis labels
@@ -325,13 +329,85 @@ ggplot() +
 ![A world map highlighting China, Japan, and South Korea in
 orange.](World_Map_Overview_files/figure-html/highlight_multi-1.png)
 
-## 7. Summary
+## 7. Visualizing Custom Data
 
-This vignette introduced how to: \* Draw global maps using
-[`geom_world()`](https://rimagination.github.io/ggmapcn/reference/geom_world.md).
-\* Control ocean and administrative boundary layers. \* Work with
-different projections. \* Avoid missing axis labels in
-[`coord_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html). \*
-Add custom meridians/parallels with
-[`annotation_graticule()`](https://rimagination.github.io/ggmapcn/reference/annotation_graticule.md).
-\* Highlight individual or groups of countries.
+Users can also merge external datasets (e.g., GDP, population, or other
+metrics) with the map data to create choropleth maps. This requires
+accessing the underlying spatial data using `check_geodata` and `load`.
+
+### 7.1 Merging external metrics
+
+First, ensure the necessary geospatial data files are available and load
+them. Then, merge your custom data using the ISO country code (SOC).
+
+``` r
+# 1. Ensure data availability and GET FILE PATHS
+map_files <- check_geodata(c("world_countries.rda", "world_coastlines.rda"))
+#> extdata dir: /home/runner/work/_temp/Library/ggmapcn/extdata (writable = TRUE)
+#> cache   dir: /home/runner/.local/share/R/ggmapcn (writable = TRUE)
+#> Using existing extdata file: /home/runner/work/_temp/Library/ggmapcn/extdata/world_countries.rda
+#> Using existing extdata file: /home/runner/work/_temp/Library/ggmapcn/extdata/world_coastlines.rda
+
+# 2. Load the world countries data (object name: 'countries')
+load(map_files[1])
+
+# 3. Create custom data: Real 2023 Population Estimates (Top 25+ major nations)
+# Unit: Millions
+custom_data <- data.frame(
+  iso_code = c("CHN", "IND", "USA", "IDN", "PAK", "NGA", "BRA", "BGD", 
+               "RUS", "MEX", "JPN", "ETH", "PHL", "EGY", "VNM", "COD", 
+               "TUR", "IRN", "DEU", "THA", "GBR", "FRA", "ITA", "ZAF", 
+               "KOR", "ESP", "COL", "CAN", "AUS", "SAU"),
+  pop_mil  = c(1425.7, 1428.6, 339.9, 277.5, 240.5, 223.8, 216.4, 172.9, 
+               144.4, 128.5, 123.3, 126.5, 117.3, 112.7, 98.9, 102.3, 
+               85.8, 89.2, 83.2, 71.8, 67.7, 64.7, 58.9, 60.4, 
+               51.7, 47.5, 52.1, 38.8, 26.6, 36.9)
+)
+
+# 4. Merge custom data with the 'countries' object
+# Note: Use 'all.x = TRUE' to preserve the map geometry for all countries
+merged_data <- merge(
+  countries, 
+  custom_data, 
+  by.x  = "SOC", 
+  by.y  = "iso_code", 
+  all.x = TRUE
+)
+
+# 5. Plot with layering strategy
+ggplot() +
+  # Layer 1: Data Fill (No borders, just color)
+  geom_sf(
+    data  = merged_data, 
+    aes(fill = pop_mil), 
+    color = "transparent"
+  ) +
+  # Layer 2: World Boundaries (Transparent fill, standard borders)
+  geom_world(
+    country_fill = NA, 
+    show_ocean   = FALSE
+  ) +
+  # Styling
+  scale_fill_viridis_c(
+    option    = "plasma", 
+    na.value  = "grey95", 
+    direction = -1,      # Reverse color scale so dark = high population
+    name      = "Population (Millions)"
+  ) +
+  theme_void() +
+  theme(legend.position = "bottom")
+```
+
+![A world map with countries colored by GDP using a continuous color
+scale.](World_Map_Overview_files/figure-html/custom_data_gdp-1.png)
+
+This workflow highlights a key design philosophy: by accessing raw
+spatial data via
+[`check_geodata()`](https://rimagination.github.io/ggmapcn/reference/check_geodata.md)
+and processing it with
+[`geom_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html), you
+gain complete flexibility to visualize custom datasets. At the same
+time, overlaying
+[`geom_world()`](https://rimagination.github.io/ggmapcn/reference/geom_world.md)
+ensures that the final map retains the consistent, high-quality basemap
+and administrative boundary styles provided by `ggmapcn`.

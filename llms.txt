@@ -227,7 +227,7 @@ See the Articles for tutorials on:
 - [`geom_mapcn()`](https://rimagination.github.io/ggmapcn/reference/geom_mapcn.md)
   : Plot China Map with Customizable Options
 - [`geom_world()`](https://rimagination.github.io/ggmapcn/reference/geom_world.md)
-  : Convenient global basemap layer for ggplot2
+  : Convenient Global Basemap Layer for ggplot2
 - [`ggmapcn`](https://rimagination.github.io/ggmapcn/reference/ggmapcn-package.md)
   [`ggmapcn-package`](https://rimagination.github.io/ggmapcn/reference/ggmapcn-package.md)
   : ggmapcn: China-Focused Mapping Tools with Optional Global Support
