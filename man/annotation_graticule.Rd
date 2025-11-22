@@ -24,18 +24,18 @@ annotation_graticule(
 }
 \arguments{
 \item{xlim}{Numeric vector of length 2 giving the longitude range in degrees
-as `c(xmin, xmax)` in longitude–latitude (WGS84, EPSG:4326). Longitudes are
+as `c(xmin, xmax)` in longitude-latitude (WGS84, EPSG:4326). Longitudes are
 interpreted in `[-180, 180]`. If both `xlim` and `ylim` are `NULL`
 (default), the full globe `(-180, 180)` is used.}
 
 \item{ylim}{Numeric vector of length 2 giving the latitude range in degrees
-as `c(ymin, ymax)` in longitude–latitude (WGS84, EPSG:4326). Latitudes are
+as `c(ymin, ymax)` in longitude-latitude (WGS84, EPSG:4326). Latitudes are
 interpreted in `[-90, 90]`. If both `xlim` and `ylim` are `NULL`
 (default), the full globe `(-90, 90)` is used.}
 
 \item{crs}{Target coordinate reference system for the graticule, given
 as a PROJ string or `sf::crs` object. This should match the CRS used in
-your map layers and `coord_sf()`. The default is a WGS84 longitude–
+your map layers and `coord_sf()`. The default is a WGS84 longitude-
 latitude definition.}
 
 \item{lon_step}{Spacing in degrees between meridians. Default is `60`.}
@@ -76,7 +76,7 @@ A list of two `ggplot2` layers: a `geom_sf()` layer for graticule
   lines and a `geom_text()` layer for the labels.
 }
 \description{
-Draw global latitude–longitude graticules with degree labels as annotation
+Draw global latitude-longitude graticules with degree labels as annotation
 layers for `ggplot2` maps. Graticules are constructed in geographic
 coordinates (EPSG:4326) over a user-defined window (given by `xlim`/`ylim`,
 default: the full globe), optionally split at the antimeridian according to
@@ -84,16 +84,16 @@ the target CRS, and then transformed into the map CRS. Regional maps usually
 do not need this function and can rely on the default `coord_sf()` axes.
 }
 \details{
-Graticules are always generated in WGS84 longitude–latitude (EPSG:4326).
+Graticules are always generated in WGS84 longitude-latitude (EPSG:4326).
 When a non-zero central meridian (`lon_0`) is detected in the target CRS,
 meridians and parallels can be split at the antimeridian via
 `sf::st_break_antimeridian()` before being transformed, which avoids
-unexpected line wrapping in projections centred away from 0°.
+unexpected line wrapping in projections centred away from 0 degrees.
 
-Latitude labels at ±90° are always omitted. When drawing a full-globe
-longitude–latitude map with a 0° central meridian (that is, when `xlim` and
+Latitude labels at +/-90 degrees are always omitted. When drawing a full-globe
+longitude-latitude map with a 0 degree central meridian (that is, when `xlim` and
 `ylim` are both `NULL` and the CRS is geographic with `lon_0 = 0`),
-longitude labels at ±180° are omitted (the corresponding graticule lines may
+longitude labels at +/-180 degrees are omitted (the corresponding graticule lines may
 still be drawn).
 }
 \examples{
@@ -110,7 +110,7 @@ ggplot() +
   coord_sf(crs = "+proj=longlat +datum=WGS84") +
   theme_void()
 
-# 2. Robinson projection centred at 150°E
+# 2. Robinson projection centred at 150E
 crs_robin_150 <- "+proj=robin +lon_0=150 +datum=WGS84"
 
 ggplot() +
@@ -124,7 +124,7 @@ ggplot() +
   coord_sf(crs = crs_robin_150) +
   theme_void()
 
-# 3. Regional China map (long–lat) with graticule lines and axis labels
+# 3. Regional China map (long-lat) with graticule lines and axis labels
 cn_xlim <- c(70, 140)
 cn_ylim <- c(0, 60)
 
