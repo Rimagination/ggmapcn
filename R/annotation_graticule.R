@@ -86,9 +86,9 @@
 #' ggplot() +
 #'   geom_world(crs = crs_robin_150) +
 #'   annotation_graticule(
-#'     crs          = crs_robin_150,
-#'     lon_step     = 30,
-#'     lat_step     = 15,
+#'     crs           = crs_robin_150,
+#'     lon_step      = 30,
+#'     lat_step      = 15,
 #'     label_offset = 3e5
 #'   ) +
 #'   coord_sf(crs = crs_robin_150) +
@@ -101,14 +101,14 @@
 #' ggplot() +
 #'   geom_world() +
 #'   annotation_graticule(
-#'     xlim         = cn_xlim,
-#'     ylim         = cn_ylim,
-#'     crs          = 4326,
-#'     lon_step     = 10,
-#'     lat_step     = 10,
-#'     label_color  = NA,   # draw only lines; use axis labels instead
+#'     xlim          = cn_xlim,
+#'     ylim          = cn_ylim,
+#'     crs           = 4326,
+#'     lon_step      = 10,
+#'     lat_step      = 10,
+#'     label_color   = NA,   # draw only lines; use axis labels instead
 #'     label_offset = 1,
-#'     label_size   = 3.5
+#'     label_size    = 3.5
 #'   ) +
 #'   coord_sf(
 #'     xlim   = cn_xlim,
@@ -285,8 +285,11 @@ annotation_graticule <- function(
 
   ## ---- 3. Antimeridian handling and transform -----------------------------
 
-  s2_old <- sf::sf_use_s2(FALSE)
-  on.exit(sf::sf_use_s2(s2_old), add = TRUE)
+  # [Modified] Suppress "Spherical geometry (s2) switched off" message
+  s2_old <- suppressMessages(sf::sf_use_s2(FALSE))
+
+  # [Modified] Suppress "Spherical geometry (s2) switched on" message on exit
+  on.exit(suppressMessages(sf::sf_use_s2(s2_old)), add = TRUE)
 
   g_lines_cut <- g_lines
 
@@ -322,11 +325,11 @@ annotation_graticule <- function(
 
   labels_list <- list()
 
-  ## 经度标签
+  ## Longitude labels
   if (length(lon_vals) > 0) {
     for (lon in lon_vals) {
 
-      ## full-globe long-lat + lon_0 = 0 且 xlim/ylim 都为 NULL 时，跳过 ±180° 标签
+      ## skip ±180° labels for full globe lon=0 maps
       if (is.null(xlim) && is.null(ylim) &&
           is_longlat &&
           abs(lon0) < 1e-8 &&
@@ -367,11 +370,11 @@ annotation_graticule <- function(
     }
   }
 
-  ## 纬度标签
+  ## Latitude labels
   if (length(lat_vals) > 0) {
     for (lat in lat_vals) {
 
-      ## 去掉极点标签（±90°）
+      ## skip ±90°
       if (abs(lat) >= 90 - 1e-8) next
 
       coords <- get_line_coords("parallel", lat)

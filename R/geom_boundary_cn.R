@@ -47,7 +47,7 @@
 #' @param undefined_boundary_size Numeric. Line width for undefined boundaries.
 #'   Default: `0.2`.
 #' @param undefined_boundary_linetype Character. Line type for undefined
-#'   boundaries. Default: `"longdash"`.
+#'   boundaries. Default: `"dotdash"`.
 #'
 #' @param province_color Character. Line color for provincial boundaries.
 #'   Default: `"transparent"`.
@@ -104,7 +104,7 @@ geom_boundary_cn <- function(
     coastline_color = "blue", coastline_size = 0.1, coastline_linetype = "solid",
     ten_segment_line_color = "black", ten_segment_line_size = 0.2, ten_segment_line_linetype = "solid",
     SAR_boundary_color = "grey40", SAR_boundary_size = 0.1, SAR_boundary_linetype = "dashed",
-    undefined_boundary_color = "black", undefined_boundary_size = 0.2, undefined_boundary_linetype = "longdash",
+    undefined_boundary_color = "black", undefined_boundary_size = 0.2, undefined_boundary_linetype = "dotdash",
     province_color = "transparent", province_size = 0.1, province_linetype = "solid",
     ...) {
 

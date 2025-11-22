@@ -22,7 +22,7 @@ geom_boundary_cn(
   SAR_boundary_linetype = "dashed",
   undefined_boundary_color = "black",
   undefined_boundary_size = 0.2,
-  undefined_boundary_linetype = "longdash",
+  undefined_boundary_linetype = "dotdash",
   province_color = "transparent",
   province_size = 0.1,
   province_linetype = "solid",
@@ -83,7 +83,7 @@ disputed boundaries. Default: `"black"`.}
 Default: `0.2`.}
 
 \item{undefined_boundary_linetype}{Character. Line type for undefined
-boundaries. Default: `"longdash"`.}
+boundaries. Default: `"dotdash"`.}
 
 \item{province_color}{Character. Line color for provincial boundaries.
 Default: `"transparent"`.}

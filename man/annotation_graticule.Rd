@@ -116,9 +116,9 @@ crs_robin_150 <- "+proj=robin +lon_0=150 +datum=WGS84"
 ggplot() +
   geom_world(crs = crs_robin_150) +
   annotation_graticule(
-    crs          = crs_robin_150,
-    lon_step     = 30,
-    lat_step     = 15,
+    crs           = crs_robin_150,
+    lon_step      = 30,
+    lat_step      = 15,
     label_offset = 3e5
   ) +
   coord_sf(crs = crs_robin_150) +
@@ -131,14 +131,14 @@ cn_ylim <- c(0, 60)
 ggplot() +
   geom_world() +
   annotation_graticule(
-    xlim         = cn_xlim,
-    ylim         = cn_ylim,
-    crs          = 4326,
-    lon_step     = 10,
-    lat_step     = 10,
-    label_color  = NA,   # draw only lines; use axis labels instead
+    xlim          = cn_xlim,
+    ylim          = cn_ylim,
+    crs           = 4326,
+    lon_step      = 10,
+    lat_step      = 10,
+    label_color   = NA,   # draw only lines; use axis labels instead
     label_offset = 1,
-    label_size   = 3.5
+    label_size    = 3.5
   ) +
   coord_sf(
     xlim   = cn_xlim,

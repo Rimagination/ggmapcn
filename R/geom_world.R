@@ -1,4 +1,4 @@
-#' Convenient global basemap layer for ggplot2
+#' Convenient Global Basemap Layer for ggplot2
 #'
 #' @description
 #' `geom_world()` draws a styled global basemap using bundled country
@@ -7,26 +7,23 @@
 #' optional country filtering for focused maps.
 #'
 #' @details
-#' This function supersedes an earlier, much simpler version of `geom_world()`
-#' that was a thin wrapper around [ggplot2::geom_sf()] and required users to
+#' This function supersedes early development versions that required users to
 #' supply their own map data.
 #'
 #' The current implementation:
 #'
-#' - always uses bundled world map data (countries, coastlines, boundaries);
-#' - exposes dedicated arguments for ocean fill, coastlines, and different
-#'   types of administrative boundaries;
-#' - builds a projection-aware global outline for the ocean/frame layer:
-#'   rectangular in geographic CRSs, and a convex “world hull” in projected
-#'   CRSs (e.g. Robinson, Mollweide).
-#'
-#' Compared to early development versions of **ggmapcn**, some arguments and
-#' defaults have changed. Please refer to this help page when upgrading old
-#' code that used `geom_world()`.
+#' - Always uses bundled world map data (countries, coastlines, boundaries).
+#' - Exposes dedicated arguments for ocean fill, coastlines, and administrative boundaries.
+#' - Builds a projection-aware global outline for the ocean/frame layer.
+#'   For **geographic CRSs** (including those with a shifted central meridian,
+#'   e.g., `+lon_0=150`), it creates a seamless rectangular bounding box directly
+#'   in the target CRS to avoid topological splitting artifacts (vertical lines).
+#'   For **projected CRSs** (e.g., Robinson, Mollweide), it computes the convex
+#'   hull of the projected graticule.
 #'
 #' @param crs Coordinate reference system for the basemap. Accepts a numeric
-#'   EPSG code, a PROJ string, or an [sf::crs] object. The default is `4326`,
-#'   corresponding to WGS84 longitude–latitude.
+#'   EPSG code, a PROJ string, or an [sf::crs] object. The default is `4326`
+#'   (WGS84).
 #'
 #' @param filter_attribute Name of the column in the `countries` dataset used
 #'   for filtering. Default `"SOC"`.
@@ -34,7 +31,7 @@
 #' @param filter Character vector specifying which values of `filter_attribute`
 #'   to retain. If `NULL` (default), no filtering is applied. When non-`NULL`,
 #'   only the selected countries are drawn, and the ocean, coastlines,
-#'   administrative boundaries, and optional frame are all omitted.
+#'   administrative boundaries, and frame are omitted.
 #'
 #' @param show_ocean Logical; draw an ocean background polygon. Default `TRUE`.
 #'   Ignored when `filter` is not `NULL`.
@@ -46,44 +43,44 @@
 #' @param show_frame Logical; draw an outer frame following the projected
 #'   outline of the world. Default `FALSE`. Ignored when `filter` is not `NULL`.
 #'
-#' @param ocean_fill Fill colour for the ocean polygon. Default `"#c7e8fb"`.
+#' @param ocean_fill Fill color for the ocean polygon. Default `"#c7e8fb"`.
 #'
-#' @param frame_color Colour of the outer frame line. Default `"grey20"`.
+#' @param frame_color Color of the outer frame line. Default `"grey20"`.
 #' @param frame_size  Line width of the outer frame. Default `0.1`.
 #' @param frame_linetype Line type of the outer frame. Default `"solid"`.
 #'
-#' @param country_fill Fill colour for country polygons. Default `"grey90"`.
-#' @param country_boundary_color Colour of country boundary outlines.
+#' @param country_fill Fill color for country polygons. Default `"grey90"`.
+#' @param country_boundary_color Color of country boundary outlines.
 #'   Default `"transparent"`.
 #' @param country_boundary_size Width of country boundary outlines.
 #'   Default `0.1`.
 #' @param country_boundary_linetype Line type of country boundaries.
 #'   Default `"solid"`.
 #'
-#' @param coastline_color Colour of the coastline layer. Default `"#26ace7"`.
+#' @param coastline_color Color of the coastline layer. Default `"#26ace7"`.
 #' @param coastline_size  Line width of coastlines. Default `0.1`.
 #' @param coastline_linetype Line type of coastlines. Default `"solid"`.
 #'
-#' @param international_boundary_color Colour for international boundary lines.
+#' @param international_boundary_color Color for international boundary lines.
 #'   Default `"grey20"`.
 #' @param international_boundary_size Width for international boundaries.
 #'   Default `0.1`.
 #' @param international_boundary_linetype Line type for international
 #'   boundaries. Default `"solid"`.
 #'
-#' @param regional_boundary_color Colour for regional boundaries (e.g. states).
+#' @param regional_boundary_color Color for regional boundaries (e.g. states).
 #'   Default `"grey20"`.
 #' @param regional_boundary_size Width for regional boundaries. Default `0.1`.
 #' @param regional_boundary_linetype Line type for regional boundaries.
 #'   Default `"dashed"`.
 #'
-#' @param undefined_boundary_color Colour for undefined or disputed boundaries.
+#' @param undefined_boundary_color Color for undefined or disputed boundaries.
 #'   Default `"grey20"`.
 #' @param undefined_boundary_size Width for undefined boundaries. Default `0.1`.
 #' @param undefined_boundary_linetype Line type for undefined boundaries.
 #'   Default `"longdash"`.
 #'
-#' @param military_boundary_color Colour for military demarcation lines.
+#' @param military_boundary_color Color for military demarcation lines.
 #'   Default `"grey20"`.
 #' @param military_boundary_size Width for military demarcation lines.
 #'   Default `0.05`.
@@ -99,48 +96,35 @@
 #' @examples
 #' library(ggplot2)
 #'
-#' # 1. Simplest world map
+#' # 1. Simple World Map (WGS84)
 #' ggplot() +
 #'   geom_world() +
 #'   theme_void()
 #'
-#' # 2. World map with long–lat axes
+#' # 2. Pacific-Centered View (Shifted LongLat)
+#' crs_longlat_150 <- "+proj=longlat +datum=WGS84 +lon_0=150"
 #' ggplot() +
-#'   geom_world() +
-#'   coord_sf(
-#'     crs    = 4326,
-#'     expand = FALSE,
-#'     datum  = sf::st_crs(4326)
-#'   ) +
-#'   theme_minimal()
+#'   geom_world(crs = crs_longlat_150, show_frame = TRUE, show_ocean = FALSE) +
+#'   theme_void()
 #'
-#' # 3. Without ocean layer
+#' # 3. Robinson Projection (Projected CRS)
+#' crs_robin <- "+proj=robin +lon_0=0 +datum=WGS84"
 #' ggplot() +
-#'   geom_world(show_ocean = FALSE) +
-#'   theme_minimal()
+#'   geom_world(crs = crs_robin, show_frame = TRUE) +
+#'   theme_void()
 #'
 #' # 4. Without administrative boundaries
 #' ggplot() +
 #'   geom_world(show_admin_boundaries = FALSE) +
 #'   theme_minimal()
 #'
-#' # 5. Robinson projection centred at 150°E
-#' crs_robin_150 <- "+proj=robin +lon_0=150 +datum=WGS84"
+#' # 5. Highlighting specific countries (China)
 #' ggplot() +
-#'   geom_world(crs = crs_robin_150) +
-#'   coord_sf(crs = crs_robin_150) +
-#'   theme_void()
-#'
-#' # 6. Highlight China
-#' ggplot() +
+#'   geom_world(country_fill = "grey95") +
 #'   geom_world(
-#'     country_fill = "grey95",
-#'     show_frame   = TRUE
-#'   ) +
-#'   geom_world(
-#'     filter_attribute       = "SOC",
-#'     filter                 = "CHN",
-#'     country_fill           = "red",
+#'     filter_attribute = "SOC",
+#'     filter = "CHN",
+#'     country_fill = "red",
 #'     country_boundary_color = "black"
 #'   ) +
 #'   theme_void()
@@ -186,7 +170,7 @@ geom_world <- function(
 ) {
 
   ## ------------------------------------------------------------------------
-  ##  helper: parse lon_0 from CRS (for antimeridian splitting)
+  ## Helper: parse lon_0 from CRS (for antimeridian splitting)
   ## ------------------------------------------------------------------------
   get_lon0_from_crs <- function(crs_obj) {
     s <- crs_obj$input
@@ -195,7 +179,7 @@ geom_world <- function(
 
     if (length(s) == 0 || s == "") return(0)
 
-    # numeric EPSG or "EPSG:xxxx"
+    # numeric EPSG or "EPSG:xxxx" usually implies lon_0 = 0
     if (grepl("^[0-9]+$", s) || grepl("^EPSG:", s, ignore.case = TRUE)) {
       return(0)
     }
@@ -209,12 +193,11 @@ geom_world <- function(
   }
 
   ## ------------------------------------------------------------------------
-  ##  helper: safe transform with optional antimeridian cut
+  ## Helper: safe transform with optional antimeridian cut for land layers
   ## ------------------------------------------------------------------------
   st_transform_safe <- function(x, crs_target, lon0) {
     crs_obj <- sf::st_crs(crs_target)
 
-    # no target CRS: return unchanged
     if (is.na(crs_obj)) {
       return(x)
     }
@@ -227,7 +210,7 @@ geom_world <- function(
         {
           suppressMessages(isTRUE(sf::st_is_longlat(x)))
         },
-        error = function(e) isTRUE(crs_x$is_geographic)
+        error = function(e) FALSE
       )
     }
 
@@ -256,17 +239,26 @@ geom_world <- function(
   }
 
   ## ------------------------------------------------------------------------
-  ##  helper: world outline in target CRS
-  ##   - geographic CRS: rectangular bbox (-180..180, -90..90)
-  ##   - projected CRS: convex hull of a dense lon/lat grid after transform
+  ## Helper: world outline in target CRS
   ## ------------------------------------------------------------------------
   make_world_outline <- function(crs_target, lon0) {
-
     crs_obj <- sf::st_crs(crs_target)
-    is_geographic <- isTRUE(crs_obj$is_geographic)
 
-    # --- Case 1: true geographic CRS --------------------------------------
-    if (is_geographic) {
+    # Test if target CRS is geographic using a dummy point
+    test_pt   <- sf::st_sfc(sf::st_point(c(0, 0)), crs = crs_obj)
+    is_longlat <- tryCatch(
+      {
+        suppressMessages(isTRUE(sf::st_is_longlat(test_pt)))
+      },
+      error = function(e) FALSE
+    )
+
+    # --- Case 1: Geographic CRS (Long/Lat) ----------------------------------
+    # If the target is geographic (even with shifted lon_0), we create the
+    # bounding box directly in the target CRS coordinates. This prevents
+    # sf from creating a MULTIPOLYGON with a split line (artifact) at the
+    # dateline, ensuring a single, seamless rectangular frame.
+    if (is_longlat) {
       bb <- sf::st_bbox(
         c(xmin = -180, xmax = 180, ymin = -90, ymax = 90),
         crs = crs_obj
@@ -275,16 +267,18 @@ geom_world <- function(
       return(outline)
     }
 
-    # --- Case 2: projected CRS (Robinson, Mollweide, etc.) ----------------
+    # --- Case 2: Projected CRS (Robinson, Mollweide, etc.) ------------------
+    # Create a dense grid of points in WGS84, transform them, and compute hull.
     lon <- seq(-180, 180, by = 2)
     lat <- seq(-90,   90, by = 2)
 
     pts_ll <- expand.grid(lon = lon, lat = lat)
     pts_ll <- sf::st_as_sf(pts_ll, coords = c("lon", "lat"), crs = 4326)
 
-    pts_proj <- sf::st_transform(pts_ll, crs_obj)
+    # Use the safe transform to project points
+    pts_proj <- st_transform_safe(pts_ll, crs_obj, lon0)
 
-    # temporarily switch off s2 in a silent and reversible way
+    # Temporarily switch off s2 for convex hull calculation
     old_s2 <- suppressMessages(sf::sf_use_s2())
     on.exit(suppressMessages(sf::sf_use_s2(old_s2)), add = TRUE)
     suppressMessages(sf::sf_use_s2(FALSE))
@@ -295,7 +289,7 @@ geom_world <- function(
 
     outline <- sf::st_sf(geometry = hull)
 
-    # extreme fallback: if hull is empty, use bbox of projected points
+    # Fallback: if hull is empty, use bbox of projected points
     if (all(sf::st_is_empty(outline))) {
       bb_proj <- sf::st_bbox(pts_proj)
       outline <- sf::st_sf(geometry = sf::st_as_sfc(bb_proj))
@@ -305,7 +299,7 @@ geom_world <- function(
   }
 
   ## ------------------------------------------------------------------------
-  ## 1. load bundled data via check_geodata()
+  ## 1. Load bundled data via check_geodata()
   ## ------------------------------------------------------------------------
   paths <- check_geodata(
     files = c("world_countries.rda",
@@ -324,7 +318,7 @@ geom_world <- function(
   boundaries <- env$boundaries
 
   ## ------------------------------------------------------------------------
-  ## 2. optional filtering on countries
+  ## 2. Optional filtering on countries
   ## ------------------------------------------------------------------------
   filtered_mode <- !is.null(filter)
 
@@ -351,14 +345,14 @@ geom_world <- function(
   outline_proj <- make_world_outline(crs_obj, lon0)
 
   ## ------------------------------------------------------------------------
-  ## 4. transform all layers safely
+  ## 4. Transform all layers safely
   ## ------------------------------------------------------------------------
   countries_proj  <- st_transform_safe(countries,  crs_obj, lon0)
   coastlines_proj <- st_transform_safe(coastlines, crs_obj, lon0)
   boundaries_proj <- st_transform_safe(boundaries, crs_obj, lon0)
 
   ## ------------------------------------------------------------------------
-  ## 5. split boundaries by fixed column "Type"
+  ## 5. Split boundaries by fixed column "Type"
   ## ------------------------------------------------------------------------
   subset_boundary <- function(label) {
     idx <- boundaries_proj$Type == label
@@ -371,11 +365,11 @@ geom_world <- function(
   military_boundary      <- subset_boundary("Military demarcation line")
 
   ## ------------------------------------------------------------------------
-  ## 6. assemble ggplot layers
+  ## 6. Assemble ggplot layers
   ## ------------------------------------------------------------------------
   layers <- list()
 
-  # 6.1 ocean background (not drawn in filtered mode)
+  # 6.1 Ocean background (not drawn in filtered mode)
   if (show_ocean && !filtered_mode &&
       !is.null(outline_proj) &&
       inherits(outline_proj, "sf") &&
@@ -390,7 +384,7 @@ geom_world <- function(
     ))
   }
 
-  # 6.2 countries (always drawn)
+  # 6.2 Countries (always drawn)
   layers <- append(layers, list(
     ggplot2::geom_sf(
       data      = countries_proj,
@@ -402,7 +396,7 @@ geom_world <- function(
     )
   ))
 
-  # 6.3 coastlines (not drawn in filtered mode)
+  # 6.3 Coastlines (not drawn in filtered mode)
   if (!filtered_mode) {
     layers <- append(layers, list(
       ggplot2::geom_sf(
@@ -414,7 +408,7 @@ geom_world <- function(
     ))
   }
 
-  # 6.4 administrative boundaries (not drawn in filtered mode)
+  # 6.4 Administrative boundaries (not drawn in filtered mode)
   if (show_admin_boundaries && !filtered_mode) {
     layers <- append(layers, list(
       ggplot2::geom_sf(
@@ -444,7 +438,7 @@ geom_world <- function(
     ))
   }
 
-  # 6.5 outer frame (not drawn in filtered mode)
+  # 6.5 Outer frame (not drawn in filtered mode)
   if (show_frame && !filtered_mode &&
       !is.null(outline_proj) &&
       inherits(outline_proj, "sf") &&
