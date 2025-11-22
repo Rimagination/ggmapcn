@@ -106,7 +106,7 @@
 #'     crs           = 4326,
 #'     lon_step      = 10,
 #'     lat_step      = 10,
-#'     label_color   = NA,   # draw only lines; use axis labels instead
+#'     label_color   = NA,    # draw only lines; use axis labels instead
 #'     label_offset = 1,
 #'     label_size    = 3.5
 #'   ) +

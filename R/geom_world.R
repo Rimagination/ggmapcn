@@ -83,7 +83,7 @@
 #' @param military_boundary_color Color for military demarcation lines.
 #'   Default `"grey20"`.
 #' @param military_boundary_size Width for military demarcation lines.
-#'   Default `0.05`.
+#'   Default `0.1`.
 #' @param military_boundary_linetype Line type for military demarcation lines.
 #'   Default `"dotted"`.
 #'
@@ -164,7 +164,7 @@ geom_world <- function(
     undefined_boundary_size       = 0.1,
     undefined_boundary_linetype   = "longdash",
     military_boundary_color       = "grey20",
-    military_boundary_size        = 0.05,
+    military_boundary_size        = 0.1,
     military_boundary_linetype    = "dotted",
     ...
 ) {
@@ -242,7 +242,13 @@ geom_world <- function(
   ## Helper: world outline in target CRS
   ## ------------------------------------------------------------------------
   make_world_outline <- function(crs_target, lon0) {
+
     crs_obj <- sf::st_crs(crs_target)
+
+    # [Crucial fix] Temporarily switch off S2 to treat coords as planar during hull/box creation.
+    # This ensures the ocean box is generated correctly on all machines.
+    old_s2 <- suppressMessages(sf::sf_use_s2(FALSE))
+    on.exit(suppressMessages(sf::sf_use_s2(old_s2)), add = TRUE)
 
     # Test if target CRS is geographic using a dummy point
     test_pt   <- sf::st_sfc(sf::st_point(c(0, 0)), crs = crs_obj)
@@ -277,11 +283,6 @@ geom_world <- function(
 
     # Use the safe transform to project points
     pts_proj <- st_transform_safe(pts_ll, crs_obj, lon0)
-
-    # Temporarily switch off s2 for convex hull calculation
-    old_s2 <- suppressMessages(sf::sf_use_s2())
-    on.exit(suppressMessages(sf::sf_use_s2(old_s2)), add = TRUE)
-    suppressMessages(sf::sf_use_s2(FALSE))
 
     hull <- suppressMessages(
       sf::st_convex_hull(sf::st_union(pts_proj))
