@@ -201,7 +201,7 @@ convex hull of the projected graticule.
 
 ``` r
 library(ggplot2)
-
+# \donttest{
 # 1. Simple World Map (WGS84)
 ggplot() +
   geom_world() +
@@ -239,4 +239,5 @@ ggplot() +
   ) +
   theme_void()
 
+# }
 ```
