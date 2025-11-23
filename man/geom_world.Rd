@@ -149,7 +149,7 @@ The current implementation:
 }
 \examples{
 library(ggplot2)
-
+\donttest{
 # 1. Simple World Map (WGS84)
 ggplot() +
   geom_world() +
@@ -182,5 +182,6 @@ ggplot() +
     country_boundary_color = "black"
   ) +
   theme_void()
+}
 
 }

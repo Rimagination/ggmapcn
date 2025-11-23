@@ -14,37 +14,45 @@ coord_proj(
 )
 }
 \arguments{
-\item{crs}{Character string specifying the output coordinate reference system
-(e.g., `"EPSG:4326"`, `"EPSG:3857"`, or a PROJ string such as
-`"+proj=aeqd +lat_0=35 +lon_0=105"`). Required.}
+\item{crs}{Character string or object specifying the output coordinate
+reference system (e.g., `"EPSG:3857"`, `"+proj=robin"`, or an `sf::crs` object).
+**Required**.}
 
 \item{xlim}{Numeric vector of length 2. Longitude limits in degrees (WGS84).}
 
 \item{ylim}{Numeric vector of length 2. Latitude limits in degrees (WGS84).}
 
-\item{expand}{Logical. Passed to \code{coord_sf()}. Default: `TRUE`.}
+\item{expand}{Logical. Passed to [ggplot2::coord_sf()]. Default is `TRUE`.}
 
-\item{default_crs}{Character. CRS of `xlim` and `ylim`. Default: `"EPSG:4326"`.}
+\item{default_crs}{Character or object. The CRS of the input `xlim` and `ylim`.
+Default is `"EPSG:4326"` (WGS84).}
 
-\item{...}{Additional arguments passed to \code{coord_sf()}.}
+\item{...}{Additional arguments passed to [ggplot2::coord_sf()].}
 }
 \value{
-A \code{ggplot2::coord_sf} object with automatically transformed limits.
+A `CoordSf` object (specifically a result of `coord_sf()`) with
+  automatically transformed limits.
 }
 \description{
-`coord_proj()` extends \code{\link[ggplot2:coord_sf]{ggplot2::coord_sf()}} by
-allowing users to specify map limits (`xlim`, `ylim`) in geographic coordinates
-(longitude/latitude, WGS84). These limits are automatically transformed into the
-target projected CRS, ensuring that maps display the intended region correctly
-under any projection.
+`coord_proj()` extends [ggplot2::coord_sf()] by allowing users to specify
+map limits (`xlim`, `ylim`) in geographic coordinates (longitude/latitude, WGS84).
+These limits are automatically transformed into the target projected CRS,
+ensuring that maps display the intended region correctly under any projection.
+}
+\details{
+This wrapper is particularly useful because [ggplot2::coord_sf()] interprets
+`xlim` and `ylim` as *projected* coordinates (in the units of the target CRS).
+Passing longitude/latitude directly to `coord_sf()` results in incorrect map
+extents unless the output CRS is also WGS84.
 
-This wrapper is particularly useful because \code{coord_sf()} interprets
-`xlim` and `ylim` as *projected* coordinates. Passing longitude/latitude
-directly to \code{coord_sf()} results in incorrect map extents unless the CRS
-is WGS84. `coord_proj()` provides a safe, projection-aware workflow that
-requires no manual calculation of projected bounding boxes.
+`coord_proj()` provides a safe, projection-aware workflow that calculates
+the bounding box in WGS84, transforms it to the target CRS, and passes the
+new limits to `coord_sf()`.
 }
 \examples{
+library(ggplot2)
+
+\donttest{
 # Example 1: China (AEQD projection) with geographic limits
 china_proj <- "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs"
 
@@ -57,22 +65,22 @@ ggplot() +
   ) +
   theme_minimal()
 
+# Example 2: Zooming into a specific region
+# Even though the map is projected (Robinson), we specify limits in Lat/Lon
+crs_robin <- "+proj=robin +lon_0=0 +datum=WGS84"
 
-# Example 2: South China Sea region using geom_mapcn + geom_boundary_cn
 ggplot() +
-  geom_mapcn(fill = "white") +
-  geom_boundary_cn() +
-  theme_bw() +
+  geom_world(crs = crs_robin) +
   coord_proj(
-    crs = china_proj,
-    expand = FALSE,
-    xlim = c(105, 126),   # lon range
-    ylim = c(2, 23)       # lat range
-  )
+    crs = crs_robin,
+    xlim = c(-20, 50), # Focus on Africa/Europe
+    ylim = c(-40, 40)
+  ) +
+  theme_minimal()
+}
 
 }
 \seealso{
-\code{\link[ggplot2:coord_sf]{ggplot2::coord_sf}},
-\code{\link[ggmapcn:geom_world]{geom_world}},
-\code{\link[ggmapcn:geom_mapcn]{geom_mapcn}}
+* [ggplot2::coord_sf()] for the underlying function.
+* [geom_world()] for the basemap layer.
 }

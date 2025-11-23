@@ -99,6 +99,7 @@ still be drawn).
 \examples{
 library(ggplot2)
 
+\donttest{
 # 1. Graticule on a WGS84 world map
 ggplot() +
   geom_world() +
@@ -150,5 +151,6 @@ ggplot() +
     y = "Latitude"
   ) +
   theme_bw()
+}
 
 }

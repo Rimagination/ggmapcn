@@ -69,6 +69,7 @@
 #' @examples
 #' library(ggplot2)
 #'
+#' \donttest{
 #' # 1. Graticule on a WGS84 world map
 #' ggplot() +
 #'   geom_world() +
@@ -120,6 +121,7 @@
 #'     y = "Latitude"
 #'   ) +
 #'   theme_bw()
+#' }
 #'
 #' @export
 #' @importFrom sf st_crs st_sfc st_linestring st_as_sf st_transform
