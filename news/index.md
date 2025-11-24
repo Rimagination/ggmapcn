@@ -2,6 +2,8 @@
 
 ## ggmapcn 0.3.0
 
+CRAN release: 2025-11-23
+
 ### NEW FEATURES
 
 - **New function:

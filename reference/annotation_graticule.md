@@ -20,8 +20,13 @@ annotation_graticule(
   line_color = "grey70",
   line_width = 0.3,
   line_type = "dashed",
+  line_alpha = 1,
   label_color = "grey30",
   label_size = 3,
+  label_family = "",
+  label_alpha = 1,
+  label_angle = 0,
+  label_format = NULL,
   label_offset = 5,
   label_offset_lon = NULL,
   label_offset_lat = NULL,
@@ -73,14 +78,41 @@ annotation_graticule(
 
   Line type for graticule lines. Default is \`"dashed"\`.
 
+- line_alpha:
+
+  Line transparency, range \`\[0, 1\]\`. Default is \`1\` (opaque).
+
 - label_color:
 
   Text colour for labels. Default is \`"grey30"\`.
 
 - label_size:
 
-  Text size for labels, passed to \`ggplot2::geom_text()\`. Default is
-  \`3\`.
+  Text size for labels in **millimeters (mm)**, passed to
+  \`ggplot2::geom_text()\`. Default is \`3\`. **Note:** This unit
+  differs from the point unit (pt) used in \`theme()\`. To match a
+  specific font size in points (e.g., 8 pt), use \`label_size = 8 /
+  ggplot2::.pt\`.
+
+- label_family:
+
+  Font family for labels (e.g., "sans", "serif", "mono"). Default is
+  \`""\` (system default).
+
+- label_alpha:
+
+  Text transparency, range \`\[0, 1\]\`. Default is \`1\`.
+
+- label_angle:
+
+  Text rotation angle in degrees. Default is \`0\`.
+
+- label_format:
+
+  Optional function to format the degree labels. If \`NULL\` (default),
+  standard N/S/E/W formatting is used (e.g., "30"). If provided, it
+  should be a function accepting a numeric vector and returning a
+  character vector.
 
 - label_offset:
 
@@ -108,7 +140,7 @@ annotation_graticule(
 - ...:
 
   Additional arguments forwarded to \`ggplot2::geom_sf()\` for the
-  graticule line layer (for example, \`alpha\`).
+  graticule line layer.
 
 ## Value
 
@@ -134,7 +166,6 @@ omitted (the corresponding graticule lines may still be drawn).
 ``` r
 library(ggplot2)
 
-# \donttest{
 # 1. Graticule on a WGS84 world map
 ggplot() +
   geom_world() +
@@ -153,10 +184,10 @@ crs_robin_150 <- "+proj=robin +lon_0=150 +datum=WGS84"
 ggplot() +
   geom_world(crs = crs_robin_150) +
   annotation_graticule(
-    crs           = crs_robin_150,
-    lon_step      = 30,
-    lat_step      = 15,
-    label_offset = 3e5
+    crs            = crs_robin_150,
+    lon_step       = 30,
+    lat_step       = 15,
+    label_offset   = 3e5
   ) +
   coord_sf(crs = crs_robin_150) +
   theme_void()
@@ -171,14 +202,14 @@ cn_ylim <- c(0, 60)
 ggplot() +
   geom_world() +
   annotation_graticule(
-    xlim          = cn_xlim,
-    ylim          = cn_ylim,
-    crs           = 4326,
-    lon_step      = 10,
-    lat_step      = 10,
-    label_color   = NA,    # draw only lines; use axis labels instead
-    label_offset = 1,
-    label_size    = 3.5
+    xlim           = cn_xlim,
+    ylim           = cn_ylim,
+    crs            = 4326,
+    lon_step       = 10,
+    lat_step       = 10,
+    label_color    = NA,    # draw only lines; use axis labels instead
+    label_offset   = 1,
+    label_size     = 3.5
   ) +
   coord_sf(
     xlim   = cn_xlim,
@@ -191,5 +222,4 @@ ggplot() +
   ) +
   theme_bw()
 
-# }
 ```
