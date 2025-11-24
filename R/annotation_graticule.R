@@ -42,10 +42,22 @@
 #' @param line_color Line colour for graticule lines. Default is `"grey70"`.
 #' @param line_width Line width for graticule lines. Default is `0.3`.
 #' @param line_type Line type for graticule lines. Default is `"dashed"`.
+#' @param line_alpha Line transparency, range `[0, 1]`. Default is `1` (opaque).
 #'
 #' @param label_color Text colour for labels. Default is `"grey30"`.
-#' @param label_size Text size for labels, passed to `ggplot2::geom_text()`.
-#'   Default is `3`.
+#' @param label_size Text size for labels in \strong{millimeters (mm)}, passed to
+#'   `ggplot2::geom_text()`. Default is `3`.
+#'   \strong{Note:} This unit differs from the point unit (pt) used in `theme()`.
+#'   To match a specific font size in points (e.g., 8 pt), use
+#'   `label_size = 8 / ggplot2::.pt`.
+#' @param label_family Font family for labels (e.g., "sans", "serif", "mono").
+#'   Default is `""` (system default).
+#' @param label_alpha Text transparency, range `[0, 1]`. Default is `1`.
+#' @param label_angle Text rotation angle in degrees. Default is `0`.
+#' @param label_format Optional function to format the degree labels. If `NULL`
+#'   (default), standard N/S/E/W formatting is used (e.g., "30\u00B0N").
+#'   If provided, it should be a function accepting a numeric vector and
+#'   returning a character vector.
 #'
 #' @param label_offset Common offset applied to all labels, in the units of the
 #'   target CRS. For geographic CRSs (degrees), this is interpreted as degrees
@@ -61,7 +73,7 @@
 #'   Default is `c("left", "bottom")`.
 #'
 #' @param ... Additional arguments forwarded to `ggplot2::geom_sf()` for the
-#'   graticule line layer (for example, `alpha`).
+#'   graticule line layer.
 #'
 #' @return A list of two `ggplot2` layers: a `geom_sf()` layer for graticule
 #'   lines and a `geom_text()` layer for the labels.
@@ -69,7 +81,6 @@
 #' @examples
 #' library(ggplot2)
 #'
-#' \donttest{
 #' # 1. Graticule on a WGS84 world map
 #' ggplot() +
 #'   geom_world() +
@@ -87,10 +98,10 @@
 #' ggplot() +
 #'   geom_world(crs = crs_robin_150) +
 #'   annotation_graticule(
-#'     crs           = crs_robin_150,
-#'     lon_step      = 30,
-#'     lat_step      = 15,
-#'     label_offset = 3e5
+#'     crs            = crs_robin_150,
+#'     lon_step       = 30,
+#'     lat_step       = 15,
+#'     label_offset   = 3e5
 #'   ) +
 #'   coord_sf(crs = crs_robin_150) +
 #'   theme_void()
@@ -102,14 +113,14 @@
 #' ggplot() +
 #'   geom_world() +
 #'   annotation_graticule(
-#'     xlim          = cn_xlim,
-#'     ylim          = cn_ylim,
-#'     crs           = 4326,
-#'     lon_step      = 10,
-#'     lat_step      = 10,
-#'     label_color   = NA,    # draw only lines; use axis labels instead
-#'     label_offset = 1,
-#'     label_size    = 3.5
+#'     xlim           = cn_xlim,
+#'     ylim           = cn_ylim,
+#'     crs            = 4326,
+#'     lon_step       = 10,
+#'     lat_step       = 10,
+#'     label_color    = NA,    # draw only lines; use axis labels instead
+#'     label_offset   = 1,
+#'     label_size     = 3.5
 #'   ) +
 #'   coord_sf(
 #'     xlim   = cn_xlim,
@@ -121,7 +132,6 @@
 #'     y = "Latitude"
 #'   ) +
 #'   theme_bw()
-#' }
 #'
 #' @export
 #' @importFrom sf st_crs st_sfc st_linestring st_as_sf st_transform
@@ -138,23 +148,32 @@ annotation_graticule <- function(
     line_color       = "grey70",
     line_width       = 0.3,
     line_type        = "dashed",
+    line_alpha       = 1,
     label_color      = "grey30",
     label_size       = 3,
+    label_family     = "",
+    label_alpha      = 1,
+    label_angle      = 0,
+    label_format     = NULL,
     label_offset     = 5,
     label_offset_lon = NULL,
     label_offset_lat = NULL,
     sides            = c("left", "bottom"),
     ...
 ) {
+  # Silence R CMD check NOTES for variables used in ggplot aes()
+  x <- y <- label <- hjust <- vjust <- NULL
+
   sides <- match.arg(
     sides,
     choices = c("bottom", "top", "left", "right"),
     several.ok = TRUE
   )
 
-  ## ---- helpers: label formatting (ASCII compliant) -----------------------
+  ## ---- helpers: label formatting -----------------------------------------
 
-  format_lat <- function(v) {
+  # Internal formatters (used if label_format is NULL)
+  default_format_lat <- function(v) {
     v_round <- round(v)
     if (abs(v_round) < 1e-8) {
       "0\u00B0"  # \u00B0 is the Unicode escape for degree symbol
@@ -165,7 +184,7 @@ annotation_graticule <- function(
     }
   }
 
-  format_lon <- function(v) {
+  default_format_lon <- function(v) {
     v_round <- round(v)
     if (abs(v_round) < 1e-8) {
       "0\u00B0"
@@ -176,6 +195,14 @@ annotation_graticule <- function(
     } else {
       sprintf("%d\u00B0W", abs(v_round))
     }
+  }
+
+  # Wrapper to dispatch format
+  fmt_val <- function(v, type = c("lat", "lon")) {
+    if (is.function(label_format)) {
+      return(as.character(label_format(v)))
+    }
+    if (type == "lat") default_format_lat(v) else default_format_lon(v)
   }
 
   ## ---- helper: extract lon_0 from crs ------------------------------------
@@ -348,7 +375,7 @@ annotation_graticule <- function(
         labels_list[[length(labels_list) + 1]] <- data.frame(
           x     = coords[i, "X"],
           y     = coords[i, "Y"] - off_lon,
-          label = format_lon(lon),
+          label = fmt_val(lon, "lon"),
           side  = "bottom",
           kind  = "lon",
           hjust = 0.5,
@@ -362,7 +389,7 @@ annotation_graticule <- function(
         labels_list[[length(labels_list) + 1]] <- data.frame(
           x     = coords[i, "X"],
           y     = coords[i, "Y"] + off_lon,
-          label = format_lon(lon),
+          label = fmt_val(lon, "lon"),
           side  = "top",
           kind  = "lon",
           hjust = 0.5,
@@ -388,7 +415,7 @@ annotation_graticule <- function(
         labels_list[[length(labels_list) + 1]] <- data.frame(
           x     = coords[i, "X"] - off_lat,
           y     = coords[i, "Y"],
-          label = format_lat(lat),
+          label = fmt_val(lat, "lat"),
           side  = "left",
           kind  = "lat",
           hjust = 1,
@@ -402,7 +429,7 @@ annotation_graticule <- function(
         labels_list[[length(labels_list) + 1]] <- data.frame(
           x     = coords[i, "X"] + off_lat,
           y     = coords[i, "Y"],
-          label = format_lat(lat),
+          label = fmt_val(lat, "lat"),
           side  = "right",
           kind  = "lat",
           hjust = 0,
@@ -434,6 +461,7 @@ annotation_graticule <- function(
     color       = line_color,
     linewidth   = line_width,
     linetype    = line_type,
+    alpha       = line_alpha,
     inherit.aes = FALSE,
     ...
   )
@@ -450,6 +478,9 @@ annotation_graticule <- function(
       ),
       color       = label_color,
       size        = label_size,
+      family      = label_family,
+      alpha       = label_alpha,
+      angle       = label_angle,
       inherit.aes = FALSE
     )
   } else {
