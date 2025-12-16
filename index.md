@@ -152,8 +152,6 @@ ggplot() +
 ggplot() +
   geom_world(show_ocean = FALSE) +
   theme_bw()
-#> Warning: geom_world() has been redesigned; its interface and defaults have
-#> changed compared to earlier development versions. See ?geom_world for details.
 ```
 
 ![Figure](reference/figures/README-example-world-1.png)
