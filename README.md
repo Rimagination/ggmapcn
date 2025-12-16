@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit this file -->
 
-# ggmapcn
+# ggmapcn <img src="man/figures/logo.png" align="right" height="120" />
 
 `ggmapcn` is a `ggplot2` extension package for visualizing maps of China
 and the world with customizable projections and cartographic styling.
@@ -148,8 +148,6 @@ ggplot() +
 ggplot() +
   geom_world(show_ocean = FALSE) +
   theme_bw()
-#> Warning: geom_world() has been redesigned; its interface and defaults have
-#> changed compared to earlier development versions. See ?geom_world for details.
 ```
 
 <img src="man/figures/README-example-world-1.png" alt="Figure" width="100%" />

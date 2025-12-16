@@ -4,6 +4,7 @@ template:
   bootstrap: 5
   bootswatch: cerulean
   package: ggmapcn
+  logo: man/figures/logo.png
 
 navbar:
   title: ggmapcn

@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# ggmapcn
+# ggmapcn <img src="man/figures/logo.png" align="right" height="120" />
 
 `ggmapcn` is a `ggplot2` extension package for visualizing maps of China and the
 world with customizable projections and cartographic styling.
