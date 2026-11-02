@@ -46,11 +46,11 @@ Install the released version from CRAN:
 install.packages("ggmapcn")
 ```
 
-The development version is also available from GitHub:
+The development version is available from the `dev` branch on GitHub:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("Rimagination/ggmapcn", force = TRUE)
+# install.packages("remotes")
+remotes::install_github("Rimagination/ggmapcn", ref = "dev", upgrade = "never")
 ```
 
 ---
