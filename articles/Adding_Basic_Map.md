@@ -1,10 +1,15 @@
 # Adding_Basic_Map
 
 ``` r
+
 library(ggmapcn)
 #> Loading required package: ggplot2
 # Define Azimuthal Equidistant projection centered on China
 china_proj <- "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs"
+data_dirs <- c(system.file("extdata", package = "ggmapcn"),
+               tools::R_user_dir("ggmapcn", "cache"),
+               tools::R_user_dir("ggmapcn", "data"))
+dem_available <- any(file.exists(file.path(data_dirs, "gebco_2024_China.tif")))
 ```
 
 ## Introduction
@@ -25,6 +30,7 @@ By default, it uses an Azimuthal Equidistant projection centered on
 China.
 
 ``` r
+
 ggplot() +
   geom_mapcn() +
   geom_boundary_cn() +
@@ -40,6 +46,7 @@ as mainland buffers, coastlines, and administrative boundaries—onto a
 single map.
 
 ``` r
+
 ggplot() +
   geom_buffer_cn(mainland_dist = 40000) +
   geom_buffer_cn(mainland_dist = 20000, fill = "#BBB3D8") +
@@ -62,6 +69,7 @@ longitude and latitude columns, and can map aesthetics like color to
 categorical variables.
 
 ``` r
+
 # Create a ggplot with spatial points colored by 'Category'
 set.seed(123)
 data_sim <- data.frame(
@@ -86,6 +94,7 @@ Before using the function, ensure that the necessary data files are
 available by running:
 
 ``` r
+
 # This function checks if the required data files are available
 # It may take some time, especially if your network connection is slow.
   check_geodata(files = c("vege_1km_projected.tif"), quiet = FALSE)
@@ -95,6 +104,7 @@ The `basemap_vege` function adds a vegetation raster map of China with
 color-coded vegetation types to a ggplot.
 
 ``` r
+
 # Add vegetation raster of China to a ggplot
 ggplot() +
   basemap_vege() +
@@ -105,9 +115,11 @@ ggplot() +
 ## Example 5: basemap_dem: Elevation Map of China Layer for ggplot2
 
 The `basemap_dem` function adds a digital elevation model (DEM) raster
-map of China as a layer to ggplot2.
+map of China as a layer to ggplot2. The example is evaluated when the
+raster is available locally.
 
 ``` r
+
 # Apply Azimuthal Equidistant projection centered on China
 ggplot() +
   basemap_dem(crs = china_proj, within_china = TRUE) +
@@ -120,11 +132,7 @@ ggplot() +
   labs(fill = "Elevation (m)") +
   theme_minimal() +
   theme(legend.position = "bottom")
-#> <SpatRaster> resampled to 1000968 cells.
 ```
-
-![Elevation Map of
-China](Adding_Basic_Map_files/figure-html/dem%20map-1.png)
 
 ## Example 6: coord_proj: Transforming Limits for Custom Projections
 
@@ -136,6 +144,7 @@ Here, the Azimuthal Equidistant projection centered on China is applied,
 with transformed map limits specified in longitude and latitude.
 
 ``` r
+
 ggplot() +
   geom_mapcn(fill = "white") +
   geom_boundary_cn() +
@@ -154,6 +163,7 @@ longitude and latitude range shown here is for demonstration purposes
 only.
 
 ``` r
+
 ggplot() +
   geom_mapcn(fill = "white") +
   geom_boundary_cn() +

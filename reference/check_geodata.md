@@ -1,11 +1,10 @@
 # Check and retrieve required geodata files
 
-Ensures that external geospatial data files required by ggmapcn are
+Ensures that default geospatial data files provided by ggmapcn are
 available locally. Existing files are reused when `overwrite = FALSE`;
 missing files are downloaded from remote mirrors when possible. If all
 mirrors fail (for example, due to network restrictions), the function
-fails gracefully by returning `NA` for the affected files without
-raising warnings or errors, in line with CRAN policy.
+returns `NA` for the affected files.
 
 ## Usage
 
@@ -33,7 +32,8 @@ check_geodata(
 - overwrite:
 
   Logical; if `TRUE`, forces re-download even when a non-empty file
-  already exists.
+  already exists. The refreshed file is saved in the user cache, without
+  changing the installed package.
 
 - quiet:
 
@@ -74,17 +74,26 @@ obtained is returned as `NA`.
 
 ## Details
 
-Because CRAN enforces strict limits on package size, several large
-datasets are hosted externally rather than bundled in the package.
+Default datasets are provided through the installed package and its
+companion [data
+repository](https://github.com/Rimagination/ggmapcn-data). Larger files
+are hosted in that repository to keep the installation small.
 `check_geodata()` locates or retrieves these files using the following
 priority:
 
 1.  user-specified `local_dirs`
 
-2.  the package `extdata` directory
+2.  a refreshed copy in the per-user cache, if explicitly requested with
+    `overwrite = TRUE` for the current bundled file
 
-3.  the per-user cache directory via
-    `tools::R_user_dir("ggmapcn", "data")`
+3.  the package `extdata` directory
+
+4.  the per-user cache, followed by the legacy user data directory
+
+Downloads are saved under `tools::R_user_dir("ggmapcn", "cache")`; the
+installed package directory is only read. A refreshed copy of a bundled
+file is used until the corresponding bundled file changes in a package
+update.
 
 High-level mapping functions such as
 [`geom_mapcn()`](https://rimagination.github.io/ggmapcn/reference/geom_mapcn.md)
@@ -98,9 +107,8 @@ On networks that cannot reliably access `cdn.jsdelivr.net` or
 `raw.githubusercontent.com`, downloads may time out and the
 corresponding entries in the returned vector will be `NA`. In such
 cases, users may manually download the required files from the data
-repository and place them into a directory supplied through
-`local_dirs`, the package `extdata` directory, or the user cache
-directory so that downloads are skipped.
+repository and place them into a directory supplied through `local_dirs`
+or the user cache directory so that downloads are skipped.
 
 Note: recent versions of
 [`geom_world()`](https://rimagination.github.io/ggmapcn/reference/geom_world.md)
@@ -112,10 +120,7 @@ use the following world datasets: `world_countries.rda`,
 
 ``` r
 if (FALSE) { # interactive() && curl::has_internet()
-# Ensure that all default datasets are available (downloads only if needed)
-check_geodata()
-
-# Datasets used by geom_world()
+# Retrieve only the datasets used by geom_world()
 check_geodata(c(
   "world_countries.rda",
   "world_coastlines.rda",

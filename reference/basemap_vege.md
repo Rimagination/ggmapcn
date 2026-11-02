@@ -49,40 +49,44 @@ basemap_vege(
 
 - ...:
 
-  Additional parameters passed to \`geom_spatraster\`.
+  Additional parameters passed to `geom_spatraster`.
 
 ## Value
 
 A ggplot2 layer object representing the vegetation map of China.
 
+## Details
+
+The default dataset is a 1 km raster representation of *Vegetation Map
+of the People's Republic of China 1:1000000* (The Editorial Committee of
+Vegetation Map of China, Chinese Academy of Sciences, 2007). Its default
+colors follow Su et al. (2020).
+[`check_geodata()`](https://rimagination.github.io/ggmapcn/reference/check_geodata.md)
+locates or retrieves `vege_1km_projected.tif`.
+
 ## References
 
-Zhang X, Sun S, Yong S, et al. (2007). \*Vegetation map of the People's
-Republic of China (1:1000000)\*. Geology Publishing House, Beijing.
+The Editorial Committee of Vegetation Map of China, Chinese Academy of
+Sciences (2007). *Vegetation Map of the People's Republic of China
+1:1000000*. Geological Publishing House, Beijing.
+
+Su YJ, Guo QH, Hu TY, et al. (2020). An updated vegetation map of China
+(1:1000000). *Science Bulletin*, 65(13), 1125–1136.
 
 ## Examples
 
 ``` r
+if (FALSE) { # interactive()
 # \donttest{
 # Example1: Check and load the vegetation raster map
 
 # Make sure the required raster data is available
 check_geodata(files = c("vege_1km_projected.tif"))
-#> extdata dir: /home/runner/work/_temp/Library/ggmapcn/extdata (writable = TRUE)
-#> cache   dir: /home/runner/.local/share/R/ggmapcn (writable = TRUE)
-#> Fetching 'vege_1km_projected.tif' into: /home/runner/work/_temp/Library/ggmapcn/extdata
-#>   Trying URL: https://cdn.jsdelivr.net/gh/Rimagination/ggmapcn-data@main/data/vege_1km_projected.tif
-#> Saved to extdata: /home/runner/work/_temp/Library/ggmapcn/extdata/vege_1km_projected.tif
-#> [1] "/home/runner/work/_temp/Library/ggmapcn/extdata/vege_1km_projected.tif"
 
 # Once the data is checked or downloaded, add the vegetation raster to a ggplot
 ggplot() +
   basemap_vege() +
   theme_minimal()
-#> <SpatRaster> resampled to 1000776 cells.
-#> Warning: Removed 715308 rows containing missing values or values outside the scale range
-#> (`geom_raster()`).
-
 
 # Example2: Customize color table
 custom_colors <- data.frame(
@@ -101,9 +105,6 @@ ggplot() +
   basemap_vege(color_table = custom_colors) +
   labs(fill = "Vegetation type group") +
   theme_minimal()
-#> <SpatRaster> resampled to 1000776 cells.
-#> Warning: Removed 715308 rows containing missing values or values outside the scale range
-#> (`geom_raster()`).
-
 # }
+}
 ```

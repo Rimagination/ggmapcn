@@ -37,5 +37,4 @@
   : Convenient Global Basemap Layer for ggplot2
 - [`ggmapcn`](https://rimagination.github.io/ggmapcn/reference/ggmapcn-package.md)
   [`ggmapcn-package`](https://rimagination.github.io/ggmapcn/reference/ggmapcn-package.md)
-  : ggmapcn: China-Focused Mapping Tools with Optional Global Support
-  for ggplot2
+  : Customizable China and Global Map Visualizations

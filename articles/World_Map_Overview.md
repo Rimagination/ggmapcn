@@ -3,9 +3,15 @@
 ## 1. Introduction
 
 [`geom_world()`](https://rimagination.github.io/ggmapcn/reference/geom_world.md)
-provides a convenient global base map for `ggplot2`. It comes bundled
-with country polygons, coastlines, and political/administrative
-boundaries.
+provides a global base map for `ggplot2` using the package’s default
+country polygons, coastlines, and political/administrative boundaries.
+These default datasets are supplied through the companion [ggmapcn-data
+repository](https://github.com/Rimagination/ggmapcn-data). The function
+uses
+[`check_geodata()`](https://rimagination.github.io/ggmapcn/reference/check_geodata.md)
+to reuse local copies or retrieve missing files. The examples below are
+evaluated when the required datasets are available locally; otherwise
+their code is shown without running it.
 
 Key features include:
 
@@ -25,6 +31,7 @@ By default,
 plots the map using the WGS84 standard.
 
 ``` r
+
 ggplot() +
   geom_world() +
   theme_void()
@@ -38,6 +45,7 @@ styling.](World_Map_Overview_files/figure-html/basic_map-1.png)
 You can specify the CRS directly within the function.
 
 ``` r
+
 ggplot() +
   geom_world(crs = 4326) +
   coord_sf(crs = 4326) +
@@ -53,6 +61,7 @@ For a cleaner look, you can remove the blue ocean background and change
 the land fill color.
 
 ``` r
+
 ggplot() +
   geom_world(
     show_ocean   = FALSE,
@@ -71,6 +80,7 @@ If you only need continental landmasses without internal country
 borders, set `show_admin_boundaries = FALSE`.
 
 ``` r
+
 ggplot() +
   geom_world(
     show_admin_boundaries = FALSE,
@@ -85,6 +95,7 @@ borders.](World_Map_Overview_files/figure-html/hide_admin-1.png)
 Combining both options creates a minimalist silhouette map:
 
 ``` r
+
 ggplot() +
   geom_world(
     show_ocean            = FALSE,
@@ -105,6 +116,7 @@ projects the underlying polygons.
 ### 3.1 Robinson projection
 
 ``` r
+
 crs_robin <- "+proj=robin +datum=WGS84"
 
 ggplot() +
@@ -124,6 +136,7 @@ often difficult in standard ggplot2.
 handles the polygon splitting automatically.
 
 ``` r
+
 crs_robin_150 <- "+proj=robin +lon_0=150 +datum=WGS84"
 
 ggplot() +
@@ -139,6 +152,7 @@ East).](World_Map_Overview_files/figure-html/robin_pacific-1.png)
 ### 3.3 Geographic CRS with shifted central meridian
 
 ``` r
+
 crs_wgs84_150 <- "+proj=longlat +datum=WGS84 +lon_0=150"
 
 ggplot() +
@@ -166,6 +180,7 @@ often occurs when:
 inside `coord_sf` and set `panel.ontop = TRUE` in the theme.
 
 ``` r
+
 ggplot() +
   geom_world() +
   coord_sf(
@@ -194,6 +209,7 @@ gridlines, these are annotation layers that:
 ### 5.1 Global WGS84 map with graticules
 
 ``` r
+
 ggplot() +
   geom_world() +
   annotation_graticule(
@@ -219,6 +235,7 @@ latitude.](World_Map_Overview_files/figure-html/graticule_global-1.png)
 Note how the graticules curve naturally with the projection.
 
 ``` r
+
 crs_robin <- "+proj=robin +datum=WGS84"
 
 ggplot() +
@@ -249,6 +266,7 @@ For regional maps, the recommended pattern is to:
 3.  Keep the region exact with `expand = FALSE`.
 
 ``` r
+
 cn_xlim <- c(70, 140)
 cn_ylim <- c(0, 60)
 
@@ -290,6 +308,7 @@ filters for specific countries to color them.
 ### 6.1 Highlighting China
 
 ``` r
+
 ggplot() +
   geom_world(
     country_fill = "white",
@@ -311,6 +330,7 @@ red.](World_Map_Overview_files/figure-html/highlight_cn-1.png)
 Pass a vector of ISO codes to highlight multiple regions.
 
 ``` r
+
 focus <- c("CHN", "JPN", "KOR")
 
 ggplot() +
@@ -341,12 +361,13 @@ First, ensure the necessary geospatial data files are available and load
 them. Then, merge your custom data using the ISO country code (SOC).
 
 ``` r
+
 # 1. Ensure data availability and GET FILE PATHS
 map_files <- check_geodata(c("world_countries.rda", "world_coastlines.rda"))
-#> extdata dir: /home/runner/work/_temp/Library/ggmapcn/extdata (writable = TRUE)
-#> cache   dir: /home/runner/.local/share/R/ggmapcn (writable = TRUE)
-#> Using existing extdata file: /home/runner/work/_temp/Library/ggmapcn/extdata/world_countries.rda
-#> Using existing extdata file: /home/runner/work/_temp/Library/ggmapcn/extdata/world_coastlines.rda
+#> extdata dir: /home/runner/work/_temp/Library/ggmapcn/extdata
+#> cache   dir: /home/runner/.cache/R/ggmapcn
+#> Using existing data file: /home/runner/.cache/R/ggmapcn/world_countries.rda
+#> Using existing data file: /home/runner/.cache/R/ggmapcn/world_coastlines.rda
 
 # 2. Load the world countries data (object name: 'countries')
 load(map_files[1])

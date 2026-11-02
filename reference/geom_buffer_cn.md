@@ -28,7 +28,7 @@ geom_buffer_cn(
 
   Numeric. The buffer distance (in meters) for each segment of the
   ten-segment line. If not specified, it defaults to the same value as
-  \`mainland_dist\`.
+  `mainland_dist`.
 
 - crs:
 
@@ -39,17 +39,16 @@ geom_buffer_cn(
 
 - color:
 
-  Character. The border color for the buffer area. Default is \`NA\`
+  Character. The border color for the buffer area. Default is `NA`
   (transparent).
 
 - fill:
 
-  Character. The fill color for the buffer area. Default is
-  \`"#D2D5EB"\`.
+  Character. The fill color for the buffer area. Default is `"#D2D5EB"`.
 
 - ...:
 
-  Additional parameters passed to \`geom_sf\`.
+  Additional parameters passed to `geom_sf`.
 
 ## Value
 

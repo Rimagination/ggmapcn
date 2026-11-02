@@ -10,14 +10,14 @@
 Source:
 [`DESCRIPTION`](https://github.com/Rimagination/ggmapcn/blob/main/DESCRIPTION)
 
-Ren L (2025). *ggmapcn: Customizable China and Global Map
-Visualizations*. R package version 0.3.0,
+Ren L (2026). *ggmapcn: Customizable China and Global Map
+Visualizations*. R package version 0.3.1,
 <https://rimagination.github.io/ggmapcn/>.
 
     @Manual{,
       title = {ggmapcn: Customizable China and Global Map Visualizations},
       author = {Liang Ren},
-      year = {2025},
-      note = {R package version 0.3.0},
+      year = {2026},
+      note = {R package version 0.3.1},
       url = {https://rimagination.github.io/ggmapcn/},
     }

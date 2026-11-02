@@ -3,30 +3,38 @@
 `ggmapcn` is a `ggplot2` extension package for visualizing maps of China
 and the world with customizable projections and cartographic styling.
 
-Because CRAN imposes strict size limits on package data, certain large
-geospatial datasets used by `ggmapcn` cannot be bundled directly. These
-datasets are stored externally and retrieved automatically using
-[`check_geodata()`](https://rimagination.github.io/ggmapcn/reference/check_geodata.md).
-All high-level functions—such as
-[`geom_mapcn()`](https://rimagination.github.io/ggmapcn/reference/geom_mapcn.md)
-and
-[`geom_world()`](https://rimagination.github.io/ggmapcn/reference/geom_world.md)—internally
-call
+`ggmapcn` provides default boundary, world map, elevation, and
+vegetation datasets for direct use by its mapping functions. Some files
+are distributed in the installed package; larger files are hosted in the
+companion [ggmapcn-data
+repository](https://github.com/Rimagination/ggmapcn-data).
 [`check_geodata()`](https://rimagination.github.io/ggmapcn/reference/check_geodata.md)
-to ensure that required data files exist locally.
+reuses local copies and automatically retrieves missing default files
+when needed.
 
-If the network is unavailable or remote mirrors cannot be reached,
+If a required file cannot be retrieved,
 [`check_geodata()`](https://rimagination.github.io/ggmapcn/reference/check_geodata.md)
-fails gracefully by returning `NA` paths. This behavior is fully
-compliant with CRAN’s policy for optional network resources.
+returns `NA` for that file. Mapping functions require the corresponding
+data to be available and may report an error if it is missing. To work
+offline, obtain the files in advance and place them in a location
+searched by
+[`check_geodata()`](https://rimagination.github.io/ggmapcn/reference/check_geodata.md).
 
 ------------------------------------------------------------------------
 
 ## Installation
 
-Install the development version from GitHub:
+Install the released version from CRAN:
 
 ``` r
+
+install.packages("ggmapcn")
+```
+
+The development version is also available from GitHub:
+
+``` r
+
 # install.packages("devtools")
 devtools::install_github("Rimagination/ggmapcn", force = TRUE)
 ```
@@ -35,31 +43,46 @@ devtools::install_github("Rimagination/ggmapcn", force = TRUE)
 
 # Data Management with `check_geodata()`
 
-Several datasets—such as `world_countries.rda`, `China_sheng.rda`, and
-`gebco_2024_China.tif`—are hosted externally.  
+The package’s default datasets include `China_sheng.rda`,
+`world_countries.rda`, and `gebco_2024_China.tif`. `China_sheng.rda` is
+distributed in the installed package. The larger world map and raster
+files are supplied through the companion data repository and retrieved
+as needed.
+
+The provincial dataset uses `name` for English names, `name_cn` for
+Chinese names, and `gb` for the source administrative codes. In older
+versions, `name` contained Chinese names and the English field was
+called `name_en`. Update filters and joins accordingly; city- and
+county-level fields may differ.
+
 [`check_geodata()`](https://rimagination.github.io/ggmapcn/reference/check_geodata.md)
 automatically:
 
 - searches for existing files in:
   - user-specified `local_dirs`
+  - explicitly refreshed copies in the user cache, while their bundled
+    files remain unchanged
   - the package `extdata` directory
-  - the per-user cache directory via
-    `tools::R_user_dir("ggmapcn", "data")`
-- downloads missing files from mirrors (jsDelivr and GitHub)
+  - the user cache and the legacy data directory
+- downloads missing files from mirrors (jsDelivr and GitHub) to
+  `tools::R_user_dir("ggmapcn", "cache")`, without writing to the
+  installed package
 - verifies checksums when available
 - retries on failure and supports resume capability
 - returns `NA` instead of errors when mirrors cannot be reached
 
-To check and retrieve all files:
+To check and retrieve the provincial dataset:
 
 ``` r
-check_geodata()
+
+check_geodata("China_sheng.rda")
 ```
 
 To retrieve explicitly the datasets used by
 [`geom_world()`](https://rimagination.github.io/ggmapcn/reference/geom_world.md):
 
 ``` r
+
 check_geodata(c(
   "world_countries.rda",
   "world_coastlines.rda",
@@ -78,6 +101,7 @@ place them in a directory passed to `local_dirs`.
 ## 1. Basic Map of China
 
 ``` r
+
 library(ggplot2)
 library(ggmapcn)
 
@@ -94,6 +118,7 @@ ggplot() +
 ## 2. Custom Projection (Albers)
 
 ``` r
+
 ggplot() +
   geom_mapcn(
     crs = "+proj=aea +lat_1=25 +lat_2=47 +lat_0=0 +lon_0=105 +datum=WGS84",
@@ -112,6 +137,7 @@ ggplot() +
 ## 3. Adding Mainland Borders and Coastlines
 
 ``` r
+
 ggplot() +
   geom_mapcn(fill = NA) +
   geom_boundary_cn(
@@ -130,6 +156,7 @@ ggplot() +
 ## 4. Buffer Zones
 
 ``` r
+
 ggplot() +
   geom_buffer_cn(mainland_dist = 40000) +
   geom_buffer_cn(mainland_dist = 20000, fill = "#BBB3D8") +
@@ -149,6 +176,7 @@ ggplot() +
 ## 5. World Map (WGS84)
 
 ``` r
+
 ggplot() +
   geom_world(show_ocean = FALSE) +
   theme_bw()
@@ -165,15 +193,35 @@ ggplot() +
 Provided by **Tianditu**  
 <https://cloudcenter.tianditu.gov.cn/administrativeDivision/>
 
-Province-, prefecture-, and county-level boundaries are preprocessed and
-simplified for efficient rendering in `ggplot2`.
+Province-, prefecture-, and county-level boundaries are prepared for use
+in `ggplot2`.
 
-## Global administrative boundaries
+The accompanying manuscript identifies these administrative division
+vectors as sharing their source with the Tianditu map GS(2024)0650. Land
+borders, coastlines, and maritime boundaries are managed as separate
+layers.
 
-The global dataset (countries, coastlines, and political boundaries) is
-curated and maintained by the package authors. It is optimized for
-consistent cartographic outputs across world projections and supports
-antimeridian splitting.
+## World map data
+
+The accompanying manuscript identifies the world vectors as originating
+from the data used by Di et al. (2025), *Sustainable dynamics and
+driving factors of the global virtual water trade in crops*, *Arid Zone
+Research*, 42(6), 993–1003, and sharing their source with world map
+GS(2025)0904. The package provides country, coastline, and boundary
+layers with projection and antimeridian support.
+
+These map identifiers refer to the source maps, rather than approval of
+the software or of maps generated with it.
+
+## Elevation and vegetation
+
+The default China elevation layer uses GEBCO_2024 (GEBCO Compilation
+Group, 2024). The vegetation layer is a 1 km raster representation of
+*Vegetation Map of the People’s Republic of China 1:1000000* (The
+Editorial Committee of Vegetation Map of China, Chinese Academy of
+Sciences, 2007). Its default colors follow Su et al. (2020), *An updated
+vegetation map of China (1:1000000)*, *Science Bulletin*, 65(13),
+1125–1136.
 
 ------------------------------------------------------------------------
 

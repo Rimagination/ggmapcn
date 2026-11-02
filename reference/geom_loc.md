@@ -1,6 +1,6 @@
 # Visualize Spatial Point Data
 
-\`geom_loc\` is a wrapper around
+`geom_loc` is a wrapper around
 [`ggplot2::geom_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html)
 designed for visualizing spatial point data. It supports both `sf`
 objects and tabular data frames with longitude and latitude columns,
@@ -56,10 +56,10 @@ geom_loc(
 
 ## Value
 
-A ggplot2 layer for visualizing spatial point data, either from an
-\`sf\` object or a tabular data frame with longitude and latitude
-columns, after transforming the data to the specified coordinate
-reference system (CRS).
+A ggplot2 layer for visualizing spatial point data, either from an `sf`
+object or a tabular data frame with longitude and latitude columns,
+after transforming the data to the specified coordinate reference system
+(CRS).
 
 ## Details
 

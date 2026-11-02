@@ -1,10 +1,11 @@
 # Coordinate System with Geographic Limits Automatically Transformed to a Projection
 
-\`coord_proj()\` extends \[ggplot2::coord_sf()\] by allowing users to
-specify map limits (\`xlim\`, \`ylim\`) in geographic coordinates
-(longitude/latitude, WGS84). These limits are automatically transformed
-into the target projected CRS, ensuring that maps display the intended
-region correctly under any projection.
+`coord_proj()` extends
+[`ggplot2::coord_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html)
+by allowing users to specify map limits (`xlim`, `ylim`) in geographic
+coordinates (longitude/latitude, WGS84). These limits are automatically
+transformed into the target projected CRS, ensuring that maps display
+the intended region correctly under any projection.
 
 ## Usage
 
@@ -24,8 +25,9 @@ coord_proj(
 - crs:
 
   Character string or object specifying the output coordinate reference
-  system (e.g., \`"EPSG:3857"\`, \`"+proj=robin"\`, or an \`sf::crs\`
-  object). \*\*Required\*\*.
+  system (e.g., `"EPSG:3857"`, `"+proj=robin"`, or an
+  [`sf::crs`](https://r-spatial.github.io/sf/reference/coerce-methods.html)
+  object). **Required**.
 
 - xlim:
 
@@ -37,38 +39,47 @@ coord_proj(
 
 - expand:
 
-  Logical. Passed to \[ggplot2::coord_sf()\]. Default is \`TRUE\`.
+  Logical. Passed to
+  [`ggplot2::coord_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html).
+  Default is `TRUE`.
 
 - default_crs:
 
-  Character or object. The CRS of the input \`xlim\` and \`ylim\`.
-  Default is \`"EPSG:4326"\` (WGS84).
+  Character or object. The CRS of the input `xlim` and `ylim`. Default
+  is `"EPSG:4326"` (WGS84).
 
 - ...:
 
-  Additional arguments passed to \[ggplot2::coord_sf()\].
+  Additional arguments passed to
+  [`ggplot2::coord_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html).
 
 ## Value
 
-A \`CoordSf\` object (specifically a result of \`coord_sf()\`) with
+A `CoordSf` object (specifically a result of
+[`coord_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html)) with
 automatically transformed limits.
 
 ## Details
 
-This wrapper is particularly useful because \[ggplot2::coord_sf()\]
-interprets \`xlim\` and \`ylim\` as \*projected\* coordinates (in the
-units of the target CRS). Passing longitude/latitude directly to
-\`coord_sf()\` results in incorrect map extents unless the output CRS is
-also WGS84.
+This wrapper is particularly useful because
+[`ggplot2::coord_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html)
+interprets `xlim` and `ylim` as *projected* coordinates (in the units of
+the target CRS). Passing longitude/latitude directly to
+[`coord_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html)
+results in incorrect map extents unless the output CRS is also WGS84.
 
-\`coord_proj()\` provides a safe, projection-aware workflow that
+`coord_proj()` provides a safe, projection-aware workflow that
 calculates the bounding box in WGS84, transforms it to the target CRS,
-and passes the new limits to \`coord_sf()\`.
+and passes the new limits to
+[`coord_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html).
 
 ## See also
 
-\* \[ggplot2::coord_sf()\] for the underlying function. \*
-\[geom_world()\] for the basemap layer.
+- [`ggplot2::coord_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html)
+  for the underlying function.
+
+- [`geom_world()`](https://rimagination.github.io/ggmapcn/reference/geom_world.md)
+  for the basemap layer.
 
 ## Examples
 

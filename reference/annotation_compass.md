@@ -1,10 +1,11 @@
 # Add a Spatially-Aware Compass
 
-\`annotation_compass()\` adds a compass (north arrow) to a ggplot map.
-It can align to \*\*grid north\*\* (top of the panel) or \*\*true
-north\*\* (geographic north). Styles are provided as grobs or functions
-returning grobs (for example \`north_arrow_classic()\`,
-\`compass_sinan()\`).
+`annotation_compass()` adds a compass (north arrow) to a ggplot map. It
+can align to **grid north** (top of the panel) or **true north**
+(geographic north). Styles are provided as grobs or functions returning
+grobs (for example
+[`north_arrow_classic()`](https://rimagination.github.io/ggmapcn/reference/compass-styles.md),
+[`compass_sinan()`](https://rimagination.github.io/ggmapcn/reference/compass-styles.md)).
 
 ## Usage
 
@@ -36,31 +37,34 @@ annotation_compass(
 
 - location:
 
-  Character; one of \`"tl"\`, \`"tr"\`, \`"bl"\`, \`"br"\`, indicating
-  top/bottom and left/right placement. Default: \`"bl"\`.
+  Character; one of `"tl"`, `"tr"`, `"bl"`, `"br"`, indicating
+  top/bottom and left/right placement. Default: `"bl"`.
 
 - which_north:
 
-  Character; \`"grid"\` (default) or \`"true"\`.
+  Character; `"grid"` (default) or `"true"`.
 
 - height, width:
 
-  \`grid::unit\`. Compass box dimensions. Defaults: \`1.5 cm\`.
+  [`grid::unit`](https://rdrr.io/r/grid/unit.html). Compass box
+  dimensions. Defaults: `1.5 cm`.
 
 - pad_x, pad_y:
 
-  \`grid::unit\`. Padding from panel edges. Defaults: \`0.5 cm\`.
+  [`grid::unit`](https://rdrr.io/r/grid/unit.html). Padding from panel
+  edges. Defaults: `0.5 cm`.
 
 - rotation:
 
   Numeric. Fixed rotation in degrees (counter-clockwise). When supplied,
-  it overrides \`"grid"\` / \`"true"\` behavior.
+  it overrides `"grid"` / `"true"` behavior.
 
 - style:
 
-  A grob, \`gList\` / \`gTree\`, or a function returning a grob (for
-  example \`north_arrow_classic()\`). Default:
-  \`north_arrow_classic()\`.
+  A grob, `gList` / `gTree`, or a function returning a grob (for example
+  [`north_arrow_classic()`](https://rimagination.github.io/ggmapcn/reference/compass-styles.md)).
+  Default:
+  [`north_arrow_classic()`](https://rimagination.github.io/ggmapcn/reference/compass-styles.md).
 
 ## Value
 
@@ -68,17 +72,24 @@ A ggplot2 layer object.
 
 ## Details
 
-\* \`"grid"\` north: the compass points straight up in plotting space
-(no CRS required). \* \`"true"\` north: the compass rotates toward the
-geographic North Pole using the plot CRS. This requires a valid CRS
-supplied by \`coord_sf()\` or injected via \`layer\$geom_params\$crs\`.
-\* A fixed \`rotation\` (degrees counter-clockwise) always overrides the
-automatic \`"grid"\` / \`"true"\` logic. \* The layer is
-annotation-like: it draws once per panel based on the panel bounds.
+- `"grid"` north: the compass points straight up in plotting space (no
+  CRS required).
+
+- `"true"` north: the compass rotates toward the geographic North Pole
+  using the plot CRS. This requires a valid CRS supplied by
+  [`coord_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html) or
+  injected via `layer$geom_params$crs`.
+
+- A fixed `rotation` (degrees counter-clockwise) always overrides the
+  automatic `"grid"` / `"true"` logic.
+
+- The layer is annotation-like: it draws once per panel based on the
+  panel bounds.
 
 ## See also
 
-\[compass-styles\]
+[Compass
+styles](https://rimagination.github.io/ggmapcn/reference/compass-styles.md).
 
 ## Examples
 

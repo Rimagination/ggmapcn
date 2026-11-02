@@ -38,110 +38,113 @@ geom_boundary_cn(
 
 - crs:
 
-  Character or \`sf::crs\`. Target coordinate reference system for
-  plotting. Defaults to an azimuthal equidistant projection centered on
-  China (\`+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m
-  +no_defs\`).
+  Character or
+  [`sf::crs`](https://r-spatial.github.io/sf/reference/coerce-methods.html).
+  Target coordinate reference system for plotting. Defaults to an
+  azimuthal equidistant projection centered on China
+  (`+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs`).
 
 - compass:
 
-  Logical. If \`TRUE\`, add a compass pointing to true north in the
-  top-left corner. Default: \`FALSE\`.
+  Logical. If `TRUE`, add a compass pointing to true north in the
+  top-left corner. Default: `FALSE`.
 
 - scale:
 
-  Logical. If \`TRUE\`, add a scale bar in the bottom-left corner.
-  Default: \`FALSE\`.
+  Logical. If `TRUE`, add a scale bar in the bottom-left corner.
+  Default: `FALSE`.
 
 - mainland_color:
 
-  Character. Line color for the mainland boundary. Default: \`"black"\`.
+  Character. Line color for the mainland boundary. Default: `"black"`.
 
 - mainland_size:
 
-  Numeric. Line width for the mainland boundary. Default: \`0.2\`.
+  Numeric. Line width for the mainland boundary. Default: `0.2`.
 
 - mainland_linetype:
 
-  Character. Line type for the mainland boundary. Default: \`"solid"\`.
+  Character. Line type for the mainland boundary. Default: `"solid"`.
 
 - coastline_color:
 
-  Character. Line color for coastlines. Default: \`"blue"\`.
+  Character. Line color for coastlines. Default: `"blue"`.
 
 - coastline_size:
 
-  Numeric. Line width for coastlines. Default: \`0.1\`.
+  Numeric. Line width for coastlines. Default: `0.1`.
 
 - coastline_linetype:
 
-  Character. Line type for coastlines. Default: \`"solid"\`.
+  Character. Line type for coastlines. Default: `"solid"`.
 
 - ten_segment_line_color:
 
   Character. Line color for the South China Sea ten-segment line.
-  Default: \`"black"\`.
+  Default: `"black"`.
 
 - ten_segment_line_size:
 
-  Numeric. Line width for the ten-segment line. Default: \`0.2\`.
+  Numeric. Line width for the ten-segment line. Default: `0.2`.
 
 - ten_segment_line_linetype:
 
-  Character. Line type for the ten-segment line. Default: \`"solid"\`.
+  Character. Line type for the ten-segment line. Default: `"solid"`.
 
 - SAR_boundary_color:
 
   Character. Line color for Hong Kong and Macau SAR boundaries. Default:
-  \`"grey40"\`.
+  `"grey40"`.
 
 - SAR_boundary_size:
 
-  Numeric. Line width for SAR boundaries. Default: \`0.1\`.
+  Numeric. Line width for SAR boundaries. Default: `0.1`.
 
 - SAR_boundary_linetype:
 
-  Character. Line type for SAR boundaries. Default: \`"dashed"\`.
+  Character. Line type for SAR boundaries. Default: `"dashed"`.
 
 - undefined_boundary_color:
 
   Character. Line color for undefined or disputed boundaries. Default:
-  \`"black"\`.
+  `"black"`.
 
 - undefined_boundary_size:
 
-  Numeric. Line width for undefined boundaries. Default: \`0.2\`.
+  Numeric. Line width for undefined boundaries. Default: `0.2`.
 
 - undefined_boundary_linetype:
 
-  Character. Line type for undefined boundaries. Default: \`"dotdash"\`.
+  Character. Line type for undefined boundaries. Default: `"dotdash"`.
 
 - province_color:
 
   Character. Line color for provincial boundaries. Default:
-  \`"transparent"\`.
+  `"transparent"`.
 
 - province_size:
 
-  Numeric. Line width for provincial boundaries. Default: \`0.1\`.
+  Numeric. Line width for provincial boundaries. Default: `0.1`.
 
 - province_linetype:
 
-  Character. Line type for provincial boundaries. Default: \`"solid"\`.
+  Character. Line type for provincial boundaries. Default: `"solid"`.
 
 - ...:
 
-  Additional arguments passed to \`ggplot2::geom_sf()\` (e.g.,
-  \`alpha\`).
+  Additional arguments passed to
+  [`ggplot2::geom_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html)
+  (e.g., `alpha`).
 
 ## Value
 
-A list of \`ggplot2\` layers. If the boundary dataset cannot be
-obtained, an empty list is returned.
+A list of `ggplot2` layers. If the boundary dataset cannot be obtained,
+an empty list is returned.
 
 ## Examples
 
 ``` r
+
 # Example 1: Basic China map
 ggplot() +
   geom_boundary_cn() +

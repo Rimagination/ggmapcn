@@ -1,8 +1,8 @@
 # Classic North Arrow Style (Minimal)
 
-A collection of style constructors that return \`grid\` grobs for use
-with \`annotation_compass(style = ...)\`. These styles provide different
-visual appearances for a compass or north arrow drawn as an annotation.
+A collection of style constructors that return `grid` grobs for use with
+`annotation_compass(style = ...)`. These styles provide different visual
+appearances for a compass or north arrow drawn as an annotation.
 
 ## Usage
 
@@ -170,7 +170,7 @@ compass_sinan(
 
 - labels:
 
-  Character vector of cardinal labels, usually \`c("N","E","S","W")\`.
+  Character vector of cardinal labels, usually `c("N","E","S","W")`.
 
 - label_offset:
 
@@ -198,7 +198,7 @@ compass_sinan(
 
 - sharpness:
 
-  Controls star-point sharpness in rose styles, numeric in \[0, 1\].
+  Controls star-point sharpness in rose styles, numeric in `[0, 1]`.
 
 - size:
 
@@ -222,7 +222,7 @@ compass_sinan(
 
 ## Value
 
-A \`grid\` graphical object (grob).
+A `grid` graphical object (grob).
 
 ## Details
 
@@ -248,7 +248,8 @@ cardinal labels) to indicate north.
 
 ## See also
 
-\[annotation_compass\] for adding the compass to a ggplot.
+[`annotation_compass()`](https://rimagination.github.io/ggmapcn/reference/annotation_compass.md)
+for adding the compass to a plot.
 
 ## Examples
 

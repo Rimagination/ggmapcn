@@ -13,6 +13,7 @@ We will use the standard North Carolina shapefile provided by the `sf`
 package as our base map.
 
 ``` r
+
 library(ggplot2)
 library(sf)
 #> Linking to GEOS 3.12.1, GDAL 3.8.4, PROJ 9.4.0; sf_use_s2() is TRUE
@@ -43,6 +44,7 @@ bottom-left, `"tr"` for top-right) and adjust the relative width using
 `width_hint`.
 
 ``` r
+
 base_proj <- base_geo +
   coord_sf(crs = 32617) +
   theme(axis.title = element_blank())
@@ -57,6 +59,7 @@ left. The second shows a wider scale bar in the top
 right.](Advanced_Scalebar_and_Compass_files/figure-html/proj_scale-1.png)
 
 ``` r
+
 
 # Top-right scale bar with custom width hint
 base_proj +
@@ -77,6 +80,7 @@ supports multiple styles: `"segment"`, `"ticks"`, and `"bar"`. You can
 also customize colors and text visibility.
 
 ``` r
+
 # 1. Segment style
 p_segment <- base_proj +
   annotation_scalebar(
@@ -91,6 +95,7 @@ p_segment
 bar.](Advanced_Scalebar_and_Compass_files/figure-html/styles_1-1.png)
 
 ``` r
+
 # 2. Ticks style
 p_ticks <- base_proj +
   annotation_scalebar(
@@ -104,6 +109,7 @@ p_ticks
 bar.](Advanced_Scalebar_and_Compass_files/figure-html/styles_2-1.png)
 
 ``` r
+
 # 3. Bar style with custom colors
 p_bar <- base_proj +
   annotation_scalebar(
@@ -121,6 +127,7 @@ You can also set a fixed distance width (e.g., 100km) and change the
 line colors:
 
 ``` r
+
 base_proj +
   annotation_scalebar(
     location     = "bl",
@@ -143,6 +150,7 @@ distance calculation is difficult.
 - `geographic_mode = "degrees"`: Shows the scale in decimal degrees.
 
 ``` r
+
 # Approximate meters
 base_geo +
   coord_sf(crs = 4326) +
@@ -160,6 +168,7 @@ other in
 degrees.](Advanced_Scalebar_and_Compass_files/figure-html/geo_mode-1.png)
 
 ``` r
+
 
 # Degrees
 base_geo +
@@ -182,6 +191,7 @@ You can adjust the size and padding using
 [`grid::unit()`](https://rdrr.io/r/grid/unit.html).
 
 ``` r
+
 # Default classic arrow
 base_geo +
   annotation_compass(
@@ -195,6 +205,7 @@ is larger with
 padding.](Advanced_Scalebar_and_Compass_files/figure-html/compass_basic-1.png)
 
 ``` r
+
 
 # Custom size and padding
 base_geo +
@@ -221,6 +232,7 @@ Use `which_north = "true"` to automatically calculate the convergence
 angle and rotate the compass.
 
 ``` r
+
 # Define a Lambert Conformal Conic projection
 base_lcc <- base_geo +
   coord_sf(crs = "+proj=lcc +lon_0=-100 +lat_1=33 +lat_2=45") +
@@ -241,6 +253,7 @@ North
 arrow.](Advanced_Scalebar_and_Compass_files/figure-html/true_north-1.png)
 
 ``` r
+
 
 # Grid North with manual rotation
 base_lcc +
@@ -264,6 +277,7 @@ arrow.](Advanced_Scalebar_and_Compass_files/figure-html/true_north-2.png)
 (referencing the ancient Chinese compass).
 
 ``` r
+
 p_classic <- base_proj +
   annotation_compass(
     location = "tl",
@@ -290,6 +304,7 @@ p_classic
 Nan).](Advanced_Scalebar_and_Compass_files/figure-html/compass_styles-1.png)
 
 ``` r
+
 p_rose
 ```
 
@@ -298,6 +313,7 @@ p_rose
 Nan).](Advanced_Scalebar_and_Compass_files/figure-html/compass_styles-2.png)
 
 ``` r
+
 p_sinan
 ```
 
@@ -310,6 +326,7 @@ Nan).](Advanced_Scalebar_and_Compass_files/figure-html/compass_styles-3.png)
 Finally, you can layer both annotations onto a single map.
 
 ``` r
+
 base_proj +
   annotation_scalebar(
     location   = "bl",
