@@ -2,6 +2,12 @@
 #'
 #' Adds a vegetation raster map of China to a ggplot2 plot, with color-coded vegetation types.
 #'
+#' @details The default dataset is a 1 km raster representation of
+#'   \emph{Vegetation Map of the People's Republic of China 1:1000000}
+#'   (The Editorial Committee of Vegetation Map of China, Chinese Academy
+#'   of Sciences, 2007). Its default colors follow Su et al. (2020).
+#'   `check_geodata()` locates or retrieves `vege_1km_projected.tif`.
+#'
 #' @param color_table A data frame containing vegetation types and their corresponding colors.
 #'   It should have columns "code" (raster values), "type" (vegetation names), and "col" (hex color codes).
 #'   If NULL, a default color table based on standard vegetation classifications for China is used.
@@ -15,9 +21,14 @@
 #' @return A ggplot2 layer object representing the vegetation map of China.
 #' @importFrom tidyterra geom_spatraster
 #' @importFrom terra levels coltab rast project
-#' @references Zhang X, Sun S, Yong S, et al. (2007). *Vegetation map of the People's Republic of China (1:1000000)*. Geology Publishing House, Beijing.
+#' @references The Editorial Committee of Vegetation Map of China, Chinese
+#'   Academy of Sciences (2007). \emph{Vegetation Map of the People's Republic
+#'   of China 1:1000000}. Geological Publishing House, Beijing.
+#'
+#'   Su YJ, Guo QH, Hu TY, et al. (2020). An updated vegetation map of China
+#'   (1:1000000). \emph{Science Bulletin}, 65(13), 1125–1136.
 #' @export
-#' @examples
+#' @examplesIf interactive()
 #' \donttest{
 #' # Example1: Check and load the vegetation raster map
 #'
@@ -54,11 +65,11 @@ basemap_vege <- function(color_table = NULL,
                          na.rm = FALSE,
                          ...) {
 
-  # Ensure the required 'vege_1km_projected.tif' file is available in the package's extdata directory
-  # This check will allow the data to be found in the temp directory if needed
+  # Locate the required vegetation raster.
   geodata_path <- check_geodata(files = c("vege_1km_projected.tif"), quiet = TRUE)
-
-  # Now use the path returned by check_geodata (which could be in tempdir)
+  if (is.na(geodata_path[1])) {
+    stop("Could not locate or download 'vege_1km_projected.tif'.")
+  }
   vege_raster <- terra::rast(geodata_path)
 
   # Reproject raster if a new CRS is provided

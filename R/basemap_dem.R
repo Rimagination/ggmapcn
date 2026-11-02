@@ -1,11 +1,16 @@
 #' Elevation Map of China Layer for ggplot2
 #'
 #' @description
-#' `basemap_dem` adds a digital elevation model (DEM) raster map of China as a layer to ggplot2.
-#' The function ensures the output map remains rectangular, regardless of the chosen projection.
-#' It supports displaying the DEM either within China's boundary or in a larger rectangular area
-#' around China. Users can provide their own DEM data using the `data` parameter, or the default
-#' built-in DEM data will be used.
+#' `basemap_dem()` adds a digital elevation model (DEM) raster layer to a
+#' \pkg{ggplot2} plot. It supports displaying elevation within China's
+#' boundary or in a rectangular area around China. Users can supply a
+#' `terra` raster through `data`. Otherwise, `check_geodata()` locates or
+#' retrieves the default elevation dataset from the package's companion
+#' data repository.
+#'
+#' @details The default elevation layer is the China subset of GEBCO_2024.
+#'   The dataset is located or retrieved as `gebco_2024_China.tif` by
+#'   `check_geodata()`.
 #'
 #' @param data Optional. A `terra` raster object for custom DEM data.
 #' @param crs Coordinate reference system (CRS) for the projection. Defaults to the CRS of the DEM data.
@@ -19,9 +24,14 @@
 #' @seealso
 #' \code{\link[ggmapcn]{geom_boundary_cn}}
 #'
-#' @return A `ggplot` object containing the elevation map of China as a layer, which can be further customized or plotted.
+#' @return A layer produced by [tidyterra::geom_spatraster()] that can be
+#'   added to a \pkg{ggplot2} plot.
 #'
-#' @examples
+#' @references GEBCO Compilation Group (2024). GEBCO 2024 Grid.
+#'   NERC EDS British Oceanographic Data Centre NOC.
+#'   \url{https://www.gebco.net/}.
+#'
+#' @examplesIf interactive()
 #' \donttest{
 #' # Before using the basemap_dem function, make sure the required data files are available.
 #' # The required files are: "gebco_2024_China.tif" and "China_mask.gpkg".
@@ -33,7 +43,7 @@
 #' # Define the CRS for China (EPSG:4326 is a common global geographic coordinate system)
 #' china_proj <- "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs"
 #'
-#' # Example 1: Display full rectangular area around China using built-in DEM data
+#' # Example 1: Display the rectangular area around China using the default DEM data
 #' ggplot() +
 #'   basemap_dem(within_china = FALSE) +
 #'   tidyterra::scale_fill_hypso_tint_c(
@@ -42,7 +52,7 @@
 #'   ) +
 #'   theme_minimal()
 #'
-#' # Example 2: Display only China's DEM and boundaries using built-in DEM data
+#' # Example 2: Display only China's DEM and boundaries using the default DEM data
 #' ggplot() +
 #'   basemap_dem(crs = china_proj, within_china = TRUE) +
 #'   geom_boundary_cn(crs = china_proj) +
@@ -62,16 +72,12 @@ basemap_dem <- function(data = NULL,
                         na.rm = FALSE,
                         ...) {
 
-  # Ensure required geospatial data is available
-  required_files <- c("gebco_2024_China.tif", "China_mask.gpkg")
-  check_geodata(files = required_files, quiet = TRUE)
-
   # If no custom data is provided, use the default DEM raster of China
   if (is.null(data)) {
     # Get the path of the DEM data from check_geodata
     dem_path <- check_geodata(files = c("gebco_2024_China.tif"), quiet = TRUE)
-    if (dem_path == "") {
-      stop("DEM file not found. Ensure 'gebco_2024_China.tif' is available.")
+    if (is.na(dem_path[1])) {
+      stop("Could not locate or download 'gebco_2024_China.tif'.")
     }
     dem_raster <- terra::rast(dem_path)
   } else {
@@ -79,27 +85,17 @@ basemap_dem <- function(data = NULL,
     dem_raster <- data
   }
 
-  # Load China boundary data from .gpkg file
-  china_data_path <- check_geodata(files = c("China_mask.gpkg"), quiet = TRUE)
-  if (china_data_path == "") {
-    stop("China boundary .gpkg file not found. Ensure 'China_mask.gpkg' is available.")
-  }
-
-  # Load the China boundary from the GPKG file using terra
-  China_sheng <- terra::vect(china_data_path)
-
-  # Ensure CRS of China boundary matches DEM data
   if (!is.null(crs)) {
-    # Reproject DEM to the specified CRS
     dem_raster <- terra::project(dem_raster, crs, method = "bilinear")
-    # Reproject China boundary to the same CRS
-    China_sheng <- terra::project(China_sheng, crs)
-  } else {
-    # Align China boundary with the original DEM CRS
-    China_sheng <- terra::project(China_sheng, terra::crs(dem_raster))
   }
 
   if (within_china) {
+    china_data_path <- check_geodata(files = "China_mask.gpkg", quiet = TRUE)
+    if (is.na(china_data_path[1])) {
+      stop("Could not locate or download 'China_mask.gpkg'.")
+    }
+    China_sheng <- terra::vect(china_data_path)
+    China_sheng <- terra::project(China_sheng, terra::crs(dem_raster))
     # If 'within_china' is TRUE, crop DEM to the boundary of China
     dem_raster <- terra::crop(dem_raster, China_sheng, mask = TRUE)
   } else {
@@ -108,8 +104,7 @@ basemap_dem <- function(data = NULL,
     bbox <- terra::ext(china_extent)
 
     if (!is.null(crs)) {
-      # Reproject DEM and bounding box
-      dem_raster <- terra::project(dem_raster, crs, method = "bilinear")
+      # Reproject the bounding box to the raster CRS
       bbox_proj <- terra::project(bbox, crs)
       extent_proj <- terra::ext(bbox_proj)
       dem_raster <- terra::crop(dem_raster, extent_proj)

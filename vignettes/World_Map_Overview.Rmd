@@ -17,11 +17,27 @@ knitr::opts_chunk$set(
 
 library(ggplot2)
 library(ggmapcn)
+
+world_files <- c("world_countries.rda", "world_coastlines.rda",
+                 "world_boundaries.rda")
+data_dirs <- c(system.file("extdata", package = "ggmapcn"),
+               tools::R_user_dir("ggmapcn", "cache"),
+               tools::R_user_dir("ggmapcn", "data"))
+available <- vapply(world_files, function(f) {
+  any(file.exists(file.path(data_dirs, f)))
+}, logical(1))
+knitr::opts_chunk$set(eval = all(available))
 ```
 
 ## 1. Introduction
 
-`geom_world()` provides a convenient global base map for `ggplot2`. It comes bundled with country polygons, coastlines, and political/administrative boundaries.
+`geom_world()` provides a global base map for `ggplot2` using the package's
+default country polygons, coastlines, and political/administrative boundaries.
+These default datasets are supplied through the companion
+[ggmapcn-data repository](https://github.com/Rimagination/ggmapcn-data).
+The function uses `check_geodata()` to reuse local copies or retrieve missing
+files. The examples below are evaluated when the required datasets are available
+locally; otherwise their code is shown without running it.
 
 Key features include:
 

@@ -1,10 +1,12 @@
 #' Convenient Global Basemap Layer for ggplot2
 #'
 #' @description
-#' `geom_world()` draws a styled global basemap using bundled country
+#' `geom_world()` draws a styled global basemap using country
 #' polygons, coastlines, and administrative boundary data. It automatically
 #' handles antimeridian splitting and CRS transformation, and supports
-#' optional country filtering for focused maps.
+#' optional country filtering for focused maps. The function uses the
+#' package's default world datasets; `check_geodata()` reuses local copies
+#' or retrieves missing files when possible.
 #'
 #' @details
 #' This function supersedes early development versions that required users to
@@ -12,7 +14,7 @@
 #'
 #' The current implementation:
 #'
-#' - Always uses bundled world map data (countries, coastlines, boundaries).
+#' - Uses world map data located or retrieved by `check_geodata()`.
 #' - Exposes dedicated arguments for ocean fill, coastlines, and administrative boundaries.
 #' - Builds a projection-aware global outline for the ocean/frame layer.
 #'   For **geographic CRSs** (including those with a shifted central meridian,
@@ -22,7 +24,7 @@
 #'   hull of the projected graticule.
 #'
 #' @param crs Coordinate reference system for the basemap. Accepts a numeric
-#'   EPSG code, a PROJ string, or an [sf::crs] object. The default is `4326`
+#'   EPSG code, a PROJ string, or an [sf::st_crs()] object. The default is `4326`
 #'   (WGS84).
 #'
 #' @param filter_attribute Name of the column in the `countries` dataset used
@@ -90,10 +92,10 @@
 #' @param ... Additional arguments passed to [ggplot2::geom_sf()] for the
 #'   country polygons layer.
 #'
-#' @return A list of [ggplot2] layers representing the world map (or a
+#' @return A list of \pkg{ggplot2} layers representing the world map (or a
 #'   filtered subset), ready to be added to a ggplot.
 #'
-#' @examples
+#' @examplesIf interactive()
 #' library(ggplot2)
 #' \donttest{
 #' # 1. Simple World Map (WGS84)
@@ -301,14 +303,15 @@ geom_world <- function(
   }
 
   ## ------------------------------------------------------------------------
-  ## 1. Load bundled data via check_geodata()
+  ## 1. Locate or retrieve data via check_geodata()
   ## ------------------------------------------------------------------------
-  paths <- check_geodata(
-    files = c("world_countries.rda",
-              "world_coastlines.rda",
-              "world_boundaries.rda"),
-    quiet = TRUE
-  )
+  required_files <- c("world_countries.rda", "world_coastlines.rda",
+                      "world_boundaries.rda")
+  paths <- check_geodata(files = required_files, quiet = TRUE)
+  if (anyNA(paths)) {
+    stop("Could not locate or download required world data: ",
+         paste(required_files[is.na(paths)], collapse = ", "), ".")
+  }
 
   env <- new.env(parent = emptyenv())
   load(paths[1], envir = env)  # countries

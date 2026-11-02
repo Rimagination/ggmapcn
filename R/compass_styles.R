@@ -28,7 +28,7 @@
 #' @param text_face Text font face (e.g., "plain", "bold").
 #' @param text_family Text font family.
 #' @param labels Character vector of cardinal labels, usually `c("N","E","S","W")`.
-#' @param sharpness Controls star-point sharpness in rose styles, numeric in [0, 1].
+#' @param sharpness Controls star-point sharpness in rose styles, numeric in `[0, 1]`.
 #' @param size Global size scaler (used by some styles).
 #' @param ring_ratio Inner/outer radius ratio for ringed styles (0 < value < 1).
 #' @param ring_width Stroke width of ring outlines (numeric).
@@ -47,7 +47,8 @@
 #' @return A `grid` graphical object (grob).
 #'
 #' @seealso
-#' [annotation_compass] for adding the compass to a ggplot.
+#' \code{\link[ggmapcn:annotation_compass]{annotation_compass()}} for adding
+#' the compass to a plot.
 #'
 #' @examples
 #' # Standalone preview

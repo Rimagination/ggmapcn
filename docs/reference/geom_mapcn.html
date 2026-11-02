@@ -112,7 +112,7 @@ versions, use `size` instead of `linewidth`.</p></dd>
 
 <dt id="arg-filter-attribute">filter_attribute<a class="anchor" aria-label="anchor" href="#arg-filter-attribute"></a></dt>
 <dd><p>Optional name of an attribute column used to filter
-features (e.g., `"name_en"`).</p></dd>
+features (e.g., `"name"` for English provincial names).</p></dd>
 
 
 <dt id="arg-filter">filter<a class="anchor" aria-label="anchor" href="#arg-filter"></a></dt>
@@ -149,6 +149,9 @@ loaded from the resolved path, and the main `sf` object is extracted.</p>
 <p>A special row labelled `"Boundary Line"` (used for technical clipping) is
 removed automatically when present. Attribute-based filtering can be applied
 using `filter_attribute` and `filter` before reprojecting to the target CRS.</p>
+<p>In the current provincial dataset, <code>name</code> contains English names,
+<code>name_cn</code> contains Chinese names, and <code>gb</code> contains the source
+administrative codes. City- and county-level datasets may use different attribute names.</p>
     </div>
 
     <div class="section level2">
@@ -174,7 +177,7 @@ using `filter_attribute` and `filter` before reprojecting to the target CRS.</p>
 <span class="r-in"><span><span class="co"># 3. Filter by attribute (e.g., English names) and highlight selected provinces</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>  <span class="fu">geom_mapcn</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    filter_attribute <span class="op">=</span> <span class="st">"name_en"</span>,</span></span>
+<span class="r-in"><span>    filter_attribute <span class="op">=</span> <span class="st">"name"</span>,</span></span>
 <span class="r-in"><span>    filter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Beijing"</span>, <span class="st">"Shanghai"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    fill <span class="op">=</span> <span class="st">"tomato"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span> <span class="op">+</span></span></span>

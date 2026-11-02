@@ -31,7 +31,7 @@
 #'
 #' @seealso
 #' * [ggplot2::coord_sf()] for the underlying function.
-#' * [geom_world()] for the basemap layer.
+#' * \code{\link[ggmapcn:geom_world]{geom_world()}} for the basemap layer.
 #'
 #' @examples
 #' library(ggplot2)

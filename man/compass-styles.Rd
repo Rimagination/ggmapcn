@@ -149,7 +149,7 @@ compass_sinan(
 
 \item{ring_ratio}{Inner/outer radius ratio for ringed styles (0 < value < 1).}
 
-\item{labels}{Character vector of cardinal labels, usually `c("N","E","S","W")`.}
+\item{labels}{Character vector of cardinal labels, usually \code{c("N","E","S","W")}.}
 
 \item{label_offset}{Label offset from the square edges (Sinan style), npc units.}
 
@@ -163,7 +163,7 @@ compass_sinan(
 
 \item{square_width, outer_width, inner_width, spoon_width}{Stroke widths for respective elements in Sinan style.}
 
-\item{sharpness}{Controls star-point sharpness in rose styles, numeric in [0, 1].}
+\item{sharpness}{Controls star-point sharpness in rose styles, numeric in \verb{[0, 1]}.}
 
 \item{size}{Global size scaler (used by some styles).}
 
@@ -176,23 +176,23 @@ compass_sinan(
 \item{fish_shift}{Vertical shift for fish shape (guiding fish style).}
 }
 \value{
-A `grid` graphical object (grob).
+A \code{grid} graphical object (grob).
 }
 \description{
-A collection of style constructors that return `grid` grobs for use with
-`annotation_compass(style = ...)`. These styles provide different visual
+A collection of style constructors that return \code{grid} grobs for use with
+\code{annotation_compass(style = ...)}. These styles provide different visual
 appearances for a compass or north arrow drawn as an annotation.
 }
 \details{
 Exported constructors documented under this topic:
 \itemize{
-  \item \code{north_arrow_classic()}
-  \item \code{north_arrow_solid()}
-  \item \code{compass_rose_simple()}
-  \item \code{compass_rose_classic()}
-  \item \code{compass_rose_circle()}
-  \item \code{compass_guiding_fish()}
-  \item \code{compass_sinan()}
+\item \code{north_arrow_classic()}
+\item \code{north_arrow_solid()}
+\item \code{compass_rose_simple()}
+\item \code{compass_rose_classic()}
+\item \code{compass_rose_circle()}
+\item \code{compass_guiding_fish()}
+\item \code{compass_sinan()}
 }
 
 Each constructor returns a grob ready to be passed to \code{annotation_compass(style = ...)}.
@@ -224,5 +224,6 @@ if (requireNamespace("ggplot2", quietly = TRUE) &&
 
 }
 \seealso{
-[annotation_compass] for adding the compass to a ggplot.
+\code{\link[ggmapcn:annotation_compass]{annotation_compass()}} for adding
+the compass to a plot.
 }

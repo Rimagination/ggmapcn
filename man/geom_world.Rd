@@ -39,115 +39,119 @@ geom_world(
 }
 \arguments{
 \item{crs}{Coordinate reference system for the basemap. Accepts a numeric
-EPSG code, a PROJ string, or an [sf::crs] object. The default is `4326`
+EPSG code, a PROJ string, or an \code{\link[sf:st_crs]{sf::st_crs()}} object. The default is \code{4326}
 (WGS84).}
 
-\item{filter_attribute}{Name of the column in the `countries` dataset used
-for filtering. Default `"SOC"`.}
+\item{filter_attribute}{Name of the column in the \code{countries} dataset used
+for filtering. Default \code{"SOC"}.}
 
-\item{filter}{Character vector specifying which values of `filter_attribute`
-to retain. If `NULL` (default), no filtering is applied. When non-`NULL`,
+\item{filter}{Character vector specifying which values of \code{filter_attribute}
+to retain. If \code{NULL} (default), no filtering is applied. When non-\code{NULL},
 only the selected countries are drawn, and the ocean, coastlines,
 administrative boundaries, and frame are omitted.}
 
-\item{show_ocean}{Logical; draw an ocean background polygon. Default `TRUE`.
-Ignored when `filter` is not `NULL`.}
+\item{show_ocean}{Logical; draw an ocean background polygon. Default \code{TRUE}.
+Ignored when \code{filter} is not \code{NULL}.}
 
 \item{show_admin_boundaries}{Logical; draw administrative and political
 boundaries (international, regional, undefined/disputed, and military
-demarcation lines). Default `TRUE`. Ignored when `filter` is not `NULL`.}
+demarcation lines). Default \code{TRUE}. Ignored when \code{filter} is not \code{NULL}.}
 
 \item{show_frame}{Logical; draw an outer frame following the projected
-outline of the world. Default `FALSE`. Ignored when `filter` is not `NULL`.}
+outline of the world. Default \code{FALSE}. Ignored when \code{filter} is not \code{NULL}.}
 
-\item{ocean_fill}{Fill color for the ocean polygon. Default `"#c7e8fb"`.}
+\item{ocean_fill}{Fill color for the ocean polygon. Default \code{"#c7e8fb"}.}
 
-\item{frame_color}{Color of the outer frame line. Default `"grey20"`.}
+\item{frame_color}{Color of the outer frame line. Default \code{"grey20"}.}
 
-\item{frame_size}{Line width of the outer frame. Default `0.1`.}
+\item{frame_size}{Line width of the outer frame. Default \code{0.1}.}
 
-\item{frame_linetype}{Line type of the outer frame. Default `"solid"`.}
+\item{frame_linetype}{Line type of the outer frame. Default \code{"solid"}.}
 
-\item{country_fill}{Fill color for country polygons. Default `"grey90"`.}
+\item{country_fill}{Fill color for country polygons. Default \code{"grey90"}.}
 
 \item{country_boundary_color}{Color of country boundary outlines.
-Default `"transparent"`.}
+Default \code{"transparent"}.}
 
 \item{country_boundary_size}{Width of country boundary outlines.
-Default `0.1`.}
+Default \code{0.1}.}
 
 \item{country_boundary_linetype}{Line type of country boundaries.
-Default `"solid"`.}
+Default \code{"solid"}.}
 
-\item{coastline_color}{Color of the coastline layer. Default `"#26ace7"`.}
+\item{coastline_color}{Color of the coastline layer. Default \code{"#26ace7"}.}
 
-\item{coastline_size}{Line width of coastlines. Default `0.1`.}
+\item{coastline_size}{Line width of coastlines. Default \code{0.1}.}
 
-\item{coastline_linetype}{Line type of coastlines. Default `"solid"`.}
+\item{coastline_linetype}{Line type of coastlines. Default \code{"solid"}.}
 
 \item{international_boundary_color}{Color for international boundary lines.
-Default `"grey20"`.}
+Default \code{"grey20"}.}
 
 \item{international_boundary_size}{Width for international boundaries.
-Default `0.1`.}
+Default \code{0.1}.}
 
 \item{international_boundary_linetype}{Line type for international
-boundaries. Default `"solid"`.}
+boundaries. Default \code{"solid"}.}
 
 \item{regional_boundary_color}{Color for regional boundaries (e.g. states).
-Default `"grey20"`.}
+Default \code{"grey20"}.}
 
-\item{regional_boundary_size}{Width for regional boundaries. Default `0.1`.}
+\item{regional_boundary_size}{Width for regional boundaries. Default \code{0.1}.}
 
 \item{regional_boundary_linetype}{Line type for regional boundaries.
-Default `"dashed"`.}
+Default \code{"dashed"}.}
 
 \item{undefined_boundary_color}{Color for undefined or disputed boundaries.
-Default `"grey20"`.}
+Default \code{"grey20"}.}
 
-\item{undefined_boundary_size}{Width for undefined boundaries. Default `0.1`.}
+\item{undefined_boundary_size}{Width for undefined boundaries. Default \code{0.1}.}
 
 \item{undefined_boundary_linetype}{Line type for undefined boundaries.
-Default `"longdash"`.}
+Default \code{"longdash"}.}
 
 \item{military_boundary_color}{Color for military demarcation lines.
-Default `"grey20"`.}
+Default \code{"grey20"}.}
 
 \item{military_boundary_size}{Width for military demarcation lines.
-Default `0.1`.}
+Default \code{0.1}.}
 
 \item{military_boundary_linetype}{Line type for military demarcation lines.
-Default `"dotted"`.}
+Default \code{"dotted"}.}
 
-\item{...}{Additional arguments passed to [ggplot2::geom_sf()] for the
+\item{...}{Additional arguments passed to \code{\link[ggplot2:ggsf]{ggplot2::geom_sf()}} for the
 country polygons layer.}
 }
 \value{
-A list of [ggplot2] layers representing the world map (or a
-  filtered subset), ready to be added to a ggplot.
+A list of \pkg{ggplot2} layers representing the world map (or a
+filtered subset), ready to be added to a ggplot.
 }
 \description{
-`geom_world()` draws a styled global basemap using bundled country
+\code{geom_world()} draws a styled global basemap using country
 polygons, coastlines, and administrative boundary data. It automatically
 handles antimeridian splitting and CRS transformation, and supports
-optional country filtering for focused maps.
+optional country filtering for focused maps. The function uses the
+package's default world datasets; \code{check_geodata()} reuses local copies
+or retrieves missing files when possible.
 }
 \details{
 This function supersedes early development versions that required users to
 supply their own map data.
 
 The current implementation:
-
-- Always uses bundled world map data (countries, coastlines, boundaries).
-- Exposes dedicated arguments for ocean fill, coastlines, and administrative boundaries.
-- Builds a projection-aware global outline for the ocean/frame layer.
-  For **geographic CRSs** (including those with a shifted central meridian,
-  e.g., `+lon_0=150`), it creates a seamless rectangular bounding box directly
-  in the target CRS to avoid topological splitting artifacts (vertical lines).
-  For **projected CRSs** (e.g., Robinson, Mollweide), it computes the convex
-  hull of the projected graticule.
+\itemize{
+\item Uses world map data located or retrieved by \code{check_geodata()}.
+\item Exposes dedicated arguments for ocean fill, coastlines, and administrative boundaries.
+\item Builds a projection-aware global outline for the ocean/frame layer.
+For \strong{geographic CRSs} (including those with a shifted central meridian,
+e.g., \code{+lon_0=150}), it creates a seamless rectangular bounding box directly
+in the target CRS to avoid topological splitting artifacts (vertical lines).
+For \strong{projected CRSs} (e.g., Robinson, Mollweide), it computes the convex
+hull of the projected graticule.
+}
 }
 \examples{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 library(ggplot2)
 \donttest{
 # 1. Simple World Map (WGS84)
@@ -183,5 +187,5 @@ ggplot() +
   ) +
   theme_void()
 }
-
+\dontshow{\}) # examplesIf}
 }

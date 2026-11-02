@@ -42,7 +42,11 @@ geom_buffer_cn <- function(mainland_dist = 20000,
   required_files <- c("buffer_line.rda", "China_mask.gpkg")
 
   # Ensure required geospatial data is available
-  check_geodata(files = required_files, quiet = TRUE)
+  paths <- check_geodata(files = required_files, quiet = TRUE)
+  if (anyNA(paths)) {
+    stop("Could not locate or download required map data: ",
+         paste(required_files[is.na(paths)], collapse = ", "), ".")
+  }
 
   # Direction vector: alternate directions for each ten-segment line
   ten_line_direction <- c(1, -1, -1, -1, -1, -1, 1, 1, 1, 1)
@@ -53,12 +57,7 @@ geom_buffer_cn <- function(mainland_dist = 20000,
   }
 
   # Load the .rda file (this file contains the buffer data)
-  file_path <- system.file("extdata", "buffer_line.rda", package = "ggmapcn")
-
-  # Check if the file path is valid
-  if (file_path == "") {
-    stop("Map file 'buffer_line.rda' not found in extdata folder.")
-  }
+  file_path <- paths[1]
 
   # Load the .rda file containing the geospatial data
   load(file_path)
@@ -104,10 +103,7 @@ geom_buffer_cn <- function(mainland_dist = 20000,
   buffer_data <- rbind(mainland_buffer, ten_segment_buffers)
 
   # Load the China boundary (mask) data from China_mask.gpkg
-  china_mask_path <- system.file("extdata", "China_mask.gpkg", package = "ggmapcn")
-  if (china_mask_path == "") {
-    stop("China mask file 'China_mask.gpkg' not found in extdata folder.")
-  }
+  china_mask_path <- paths[2]
   china_mask <- sf::st_read(china_mask_path, quiet = TRUE)
 
   # Ensure CRS of China mask matches the buffer data CRS

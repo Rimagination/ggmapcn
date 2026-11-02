@@ -40,127 +40,115 @@ annotation_scalebar(
 
 \item{...}{Additional parameters passed to the layer (rarely needed).}
 
-\item{location}{Character. One of `"bl"`, `"br"`, `"tr"`, `"tl"`; placement
-relative to panel edges. Default: `"bl"`.}
+\item{location}{Character. One of \code{"bl"}, \code{"br"}, \code{"tr"}, \code{"tl"}; placement
+relative to panel edges. Default: \code{"bl"}.}
 
-\item{style}{Character. Scale bar style: `"segment"` (default), `"bar"`, or
-`"ticks"`.}
+\item{style}{Character. Scale bar style: \code{"segment"} (default), \code{"bar"}, or
+\code{"ticks"}.}
 
-\item{fixed_width}{Numeric. Bar width in *native CRS units* (for example,
+\item{fixed_width}{Numeric. Bar width in \emph{native CRS units} (for example,
 meters). Overrides automatic width selection.}
 
-\item{crs_unit}{Character. CRS units (for example `"m"`, `"ft"`, `"°"`).
+\item{crs_unit}{Character. CRS units (for example \code{"m"}, \code{"ft"}, \code{"°"}).
 Usually auto-detected; set only when auto-detection is not possible.}
 
-\item{crs}{An [sf::st_crs] object or a PROJ string. Fallback CRS when the
-plot does not provide one (for example, when not using `coord_sf()`).}
+\item{crs}{An \link[sf:st_crs]{sf::st_crs} object or a PROJ string. Fallback CRS when the
+plot does not provide one (for example, when not using \code{coord_sf()}).}
 
-\item{display_unit}{Character. Display units for labels (for example `"m"`,
-`"km"`). Ignored when `geographic_mode = "degrees"`.}
+\item{display_unit}{Character. Display units for labels (for example \code{"m"},
+\code{"km"}). Ignored when \code{geographic_mode = "degrees"}.}
 
 \item{unit_labels}{Named character vector for custom unit labels, e.g.
-`c(km = "Kilometers", m = "Meters", "°" = "°")`.}
+\code{c(km = "Kilometers", m = "Meters", "°" = "°")}.}
 
 \item{width_hint}{Numeric in (0, 1]. Target fraction of the panel width used
-by the bar. Default: `0.25`.}
+by the bar. Default: \code{0.25}.}
 
-\item{unit_category}{Character. `"metric"` (default) or `"imperial"`. Affects
+\item{unit_category}{Character. \code{"metric"} (default) or \code{"imperial"}. Affects
 automatic promotion of units (m → km, ft → mi).}
 
-\item{bar_cols}{Character vector of length two. Fill colours for `"bar"`
-style blocks. Default: `c("black", "white")`.}
+\item{bar_cols}{Character vector of length two. Fill colours for \code{"bar"}
+style blocks. Default: \code{c("black", "white")}.}
 
-\item{line_width}{Numeric. Line width for outlines and ticks. Default: `1`.}
+\item{line_width}{Numeric. Line width for outlines and ticks. Default: \code{1}.}
 
-\item{height}{[grid::unit]. Bar height. Default: `unit(0.25, "cm")`.}
+\item{height}{\link[grid:unit]{grid::unit}. Bar height. Default: \code{unit(0.25, "cm")}.}
 
-\item{pad_x, pad_y}{[grid::unit]. Padding from panel edges. Default:
-`unit(0.25, "cm")`.}
+\item{pad_x, pad_y}{\link[grid:unit]{grid::unit}. Padding from panel edges. Default:
+\code{unit(0.25, "cm")}.}
 
-\item{text_pad}{[grid::unit]. Gap between the bar and text labels. Default:
-`unit(0.15, "cm")`.}
+\item{text_pad}{\link[grid:unit]{grid::unit}. Gap between the bar and text labels. Default:
+\code{unit(0.15, "cm")}.}
 
 \item{text_cex, text_face, text_family}{Font settings for labels. Defaults:
-`0.7`, `NULL`, `""`.}
+\code{0.7}, \code{NULL}, \code{""}.}
 
-\item{tick_height}{Numeric in [0, 1]. Relative height of interior ticks for
-`"ticks"` style. Default: `0.6`.}
+\item{tick_height}{Numeric in \verb{[0, 1]}. Relative height of interior ticks for
+\code{"ticks"} style. Default: \code{0.6}.}
 
-\item{segments}{Integer. For `"segment"` style, number of major divisions.
-If `NULL`, an automatic, readable choice is used.}
+\item{segments}{Integer. For \code{"segment"} style, number of major divisions.
+If \code{NULL}, an automatic, readable choice is used.}
 
-\item{label_show}{Which ticks get labels: `"ends"` (default), `"all"`,
-`"major"`, a numeric frequency (for example `2`), or a numeric vector of
+\item{label_show}{Which ticks get labels: \code{"ends"} (default), \code{"all"},
+\code{"major"}, a numeric frequency (for example \code{2}), or a numeric vector of
 1-based indices.}
 
-\item{minor_tick_height}{Numeric in [0, 1]. For `"segment"` style, relative
-height of minor ticks. Default: `0`.}
+\item{minor_tick_height}{Numeric in \verb{[0, 1]}. For \code{"segment"} style, relative
+height of minor ticks. Default: \code{0}.}
 
-\item{geographic_mode}{Character, for **geographic CRS** only:
-* `"approx_m"`: approximate meters/kilometers (default; warns about
-  approximation).
-* `"degrees"`: show raw degrees (no metric conversion).}
+\item{geographic_mode}{Character, for \strong{geographic CRS} only:
+\itemize{
+\item \code{"approx_m"}: approximate meters/kilometers (default; warns about
+approximation).
+\item \code{"degrees"}: show raw degrees (no metric conversion).
+}}
 
 \item{text_col, line_col}{Colours for text labels and outlines/ticks.
-Defaults: `"black"`, `"black"`.}
+Defaults: \code{"black"}, \code{"black"}.}
 }
 \value{
 A ggplot2 layer representing a scale bar.
 }
 \description{
-`annotation_scalebar()` adds a projection-aware scale bar to a ggplot map.
-It reads the map's CRS (from `coord_sf()` or from the `crs` argument),
+\code{annotation_scalebar()} adds a projection-aware scale bar to a ggplot map.
+It reads the map's CRS (from \code{coord_sf()} or from the \code{crs} argument),
 chooses a readable width and units, and uses robust fallbacks so that the
 scale bar still draws even when CRS information is limited.
 
 Supported styles:
-* `"segment"` – minimal horizontal bar with ticks and labels (default)
-* `"ticks"`   – baseline with vertical ticks
-* `"bar"`     – alternating black/white blocks
+\itemize{
+\item \code{"segment"} – minimal horizontal bar with ticks and labels (default)
+\item \code{"ticks"}   – baseline with vertical ticks
+\item \code{"bar"}     – alternating black/white blocks
+}
 }
 \details{
-* With a **projected CRS** (for example UTM or AEQD in meters), the scale bar
-  is measured in native map units and is as accurate as the projection.
-* With a **geographic CRS** (EPSG:4326, degrees), distance depends on
-  latitude. The `geographic_mode` argument controls how degrees are handled:
-  - `"approx_m"` (default): approximate meters/kilometers using a
-    great-circle distance at the panel’s mid-latitude (a warning is issued).
-  - `"degrees"`: display raw degree units (for example `1°`) without
-    converting.
-* You can override the automatically chosen width with `fixed_width`,
-  which is interpreted in native CRS units.
+\itemize{
+\item With a \strong{projected CRS} (for example UTM or AEQD in meters), the scale bar
+is measured in native map units and is as accurate as the projection.
+\item With a \strong{geographic CRS} (EPSG:4326, degrees), distance depends on
+latitude. The \code{geographic_mode} argument controls how degrees are handled:
+\itemize{
+\item \code{"approx_m"} (default): approximate meters/kilometers using a
+great-circle distance at the panel’s mid-latitude (a warning is issued).
+\item \code{"degrees"}: display raw degree units (for example \verb{1°}) without
+converting.
+}
+\item You can override the automatically chosen width with \code{fixed_width},
+which is interpreted in native CRS units.
+}
 }
 \examples{
-\dontshow{if (requireNamespace("sf", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
-nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
+\dontshow{if (requireNamespace("sf", quietly = TRUE)) withAutoprint(\{ # examplesIf}
+nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)[1:3, ]
 
 base_plot <- ggplot() +
   geom_sf(data = nc, fill = "grey90") +
   theme_minimal()
 
-# Example 1: Projected CRS with a longer scale bar
+# Projected CRS with a scale bar
 base_plot +
   coord_sf(crs = 32617) +
   annotation_scalebar(location = "bl", width_hint = 0.5)
-
-# Example 2: Ticks style, top-right
-base_plot +
-  coord_sf(crs = 32617) +
-  annotation_scalebar(location = "tr", style = "ticks")
-
-# Example 3: Geographic CRS (EPSG:4326), approximate meters (warns)
-base_plot +
-  coord_sf(crs = 4326) +
-  annotation_scalebar(location = "bl", geographic_mode = "approx_m")
-
-# Example 4: Force a 100 km bar with red outlines
-base_plot +
-  coord_sf(crs = 32617) +
-  annotation_scalebar(
-    location     = "bl",
-    fixed_width  = 100000,
-    display_unit = "km",
-    line_col     = "red"
-  )
 \dontshow{\}) # examplesIf}
 }

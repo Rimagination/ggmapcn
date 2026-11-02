@@ -53,14 +53,14 @@
 #'   `unit(0.15, "cm")`.
 #' @param text_cex,text_face,text_family Font settings for labels. Defaults:
 #'   `0.7`, `NULL`, `""`.
-#' @param tick_height Numeric in [0, 1]. Relative height of interior ticks for
+#' @param tick_height Numeric in `[0, 1]`. Relative height of interior ticks for
 #'   `"ticks"` style. Default: `0.6`.
 #' @param segments Integer. For `"segment"` style, number of major divisions.
 #'   If `NULL`, an automatic, readable choice is used.
 #' @param label_show Which ticks get labels: `"ends"` (default), `"all"`,
 #'   `"major"`, a numeric frequency (for example `2`), or a numeric vector of
 #'   1-based indices.
-#' @param minor_tick_height Numeric in [0, 1]. For `"segment"` style, relative
+#' @param minor_tick_height Numeric in `[0, 1]`. For `"segment"` style, relative
 #'   height of minor ticks. Default: `0`.
 #' @param geographic_mode Character, for **geographic CRS** only:
 #'   * `"approx_m"`: approximate meters/kilometers (default; warns about
@@ -72,36 +72,16 @@
 #' @return A ggplot2 layer representing a scale bar.
 #'
 #' @examplesIf requireNamespace("sf", quietly = TRUE)
-#' nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
+#' nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)[1:3, ]
 #'
 #' base_plot <- ggplot() +
 #'   geom_sf(data = nc, fill = "grey90") +
 #'   theme_minimal()
 #'
-#' # Example 1: Projected CRS with a longer scale bar
+#' # Projected CRS with a scale bar
 #' base_plot +
 #'   coord_sf(crs = 32617) +
 #'   annotation_scalebar(location = "bl", width_hint = 0.5)
-#'
-#' # Example 2: Ticks style, top-right
-#' base_plot +
-#'   coord_sf(crs = 32617) +
-#'   annotation_scalebar(location = "tr", style = "ticks")
-#'
-#' # Example 3: Geographic CRS (EPSG:4326), approximate meters (warns)
-#' base_plot +
-#'   coord_sf(crs = 4326) +
-#'   annotation_scalebar(location = "bl", geographic_mode = "approx_m")
-#'
-#' # Example 4: Force a 100 km bar with red outlines
-#' base_plot +
-#'   coord_sf(crs = 32617) +
-#'   annotation_scalebar(
-#'     location     = "bl",
-#'     fixed_width  = 100000,
-#'     display_unit = "km",
-#'     line_col     = "red"
-#'   )
 #'
 #' @export
 #' @import ggplot2

@@ -28,7 +28,7 @@ Defaults to 1e6.}
 
 \item{na.rm}{A logical value indicating whether to remove missing values. Default is FALSE.}
 
-\item{...}{Additional parameters passed to `geom_spatraster`.}
+\item{...}{Additional parameters passed to \code{geom_spatraster}.}
 }
 \value{
 A ggplot2 layer object representing the vegetation map of China.
@@ -36,7 +36,15 @@ A ggplot2 layer object representing the vegetation map of China.
 \description{
 Adds a vegetation raster map of China to a ggplot2 plot, with color-coded vegetation types.
 }
+\details{
+The default dataset is a 1 km raster representation of
+\emph{Vegetation Map of the People's Republic of China 1:1000000}
+(The Editorial Committee of Vegetation Map of China, Chinese Academy
+of Sciences, 2007). Its default colors follow Su et al. (2020).
+\code{check_geodata()} locates or retrieves \code{vege_1km_projected.tif}.
+}
 \examples{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 \donttest{
 # Example1: Check and load the vegetation raster map
 
@@ -66,7 +74,13 @@ ggplot() +
   labs(fill = "Vegetation type group") +
   theme_minimal()
 }
+\dontshow{\}) # examplesIf}
 }
 \references{
-Zhang X, Sun S, Yong S, et al. (2007). *Vegetation map of the People's Republic of China (1:1000000)*. Geology Publishing House, Beijing.
+The Editorial Committee of Vegetation Map of China, Chinese
+Academy of Sciences (2007). \emph{Vegetation Map of the People's Republic
+of China 1:1000000}. Geological Publishing House, Beijing.
+
+Su YJ, Guo QH, Hu TY, et al. (2020). An updated vegetation map of China
+(1:1000000). \emph{Science Bulletin}, 65(13), 1125–1136.
 }

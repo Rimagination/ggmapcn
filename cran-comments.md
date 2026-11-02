@@ -1,37 +1,36 @@
 ## Test environments
-* R-hub: ubuntu-gcc-release, fedora-clang-devel, debian-gcc-patched
-* win-builder: R-devel
-* Local Windows 11, R 4.4.1
+
+* Windows 11 x64, R-devel 4.7.0 (2026-11-01 r90825).
+* Source tarball built on Windows 11 x64 with R 4.6.2.
+* Targeted regression tests also run on Windows 11 x64 with R 4.5.3.
 
 ## R CMD check results
-0 errors | 0 warnings | 0 notes
 
-## Submission Comments
+The source tarball was built with vignettes and checked with
+`R CMD check --as-cran`: 0 errors, 0 warnings, and 0 notes. The check included
+examples, tests, vignette rebuilding, and the PDF manual.
 
-Dear CRAN team,
+The world and basic-map vignettes in an earlier development build were also
+rendered with an empty data cache and HTTP(S) proxies configured to reject
+connections. Examples requiring unavailable external data were displayed without
+being evaluated.
 
-This is a major update for `ggmapcn`, raising the version to 0.3.0.
+## Submission comments
 
-Key changes:
+This update addresses the CRAN notice about package logos in HTML help and
+reference manuals. The logo is provided as `man/figures/logo.png`.
 
-1. **New function: `annotation_graticule()`**  
-   Provides a projection-aware global graticule system with customizable spacing, 
-   labeling, and automatic antimeridian handling.
+The update also includes previously unpublished options for
+`annotation_graticule()`, while preserving existing positional arguments and
+the `alpha` argument passed through `...`.
 
-2. **Major redesign of `geom_world()`**  
-   The global basemap system has been rebuilt for better projection handling, 
-   antimeridian behavior, and consistent styling.
+The bundled provincial and boundary datasets have been updated, and the China
+mask has been rebuilt from the updated provincial polygons. In the provincial
+dataset, `name` now contains English names and Chinese names are in `name_cn`;
+existing filters and joins using the previous fields may need to be updated.
+Downloads now go to the user cache rather than the installed package, with the
+previous user data directory retained as a read-only fallback.
 
-3. **Major redesign of external-data management (`check_geodata()`)**  
-   Rewritten to meet CRAN network-resource policy.  
-   All network operations now fail gracefully with informative messages and never
-   generate warnings or errors when resources are unavailable.
-
-4. **Documentation updates**  
-   All examples and articles have been revised to reflect the new world datasets
-   (`world_countries.rda`, `world_coastlines.rda`, `world_boundaries.rda`).
-
-All changes follow CRAN policies, especially regarding optional internet use and
-graceful fallback behavior.
-
-Thank you for your consideration.
+The package description and help text clarify the default datasets and their
+storage requirements, with data-source descriptions aligned with the accepted
+package manuscript.

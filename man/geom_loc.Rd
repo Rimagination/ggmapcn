@@ -32,11 +32,11 @@ such as \code{color} or \code{size}.}
 such as \code{size}, \code{alpha}, or \code{color}.}
 }
 \value{
-A ggplot2 layer for visualizing spatial point data, either from an `sf` object or a tabular data frame
-  with longitude and latitude columns, after transforming the data to the specified coordinate reference system (CRS).
+A ggplot2 layer for visualizing spatial point data, either from an \code{sf} object or a tabular data frame
+with longitude and latitude columns, after transforming the data to the specified coordinate reference system (CRS).
 }
 \description{
-`geom_loc` is a wrapper around \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}} designed
+\code{geom_loc} is a wrapper around \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}} designed
 for visualizing spatial point data. It supports both \code{sf} objects and tabular data frames
 with longitude and latitude columns, automatically transforming them into the specified
 coordinate reference system (CRS).

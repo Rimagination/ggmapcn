@@ -7,3 +7,8 @@
 ^\.github$
 ^CRAN-SUBMISSION$
 ^cran-comments\.md$
+^Rplots\.pdf$
+^\.local$
+^天地图官方$
+^中国地图-李东苗$
+^长江黄河$

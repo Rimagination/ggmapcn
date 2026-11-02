@@ -1,12 +1,15 @@
-#' ggmapcn: China-Focused Mapping Tools with Optional Global Support for ggplot2
+#' Customizable China and Global Map Visualizations
 #'
-#' **ggmapcn** provides lightweight, ready-to-use tools for drawing China and
-#' world maps with *ggplot2*. It bundles clean geodata and offers simple,
-#' projection-aware helpers for basemaps, graticules, compasses, and scale bars.
+#' Provides layers and annotations for drawing maps of China and the world
+#' with \pkg{ggplot2}. Supports map projections, administrative boundaries,
+#' graticules, scale bars, north arrows, buffer zones, and raster overlays.
+#' China administrative division data are derived from the \emph{Tianditu}
+#' geospatial information service, with separate layers for land borders,
+#' coastlines, and maritime boundaries.
 #'
-#' ## Main Features
+#' @section Map layers:
 #'
-#' - **World maps**: `geom_world()` draws a complete global basemap with
+#' - **World maps**: `geom_world()` draws a global basemap with
 #'   countries, coastlines, boundaries, and optional ocean fill.
 #'
 #' - **China maps**: `geom_mapcn()` and `geom_boundary_cn()` provide provincial,
@@ -22,14 +25,20 @@
 #'   - `coord_proj()` — specify geographic `xlim`/`ylim` in degrees and
 #'     automatically transform to any projection.
 #'
-#' - **Geodata management**:
-#'   - `check_geodata()` locates bundled world and China datasets and ensures
-#'     graceful behaviour when data or internet resources are unavailable.
+#' @section Geospatial data:
+#' The package provides default boundary, world map, elevation, and vegetation
+#' datasets for direct use by its mapping functions. Some files are distributed
+#' in the installed package; larger files are hosted in the companion
+#' [ggmapcn-data repository](https://github.com/Rimagination/ggmapcn-data).
+#' `check_geodata()` reuses local copies or retrieves missing default files.
+#' It returns `NA` for files it cannot retrieve. Mapping functions require
+#' the corresponding datasets to be available before plotting.
 #'
-#' ## Integration
+#' @section Integration:
 #'
-#' All functions return standard *ggplot2* layers and work seamlessly with
-#' `sf` objects, custom projections, and `coord_sf()`.
+#' Mapping and annotation functions return layers or lists of layers for
+#' \pkg{ggplot2}. `check_geodata()` returns file paths, and `coord_proj()`
+#' returns a coordinate system.
 #'
 #' @keywords package
 "_PACKAGE"

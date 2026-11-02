@@ -1,22 +1,28 @@
 #' Check and retrieve required geodata files
 #'
 #' @description
-#' Ensures that external geospatial data files required by \pkg{ggmapcn} are
+#' Ensures that default geospatial data files provided by \pkg{ggmapcn} are
 #' available locally. Existing files are reused when \code{overwrite = FALSE};
 #' missing files are downloaded from remote mirrors when possible. If all
-#' mirrors fail (for example, due to network restrictions), the function fails
-#' gracefully by returning \code{NA} for the affected files without raising
-#' warnings or errors, in line with CRAN policy.
+#' mirrors fail (for example, due to network restrictions), the function
+#' returns \code{NA} for the affected files.
 #'
 #' @details
-#' Because CRAN enforces strict limits on package size, several large datasets
-#' are hosted externally rather than bundled in the package. \code{check_geodata()}
-#' locates or retrieves these files using the following priority:
+#' Default datasets are provided through the installed package and its
+#' companion \href{https://github.com/Rimagination/ggmapcn-data}{data repository}.
+#' Larger files are hosted in that repository to keep the installation small.
+#' \code{check_geodata()} locates or retrieves these files using the following
+#' priority:
 #' \enumerate{
 #'   \item user-specified \code{local_dirs}
+#'   \item a refreshed copy in the per-user cache, if explicitly requested with
+#'     \code{overwrite = TRUE} for the current bundled file
 #'   \item the package \code{extdata} directory
-#'   \item the per-user cache directory via \code{tools::R_user_dir("ggmapcn", "data")}
+#'   \item the per-user cache, followed by the legacy user data directory
 #' }
+#' Downloads are saved under \code{tools::R_user_dir("ggmapcn", "cache")};
+#' the installed package directory is only read. A refreshed copy of a bundled
+#' file is used until the corresponding bundled file changes in a package update.
 #'
 #' High-level mapping functions such as \code{geom_mapcn()} and \code{geom_world()}
 #' call \code{check_geodata()} internally, so most users do not need to invoke it
@@ -27,8 +33,8 @@
 #' \code{raw.githubusercontent.com}, downloads may time out and the corresponding
 #' entries in the returned vector will be \code{NA}. In such cases, users may
 #' manually download the required files from the data repository and place them
-#' into a directory supplied through \code{local_dirs}, the package \code{extdata}
-#' directory, or the user cache directory so that downloads are skipped.
+#' into a directory supplied through \code{local_dirs} or the user cache
+#' directory so that downloads are skipped.
 #'
 #' Note: recent versions of \code{geom_world()} use the following world datasets:
 #' \code{world_countries.rda}, \code{world_coastlines.rda}, and
@@ -38,7 +44,8 @@
 #' @param files Character vector of file names. If \code{NULL}, all known files
 #'   are processed.
 #' @param overwrite Logical; if \code{TRUE}, forces re-download even when a
-#'   non-empty file already exists.
+#'   non-empty file already exists. The refreshed file is saved in the user
+#'   cache, without changing the installed package.
 #' @param quiet Logical; if \code{TRUE}, suppresses progress output and
 #'   messages.
 #' @param max_retries Integer; number of retry attempts per file and mirror.
@@ -58,10 +65,7 @@
 #' is returned as \code{NA}.
 #'
 #' @examplesIf interactive() && curl::has_internet()
-#' # Ensure that all default datasets are available (downloads only if needed)
-#' check_geodata()
-#'
-#' # Datasets used by geom_world()
+#' # Retrieve only the datasets used by geom_world()
 #' check_geodata(c(
 #'   "world_countries.rda",
 #'   "world_coastlines.rda",
@@ -127,32 +131,14 @@ check_geodata <- function(files = NULL,
   }
 
   # ---- canonical directories -----------------------------------------------
-  ext_dir   <- system.file("extdata", package = "ggmapcn")
-  cache_dir <- tools::R_user_dir("ggmapcn", "data")
-  if (!dir.exists(cache_dir)) {
-    dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
-  }
-
-  is_writable <- function(dir) {
-    if (!nzchar(dir) || !dir.exists(dir)) return(FALSE)
-    tf <- file.path(dir, sprintf(".perm_test_%08x", as.integer(runif(1, 0, 1e9))))
-    ok <- tryCatch({
-      file.create(tf)
-      file.exists(tf)
-    }, warning = function(w) FALSE,
-    error   = function(e) FALSE)
-    if (ok) unlink(tf)
-    isTRUE(ok)
-  }
-
-  ext_writable   <- nzchar(ext_dir) && is_writable(ext_dir)
-  cache_writable <- is_writable(cache_dir)
+  dirs <- geodata_directories()
+  ext_dir <- dirs$extdata
+  cache_dir <- dirs$cache
+  legacy_dir <- dirs$legacy
 
   if (!quiet) {
-    message(sprintf("extdata dir: %s (writable = %s)",
-                    if (nzchar(ext_dir)) ext_dir else "<none>", ext_writable))
-    message(sprintf("cache   dir: %s (writable = %s)",
-                    cache_dir, cache_writable))
+    message("extdata dir: ", if (nzchar(ext_dir)) ext_dir else "<none>")
+    message("cache   dir: ", cache_dir)
   }
 
   # ---- reuse existing local files ------------------------------------------
@@ -265,11 +251,8 @@ check_geodata <- function(files = NULL,
       return(FALSE)
     }
 
-    if (file.exists(dest)) {
-      unlink(dest)
-    }
-    file.rename(part, dest)
-    TRUE
+    if (file.exists(dest) && unlink(dest) != 0L) return(FALSE)
+    isTRUE(file.rename(part, dest))
   }
 
   # Try to download into a target directory ----------------------------------
@@ -297,7 +280,6 @@ check_geodata <- function(files = NULL,
         "All mirrors failed for '", fname, "'. Returning NA.\n",
         "If downloads remain unavailable, you can place the file manually into:\n",
         "  - a directory supplied via local_dirs,\n",
-        "  - the extdata directory: ", ext_dir, ",\n",
         "  - or the user cache directory: ", cache_dir
       )
     }
@@ -311,7 +293,7 @@ check_geodata <- function(files = NULL,
   for (i in seq_along(files)) {
     fname <- files[i]
 
-    # A) reuse: local_dirs -> extdata -> cache -------------------------------
+    # A) reuse local copies --------------------------------------------------
     if (!overwrite) {
       if (length(local_dirs)) {
         loc <- find_local(fname, local_dirs)
@@ -324,67 +306,68 @@ check_geodata <- function(files = NULL,
         }
       }
 
-      if (nzchar(ext_dir)) {
-        loc <- find_local(fname, ext_dir)
-        if (!is.na(loc)) {
-          out[i] <- loc
-          if (!quiet) {
-            message("Using existing extdata file: ", loc)
-          }
-          next
-        }
+      bundled <- if (nzchar(ext_dir)) find_local(fname, ext_dir) else NA_character_
+      cached <- find_local(fname, cache_dir)
+
+      # An explicit refresh overrides the bundled copy only while that bundled
+      # copy remains unchanged; package updates therefore take effect normally.
+      marker <- file.path(cache_dir, paste0(fname, ".bundled-sha256"))
+      refreshed <- FALSE
+      if (!is.na(bundled) && !is.na(cached) && file.exists(marker)) {
+        recorded <- tryCatch(readLines(marker, n = 1L, warn = FALSE),
+                             error = function(e) character())
+        refreshed <- identical(recorded, digest::digest(bundled, algo = "sha256", file = TRUE))
       }
 
-      loc <- find_local(fname, cache_dir)
+      loc <- if (refreshed) cached else if (!is.na(bundled)) bundled else cached
+      if (is.na(loc)) loc <- find_local(fname, legacy_dir)
       if (!is.na(loc)) {
         out[i] <- loc
-        if (!quiet) {
-          message("Using existing cache file: ", loc)
-        }
+        if (!quiet) message("Using existing data file: ", loc)
         next
       }
     }
 
-    # B) download if needed --------------------------------------------------
-    if (ext_writable) {
-      res <- try_download(ext_dir, fname, allow_resume = resume)
-      if (res$ok) {
-        out[i] <- res$path
-        if (!quiet) {
-          message("Saved to extdata: ", res$path)
-        }
-        next
-      } else if (!quiet) {
-        message(
-          "Download into extdata failed for '", fname,
-          "'. Falling back to user cache."
-        )
-      }
-    } else if (nzchar(ext_dir) && !quiet) {
-      message(
-        "extdata not writable; skip downloading into extdata for '",
-        fname, "'."
-      )
+    # B) download only to the user cache ------------------------------------
+    if (!dir.exists(cache_dir)) {
+      dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
     }
-
-    if (cache_writable) {
-      res2 <- try_download(cache_dir, fname, allow_resume = TRUE)
-      out[i] <- res2$path
-      if (res2$ok && !quiet) {
-        message("Saved to cache: ", res2$path)
-      }
-    } else {
+    if (!dir.exists(cache_dir) || file.access(cache_dir, 2L) != 0L) {
       out[i] <- NA_character_
-      if (!quiet) {
-        message(
-          "Cache directory is not writable; cannot download '",
-          fname, "'. Returning NA."
-        )
+      if (!quiet) message("Cache directory is not writable; cannot download '", fname, "'.")
+      next
+    }
+
+    res <- try_download(cache_dir, fname, allow_resume = resume)
+    out[i] <- res$path
+    if (res$ok) {
+      bundled_path <- if (nzchar(ext_dir)) file.path(ext_dir, fname) else ""
+      marker <- file.path(cache_dir, paste0(fname, ".bundled-sha256"))
+      if (nzchar(bundled_path) && file.exists(bundled_path)) {
+        recorded <- tryCatch({
+          writeLines(digest::digest(bundled_path, algo = "sha256", file = TRUE), marker)
+          TRUE
+        }, error = function(e) FALSE)
+        if (!recorded && !quiet) message("Could not record the refreshed-file marker: ", marker)
+      } else if (file.exists(marker)) {
+        unlink(marker)
       }
+      if (!quiet) message("Saved to cache: ", res$path)
     }
   }
 
   out
+}
+
+
+#' @keywords internal
+#' @noRd
+geodata_directories <- function() {
+  list(
+    extdata = system.file("extdata", package = "ggmapcn"),
+    cache = tools::R_user_dir("ggmapcn", "cache"),
+    legacy = tools::R_user_dir("ggmapcn", "data")
+  )
 }
 
 

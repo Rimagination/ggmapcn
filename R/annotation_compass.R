@@ -31,7 +31,7 @@
 #'
 #' @return A ggplot2 layer object.
 #'
-#' @seealso [compass-styles]
+#' @seealso \link[ggmapcn:compass-styles]{Compass styles}.
 #'
 #' @export
 #' @import ggplot2

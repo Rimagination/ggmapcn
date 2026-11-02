@@ -4,40 +4,56 @@
 \name{ggmapcn-package}
 \alias{ggmapcn}
 \alias{ggmapcn-package}
-\title{ggmapcn: China-Focused Mapping Tools with Optional Global Support for ggplot2}
+\title{Customizable China and Global Map Visualizations}
 \description{
-**ggmapcn** provides lightweight, ready-to-use tools for drawing China and
-world maps with *ggplot2*. It bundles clean geodata and offers simple,
-projection-aware helpers for basemaps, graticules, compasses, and scale bars.
+Provides layers and annotations for drawing maps of China and the world
+with \pkg{ggplot2}. Supports map projections, administrative boundaries,
+graticules, scale bars, north arrows, buffer zones, and raster overlays.
+China administrative division data are derived from the \emph{Tianditu}
+geospatial information service, with separate layers for land borders,
+coastlines, and maritime boundaries.
 }
-\details{
-## Main Features
+\section{Map layers}{
 
-- **World maps**: `geom_world()` draws a complete global basemap with
-  countries, coastlines, boundaries, and optional ocean fill.
-
-- **China maps**: `geom_mapcn()` and `geom_boundary_cn()` provide provincial,
-  prefecture-level maps and coastlines.
-
-- **Annotation tools**:
-  - `annotation_graticule()` — global graticules with projection-aware labels.
-  - `annotation_scalebar()` — scale bar with automatic units and CRS
-    detection.
-  - `annotation_compass()` — north arrow with several styles.
-
-- **Projection helper**:
-  - `coord_proj()` — specify geographic `xlim`/`ylim` in degrees and
-    automatically transform to any projection.
-
-- **Geodata management**:
-  - `check_geodata()` locates bundled world and China datasets and ensures
-    graceful behaviour when data or internet resources are unavailable.
-
-## Integration
-
-All functions return standard *ggplot2* layers and work seamlessly with
-`sf` objects, custom projections, and `coord_sf()`.
+\itemize{
+\item \strong{World maps}: \code{geom_world()} draws a global basemap with
+countries, coastlines, boundaries, and optional ocean fill.
+\item \strong{China maps}: \code{geom_mapcn()} and \code{geom_boundary_cn()} provide provincial,
+prefecture-level maps and coastlines.
+\item \strong{Annotation tools}:
+\itemize{
+\item \code{annotation_graticule()} — global graticules with projection-aware labels.
+\item \code{annotation_scalebar()} — scale bar with automatic units and CRS
+detection.
+\item \code{annotation_compass()} — north arrow with several styles.
 }
+\item \strong{Projection helper}:
+\itemize{
+\item \code{coord_proj()} — specify geographic \code{xlim}/\code{ylim} in degrees and
+automatically transform to any projection.
+}
+}
+}
+
+\section{Geospatial data}{
+
+The package provides default boundary, world map, elevation, and vegetation
+datasets for direct use by its mapping functions. Some files are distributed
+in the installed package; larger files are hosted in the companion
+\href{https://github.com/Rimagination/ggmapcn-data}{ggmapcn-data repository}.
+\code{check_geodata()} reuses local copies or retrieves missing default files.
+It returns \code{NA} for files it cannot retrieve. Mapping functions require
+the corresponding datasets to be available before plotting.
+}
+
+\section{Integration}{
+
+
+Mapping and annotation functions return layers or lists of layers for
+\pkg{ggplot2}. \code{check_geodata()} returns file paths, and \code{coord_proj()}
+returns a coordinate system.
+}
+
 \seealso{
 Useful links:
 \itemize{

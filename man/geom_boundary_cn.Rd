@@ -30,75 +30,75 @@ geom_boundary_cn(
 )
 }
 \arguments{
-\item{crs}{Character or `sf::crs`. Target coordinate reference system for
+\item{crs}{Character or \code{sf::crs}. Target coordinate reference system for
 plotting. Defaults to an azimuthal equidistant projection centered on China
-(`+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs`).}
+(\code{+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs}).}
 
-\item{compass}{Logical. If `TRUE`, add a compass pointing to true north in
-the top-left corner. Default: `FALSE`.}
+\item{compass}{Logical. If \code{TRUE}, add a compass pointing to true north in
+the top-left corner. Default: \code{FALSE}.}
 
-\item{scale}{Logical. If `TRUE`, add a scale bar in the bottom-left corner.
-Default: `FALSE`.}
+\item{scale}{Logical. If \code{TRUE}, add a scale bar in the bottom-left corner.
+Default: \code{FALSE}.}
 
 \item{mainland_color}{Character. Line color for the mainland boundary.
-Default: `"black"`.}
+Default: \code{"black"}.}
 
 \item{mainland_size}{Numeric. Line width for the mainland boundary.
-Default: `0.2`.}
+Default: \code{0.2}.}
 
 \item{mainland_linetype}{Character. Line type for the mainland boundary.
-Default: `"solid"`.}
+Default: \code{"solid"}.}
 
 \item{coastline_color}{Character. Line color for coastlines.
-Default: `"blue"`.}
+Default: \code{"blue"}.}
 
 \item{coastline_size}{Numeric. Line width for coastlines.
-Default: `0.1`.}
+Default: \code{0.1}.}
 
 \item{coastline_linetype}{Character. Line type for coastlines.
-Default: `"solid"`.}
+Default: \code{"solid"}.}
 
 \item{ten_segment_line_color}{Character. Line color for the South China Sea
-ten-segment line. Default: `"black"`.}
+ten-segment line. Default: \code{"black"}.}
 
 \item{ten_segment_line_size}{Numeric. Line width for the ten-segment line.
-Default: `0.2`.}
+Default: \code{0.2}.}
 
 \item{ten_segment_line_linetype}{Character. Line type for the ten-segment line.
-Default: `"solid"`.}
+Default: \code{"solid"}.}
 
 \item{SAR_boundary_color}{Character. Line color for Hong Kong and Macau SAR
-boundaries. Default: `"grey40"`.}
+boundaries. Default: \code{"grey40"}.}
 
 \item{SAR_boundary_size}{Numeric. Line width for SAR boundaries.
-Default: `0.1`.}
+Default: \code{0.1}.}
 
 \item{SAR_boundary_linetype}{Character. Line type for SAR boundaries.
-Default: `"dashed"`.}
+Default: \code{"dashed"}.}
 
 \item{undefined_boundary_color}{Character. Line color for undefined or
-disputed boundaries. Default: `"black"`.}
+disputed boundaries. Default: \code{"black"}.}
 
 \item{undefined_boundary_size}{Numeric. Line width for undefined boundaries.
-Default: `0.2`.}
+Default: \code{0.2}.}
 
 \item{undefined_boundary_linetype}{Character. Line type for undefined
-boundaries. Default: `"dotdash"`.}
+boundaries. Default: \code{"dotdash"}.}
 
 \item{province_color}{Character. Line color for provincial boundaries.
-Default: `"transparent"`.}
+Default: \code{"transparent"}.}
 
 \item{province_size}{Numeric. Line width for provincial boundaries.
-Default: `0.1`.}
+Default: \code{0.1}.}
 
 \item{province_linetype}{Character. Line type for provincial boundaries.
-Default: `"solid"`.}
+Default: \code{"solid"}.}
 
-\item{...}{Additional arguments passed to `ggplot2::geom_sf()` (e.g., `alpha`).}
+\item{...}{Additional arguments passed to \code{ggplot2::geom_sf()} (e.g., \code{alpha}).}
 }
 \value{
-A list of `ggplot2` layers. If the boundary dataset cannot be
-  obtained, an empty list is returned.
+A list of \code{ggplot2} layers. If the boundary dataset cannot be
+obtained, an empty list is returned.
 }
 \description{
 Draw China's administrative boundaries and optional map decorations
@@ -107,7 +107,7 @@ provinces, etc.) can be styled independently. The boundary data are
 reprojected to the specified CRS before plotting.
 }
 \examples{
-\dontshow{if (requireNamespace("sf", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (requireNamespace("sf", quietly = TRUE)) withAutoprint(\{ # examplesIf}
 
 # Example 1: Basic China map
 ggplot() +

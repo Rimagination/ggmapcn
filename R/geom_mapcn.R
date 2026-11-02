@@ -25,6 +25,9 @@
 #' A special row labelled `"Boundary Line"` (used for technical clipping) is
 #' removed automatically when present. Attribute-based filtering can be applied
 #' using `filter_attribute` and `filter` before reprojecting to the target CRS.
+#' In the current provincial dataset, `name` contains English names, `name_cn`
+#' contains Chinese names, and `gb` contains the source administrative codes.
+#' City- and county-level datasets may use different attribute names.
 #'
 #' @param data An `sf` object with geometries to draw. If `NULL`, the function
 #'   loads the packaged dataset corresponding to `admin_level`.
@@ -40,7 +43,7 @@
 #' @param linewidth Border line width. Default `0.1`. For older `ggplot2`
 #'   versions, use `size` instead of `linewidth`.
 #' @param filter_attribute Optional name of an attribute column used to filter
-#'   features (e.g., `"name_en"`).
+#'   features (e.g., `"name"` for English provincial names).
 #' @param filter Optional character vector of values to keep in
 #'   `filter_attribute` (e.g., `c("Beijing", "Shanghai")`). If supplied together
 #'   with `filter_attribute`, features are subsetted accordingly. If no features
@@ -54,39 +57,13 @@
 #' A `ggplot2` layer that can be added to a plot.
 #'
 #' @examples
-#' # 1. Basic provincial map (recommended: combine with geom_boundary_cn)
-#' ggplot() +
-#'   geom_mapcn() +
-#'   geom_boundary_cn() +
-#'   theme_minimal()
-#'
-#' # 2. City-level map with custom fill and boundaries
+#' # Plot two provinces using the English name field
 #' ggplot() +
 #'   geom_mapcn(
-#'     admin_level = "city",
-#'     fill = "grey95",
-#'     color = "grey60"
-#'   ) +
-#'   geom_boundary_cn(province_color = "grey40") +
-#'   theme_bw()
-#'
-#' # 3. Filter by attribute (e.g., English names) and highlight selected provinces
-#' ggplot() +
-#'   geom_mapcn(
-#'     filter_attribute = "name_en",
+#'     filter_attribute = "name",
 #'     filter = c("Beijing", "Shanghai"),
 #'     fill = "tomato"
 #'   ) +
-#'   geom_boundary_cn() +
-#'   theme_minimal()
-#'
-#' # 4. Use a different projection (e.g., Albers equal-area)
-#' albers_cn <- "+proj=aea +lat_1=25 +lat_2=47 +lat_0=0 +lon_0=105 +datum=WGS84"
-#'
-#' ggplot() +
-#'   geom_mapcn(crs = albers_cn, linewidth = 0.3) +
-#'   geom_boundary_cn(crs = albers_cn) +
-#'   coord_sf(crs = albers_cn) +
 #'   theme_minimal()
 #'
 #' @importFrom sf st_crs st_transform

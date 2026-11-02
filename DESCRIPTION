@@ -1,13 +1,18 @@
 Package: ggmapcn
 Title: Customizable China and Global Map Visualizations
-Version: 0.3.0
+Version: 0.3.1
 Authors@R: 
     person("Liang", "Ren", email = "rl23@mails.tsinghua.edu.cn", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-2360-7900"))
-Description: A 'ggplot2' extension centered on map visualization of China
-    and the globe. Provides customizable projections, boundary styles,
-    coordinate grids, scale bars, and buffer zones for thematic maps,
-    suitable for spatial data analysis and cartographic visualization.
+Description: Provides 'ggplot2' layers and annotations for thematic mapping
+    of China and the world. Uses administrative division data from the
+    'Tianditu' geospatial information service and separate layers for land
+    borders, coastlines, and maritime boundaries. Supports province-,
+    city-, and county-level maps, map projections, graticules, scale bars,
+    north arrows, boundary buffers, and elevation and vegetation raster
+    layers. The package provides default map datasets. Larger data files are
+    hosted in a companion repository
+    <https://github.com/Rimagination/ggmapcn-data> and retrieved as needed.
 License: GPL-3
 Encoding: UTF-8
 Depends: 
@@ -30,4 +35,5 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
-RoxygenNote: 7.3.2
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3

@@ -18,102 +18,80 @@ geom_mapcn(
 )
 }
 \arguments{
-\item{data}{An `sf` object with geometries to draw. If `NULL`, the function
-loads the packaged dataset corresponding to `admin_level`.}
+\item{data}{An \code{sf} object with geometries to draw. If \code{NULL}, the function
+loads the packaged dataset corresponding to \code{admin_level}.}
 
-\item{admin_level}{Administrative level to plot. One of `"province"`
-(default), `"city"`, or `"county"`. These map to packaged files
-`China_sheng.rda`, `China_shi.rda`, and `China_xian.rda`, respectively.}
+\item{admin_level}{Administrative level to plot. One of \code{"province"}
+(default), \code{"city"}, or \code{"county"}. These map to packaged files
+\code{China_sheng.rda}, \code{China_shi.rda}, and \code{China_xian.rda}, respectively.}
 
 \item{crs}{Coordinate reference system used for plotting. Defaults to an
 azimuthal equidistant projection centered on China:
-`"+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs"`.
-Accepts PROJ strings or EPSG codes (e.g., `"EPSG:4326"`).}
+\code{"+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs"}.
+Accepts PROJ strings or EPSG codes (e.g., \code{"EPSG:4326"}).}
 
-\item{color}{Border color for polygons. Default `"black"`.}
+\item{color}{Border color for polygons. Default \code{"black"}.}
 
-\item{fill}{Fill color for polygons. Default `"white"`.}
+\item{fill}{Fill color for polygons. Default \code{"white"}.}
 
-\item{linewidth}{Border line width. Default `0.1`. For older `ggplot2`
-versions, use `size` instead of `linewidth`.}
+\item{linewidth}{Border line width. Default \code{0.1}. For older \code{ggplot2}
+versions, use \code{size} instead of \code{linewidth}.}
 
 \item{filter_attribute}{Optional name of an attribute column used to filter
-features (e.g., `"name_en"`).}
+features (e.g., \code{"name"} for English provincial names).}
 
 \item{filter}{Optional character vector of values to keep in
-`filter_attribute` (e.g., `c("Beijing", "Shanghai")`). If supplied together
-with `filter_attribute`, features are subsetted accordingly. If no features
+\code{filter_attribute} (e.g., \code{c("Beijing", "Shanghai")}). If supplied together
+with \code{filter_attribute}, features are subsetted accordingly. If no features
 remain after filtering, an error is thrown.}
 
-\item{mapping}{Optional aesthetics mapping passed to `ggplot2::geom_sf()`.
-This is useful when additional aesthetics (e.g., `fill`) should be mapped
-from columns in `data`.}
+\item{mapping}{Optional aesthetics mapping passed to \code{ggplot2::geom_sf()}.
+This is useful when additional aesthetics (e.g., \code{fill}) should be mapped
+from columns in \code{data}.}
 
-\item{...}{Additional arguments forwarded to `ggplot2::geom_sf()`.}
+\item{...}{Additional arguments forwarded to \code{ggplot2::geom_sf()}.}
 }
 \value{
-A `ggplot2` layer that can be added to a plot.
+A \code{ggplot2} layer that can be added to a plot.
 }
 \description{
-`geom_mapcn()` draws China's administrative units with a simple, opinionated
-interface. When `data` is `NULL`, it loads packaged map data for the requested
+\code{geom_mapcn()} draws China's administrative units with a simple, opinionated
+interface. When \code{data} is \code{NULL}, it loads packaged map data for the requested
 administrative level, optionally applies attribute-based filtering, removes
 internal clipping rows, and reprojects the layer to the target CRS.
 
-In typical use, `geom_mapcn()` is combined with `geom_boundary_cn()` to draw
+In typical use, \code{geom_mapcn()} is combined with \code{geom_boundary_cn()} to draw
 coastlines, national borders, and other boundary features on top of the
 administrative polygons.
 }
 \details{
-If `data` is `NULL`, `geom_mapcn()` selects one of the packaged datasets:
+If \code{data} is \code{NULL}, \code{geom_mapcn()} selects one of the packaged datasets:
+\itemize{
+\item \code{admin_level = "province"} → \code{China_sheng.rda}
+\item \code{admin_level = "city"}     → \code{China_shi.rda}
+\item \code{admin_level = "county"}   → \code{China_xian.rda}
+}
 
-* `admin_level = "province"` → `China_sheng.rda`
-* `admin_level = "city"`     → `China_shi.rda`
-* `admin_level = "county"`   → `China_xian.rda`
+The file is ensured to exist locally via \code{check_geodata()}, which may reuse
+an existing copy in the package \code{extdata} directory or user cache, or download
+it from the external repository when necessary. The \code{.rda} file is then
+loaded from the resolved path, and the main \code{sf} object is extracted.
 
-The file is ensured to exist locally via `check_geodata()`, which may reuse
-an existing copy in the package `extdata` directory or user cache, or download
-it from the external repository when necessary. The `.rda` file is then
-loaded from the resolved path, and the main `sf` object is extracted.
-
-A special row labelled `"Boundary Line"` (used for technical clipping) is
+A special row labelled \code{"Boundary Line"} (used for technical clipping) is
 removed automatically when present. Attribute-based filtering can be applied
-using `filter_attribute` and `filter` before reprojecting to the target CRS.
+using \code{filter_attribute} and \code{filter} before reprojecting to the target CRS.
+In the current provincial dataset, \code{name} contains English names, \code{name_cn}
+contains Chinese names, and \code{gb} contains the source administrative codes.
+City- and county-level datasets may use different attribute names.
 }
 \examples{
-# 1. Basic provincial map (recommended: combine with geom_boundary_cn)
-ggplot() +
-  geom_mapcn() +
-  geom_boundary_cn() +
-  theme_minimal()
-
-# 2. City-level map with custom fill and boundaries
+# Plot two provinces using the English name field
 ggplot() +
   geom_mapcn(
-    admin_level = "city",
-    fill = "grey95",
-    color = "grey60"
-  ) +
-  geom_boundary_cn(province_color = "grey40") +
-  theme_bw()
-
-# 3. Filter by attribute (e.g., English names) and highlight selected provinces
-ggplot() +
-  geom_mapcn(
-    filter_attribute = "name_en",
+    filter_attribute = "name",
     filter = c("Beijing", "Shanghai"),
     fill = "tomato"
   ) +
-  geom_boundary_cn() +
-  theme_minimal()
-
-# 4. Use a different projection (e.g., Albers equal-area)
-albers_cn <- "+proj=aea +lat_1=25 +lat_2=47 +lat_0=0 +lon_0=105 +datum=WGS84"
-
-ggplot() +
-  geom_mapcn(crs = albers_cn, linewidth = 0.3) +
-  geom_boundary_cn(crs = albers_cn) +
-  coord_sf(crs = albers_cn) +
   theme_minimal()
 
 }

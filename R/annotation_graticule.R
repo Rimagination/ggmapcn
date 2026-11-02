@@ -43,6 +43,8 @@
 #' @param line_width Line width for graticule lines. Default is `0.3`.
 #' @param line_type Line type for graticule lines. Default is `"dashed"`.
 #' @param line_alpha Line transparency, range `[0, 1]`. Default is `1` (opaque).
+#'   If both `line_alpha` and `alpha` in `...` are supplied, `line_alpha` takes
+#'   precedence.
 #'
 #' @param label_color Text colour for labels. Default is `"grey30"`.
 #' @param label_size Text size for labels in \strong{millimeters (mm)}, passed to
@@ -55,7 +57,7 @@
 #' @param label_alpha Text transparency, range `[0, 1]`. Default is `1`.
 #' @param label_angle Text rotation angle in degrees. Default is `0`.
 #' @param label_format Optional function to format the degree labels. If `NULL`
-#'   (default), standard N/S/E/W formatting is used (e.g., "30\u00B0N").
+#'   (default), standard degree labels with N/S/E/W suffixes are used.
 #'   If provided, it should be a function accepting a numeric vector and
 #'   returning a character vector.
 #'
@@ -81,9 +83,8 @@
 #' @examples
 #' library(ggplot2)
 #'
-#' # 1. Graticule on a WGS84 world map
+#' # Draw a graticule in geographic coordinates
 #' ggplot() +
-#'   geom_world() +
 #'   annotation_graticule(
 #'     lon_step     = 60,
 #'     lat_step     = 30,
@@ -91,47 +92,6 @@
 #'   ) +
 #'   coord_sf(crs = "+proj=longlat +datum=WGS84") +
 #'   theme_void()
-#'
-#' # 2. Robinson projection centred at 150E
-#' crs_robin_150 <- "+proj=robin +lon_0=150 +datum=WGS84"
-#'
-#' ggplot() +
-#'   geom_world(crs = crs_robin_150) +
-#'   annotation_graticule(
-#'     crs            = crs_robin_150,
-#'     lon_step       = 30,
-#'     lat_step       = 15,
-#'     label_offset   = 3e5
-#'   ) +
-#'   coord_sf(crs = crs_robin_150) +
-#'   theme_void()
-#'
-#' # 3. Regional China map (long-lat) with graticule lines and axis labels
-#' cn_xlim <- c(70, 140)
-#' cn_ylim <- c(0, 60)
-#'
-#' ggplot() +
-#'   geom_world() +
-#'   annotation_graticule(
-#'     xlim           = cn_xlim,
-#'     ylim           = cn_ylim,
-#'     crs            = 4326,
-#'     lon_step       = 10,
-#'     lat_step       = 10,
-#'     label_color    = NA,    # draw only lines; use axis labels instead
-#'     label_offset   = 1,
-#'     label_size     = 3.5
-#'   ) +
-#'   coord_sf(
-#'     xlim   = cn_xlim,
-#'     ylim   = cn_ylim,
-#'     expand = FALSE
-#'   ) +
-#'   labs(
-#'     x = "Longitude",
-#'     y = "Latitude"
-#'   ) +
-#'   theme_bw()
 #'
 #' @export
 #' @importFrom sf st_crs st_sfc st_linestring st_as_sf st_transform
@@ -148,18 +108,18 @@ annotation_graticule <- function(
     line_color       = "grey70",
     line_width       = 0.3,
     line_type        = "dashed",
-    line_alpha       = 1,
     label_color      = "grey30",
     label_size       = 3,
-    label_family     = "",
-    label_alpha      = 1,
-    label_angle      = 0,
-    label_format     = NULL,
     label_offset     = 5,
     label_offset_lon = NULL,
     label_offset_lat = NULL,
     sides            = c("left", "bottom"),
-    ...
+    ...,
+    line_alpha       = 1,
+    label_family     = "",
+    label_alpha      = 1,
+    label_angle      = 0,
+    label_format     = NULL
 ) {
   # Silence R CMD check NOTES for variables used in ggplot aes()
   x <- y <- label <- hjust <- vjust <- NULL
@@ -456,14 +416,19 @@ annotation_graticule <- function(
 
   ## ---- 6. ggplot layers ---------------------------------------------------
 
-  line_layer <- ggplot2::geom_sf(
-    data        = g_lines_proj,
-    color       = line_color,
-    linewidth   = line_width,
-    linetype    = line_type,
-    alpha       = line_alpha,
-    inherit.aes = FALSE,
-    ...
+  line_args <- list(...)
+  if (!("alpha" %in% names(line_args)) || !missing(line_alpha)) {
+    line_args$alpha <- line_alpha
+  }
+  line_layer <- do.call(
+    ggplot2::geom_sf,
+    c(list(
+      data        = g_lines_proj,
+      color       = line_color,
+      linewidth   = line_width,
+      linetype    = line_type,
+      inherit.aes = FALSE
+    ), line_args)
   )
 
   if (nrow(labels_df) > 0) {

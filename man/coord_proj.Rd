@@ -15,39 +15,39 @@ coord_proj(
 }
 \arguments{
 \item{crs}{Character string or object specifying the output coordinate
-reference system (e.g., `"EPSG:3857"`, `"+proj=robin"`, or an `sf::crs` object).
-**Required**.}
+reference system (e.g., \code{"EPSG:3857"}, \code{"+proj=robin"}, or an \code{sf::crs} object).
+\strong{Required}.}
 
 \item{xlim}{Numeric vector of length 2. Longitude limits in degrees (WGS84).}
 
 \item{ylim}{Numeric vector of length 2. Latitude limits in degrees (WGS84).}
 
-\item{expand}{Logical. Passed to [ggplot2::coord_sf()]. Default is `TRUE`.}
+\item{expand}{Logical. Passed to \code{\link[ggplot2:ggsf]{ggplot2::coord_sf()}}. Default is \code{TRUE}.}
 
-\item{default_crs}{Character or object. The CRS of the input `xlim` and `ylim`.
-Default is `"EPSG:4326"` (WGS84).}
+\item{default_crs}{Character or object. The CRS of the input \code{xlim} and \code{ylim}.
+Default is \code{"EPSG:4326"} (WGS84).}
 
-\item{...}{Additional arguments passed to [ggplot2::coord_sf()].}
+\item{...}{Additional arguments passed to \code{\link[ggplot2:ggsf]{ggplot2::coord_sf()}}.}
 }
 \value{
-A `CoordSf` object (specifically a result of `coord_sf()`) with
-  automatically transformed limits.
+A \code{CoordSf} object (specifically a result of \code{coord_sf()}) with
+automatically transformed limits.
 }
 \description{
-`coord_proj()` extends [ggplot2::coord_sf()] by allowing users to specify
-map limits (`xlim`, `ylim`) in geographic coordinates (longitude/latitude, WGS84).
+\code{coord_proj()} extends \code{\link[ggplot2:ggsf]{ggplot2::coord_sf()}} by allowing users to specify
+map limits (\code{xlim}, \code{ylim}) in geographic coordinates (longitude/latitude, WGS84).
 These limits are automatically transformed into the target projected CRS,
 ensuring that maps display the intended region correctly under any projection.
 }
 \details{
-This wrapper is particularly useful because [ggplot2::coord_sf()] interprets
-`xlim` and `ylim` as *projected* coordinates (in the units of the target CRS).
-Passing longitude/latitude directly to `coord_sf()` results in incorrect map
+This wrapper is particularly useful because \code{\link[ggplot2:ggsf]{ggplot2::coord_sf()}} interprets
+\code{xlim} and \code{ylim} as \emph{projected} coordinates (in the units of the target CRS).
+Passing longitude/latitude directly to \code{coord_sf()} results in incorrect map
 extents unless the output CRS is also WGS84.
 
-`coord_proj()` provides a safe, projection-aware workflow that calculates
+\code{coord_proj()} provides a safe, projection-aware workflow that calculates
 the bounding box in WGS84, transforms it to the target CRS, and passes the
-new limits to `coord_sf()`.
+new limits to \code{coord_sf()}.
 }
 \examples{
 library(ggplot2)
@@ -81,6 +81,8 @@ ggplot() +
 
 }
 \seealso{
-* [ggplot2::coord_sf()] for the underlying function.
-* [geom_world()] for the basemap layer.
+\itemize{
+\item \code{\link[ggplot2:ggsf]{ggplot2::coord_sf()}} for the underlying function.
+\item \code{\link[ggmapcn:geom_world]{geom_world()}} for the basemap layer.
+}
 }

@@ -14,31 +14,39 @@ basemap_dem(
 )
 }
 \arguments{
-\item{data}{Optional. A `terra` raster object for custom DEM data.}
+\item{data}{Optional. A \code{terra} raster object for custom DEM data.}
 
 \item{crs}{Coordinate reference system (CRS) for the projection. Defaults to the CRS of the DEM data.
-Users can specify other CRS strings (e.g., `"EPSG:4326"` or custom projections).}
+Users can specify other CRS strings (e.g., \code{"EPSG:4326"} or custom projections).}
 
-\item{within_china}{Logical. If `TRUE`, displays only the DEM within China's boundary.
-If `FALSE`, displays the DEM for a larger rectangular area around China. Default is `FALSE`.}
+\item{within_china}{Logical. If \code{TRUE}, displays only the DEM within China's boundary.
+If \code{FALSE}, displays the DEM for a larger rectangular area around China. Default is \code{FALSE}.}
 
-\item{maxcell}{Maximum number of cells for rendering (to improve performance). Defaults to `1e6`.}
+\item{maxcell}{Maximum number of cells for rendering (to improve performance). Defaults to \code{1e6}.}
 
-\item{na.rm}{Logical. If `TRUE`, removes missing values. Default is `FALSE`.}
+\item{na.rm}{Logical. If \code{TRUE}, removes missing values. Default is \code{FALSE}.}
 
-\item{...}{Additional parameters passed to `geom_spatraster`.}
+\item{...}{Additional parameters passed to \code{geom_spatraster}.}
 }
 \value{
-A `ggplot` object containing the elevation map of China as a layer, which can be further customized or plotted.
+A layer produced by \code{\link[tidyterra:geom_spatraster]{tidyterra::geom_spatraster()}} that can be
+added to a \pkg{ggplot2} plot.
 }
 \description{
-`basemap_dem` adds a digital elevation model (DEM) raster map of China as a layer to ggplot2.
-The function ensures the output map remains rectangular, regardless of the chosen projection.
-It supports displaying the DEM either within China's boundary or in a larger rectangular area
-around China. Users can provide their own DEM data using the `data` parameter, or the default
-built-in DEM data will be used.
+\code{basemap_dem()} adds a digital elevation model (DEM) raster layer to a
+\pkg{ggplot2} plot. It supports displaying elevation within China's
+boundary or in a rectangular area around China. Users can supply a
+\code{terra} raster through \code{data}. Otherwise, \code{check_geodata()} locates or
+retrieves the default elevation dataset from the package's companion
+data repository.
+}
+\details{
+The default elevation layer is the China subset of GEBCO_2024.
+The dataset is located or retrieved as \code{gebco_2024_China.tif} by
+\code{check_geodata()}.
 }
 \examples{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 \donttest{
 # Before using the basemap_dem function, make sure the required data files are available.
 # The required files are: "gebco_2024_China.tif" and "China_mask.gpkg".
@@ -50,7 +58,7 @@ check_geodata(files = c("gebco_2024_China.tif", "China_mask.gpkg"))
 # Define the CRS for China (EPSG:4326 is a common global geographic coordinate system)
 china_proj <- "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs"
 
-# Example 1: Display full rectangular area around China using built-in DEM data
+# Example 1: Display the rectangular area around China using the default DEM data
 ggplot() +
   basemap_dem(within_china = FALSE) +
   tidyterra::scale_fill_hypso_tint_c(
@@ -59,7 +67,7 @@ ggplot() +
   ) +
   theme_minimal()
 
-# Example 2: Display only China's DEM and boundaries using built-in DEM data
+# Example 2: Display only China's DEM and boundaries using the default DEM data
 ggplot() +
   basemap_dem(crs = china_proj, within_china = TRUE) +
   geom_boundary_cn(crs = china_proj) +
@@ -71,6 +79,12 @@ ggplot() +
   labs(fill = "Elevation (m)") +
   theme_minimal()
 }
+\dontshow{\}) # examplesIf}
+}
+\references{
+GEBCO Compilation Group (2024). GEBCO 2024 Grid.
+NERC EDS British Oceanographic Data Centre NOC.
+\url{https://www.gebco.net/}.
 }
 \seealso{
 \code{\link[ggmapcn]{geom_boundary_cn}}

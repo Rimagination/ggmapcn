@@ -21,7 +21,8 @@ check_geodata(
 are processed.}
 
 \item{overwrite}{Logical; if \code{TRUE}, forces re-download even when a
-non-empty file already exists.}
+non-empty file already exists. The refreshed file is saved in the user
+cache, without changing the installed package.}
 
 \item{quiet}{Logical; if \code{TRUE}, suppresses progress output and
 messages.}
@@ -48,22 +49,28 @@ A character vector of absolute file paths. Any file that cannot be obtained
 is returned as \code{NA}.
 }
 \description{
-Ensures that external geospatial data files required by \pkg{ggmapcn} are
+Ensures that default geospatial data files provided by \pkg{ggmapcn} are
 available locally. Existing files are reused when \code{overwrite = FALSE};
 missing files are downloaded from remote mirrors when possible. If all
-mirrors fail (for example, due to network restrictions), the function fails
-gracefully by returning \code{NA} for the affected files without raising
-warnings or errors, in line with CRAN policy.
+mirrors fail (for example, due to network restrictions), the function
+returns \code{NA} for the affected files.
 }
 \details{
-Because CRAN enforces strict limits on package size, several large datasets
-are hosted externally rather than bundled in the package. \code{check_geodata()}
-locates or retrieves these files using the following priority:
+Default datasets are provided through the installed package and its
+companion \href{https://github.com/Rimagination/ggmapcn-data}{data repository}.
+Larger files are hosted in that repository to keep the installation small.
+\code{check_geodata()} locates or retrieves these files using the following
+priority:
 \enumerate{
-  \item user-specified \code{local_dirs}
-  \item the package \code{extdata} directory
-  \item the per-user cache directory via \code{tools::R_user_dir("ggmapcn", "data")}
+\item user-specified \code{local_dirs}
+\item a refreshed copy in the per-user cache, if explicitly requested with
+\code{overwrite = TRUE} for the current bundled file
+\item the package \code{extdata} directory
+\item the per-user cache, followed by the legacy user data directory
 }
+Downloads are saved under \code{tools::R_user_dir("ggmapcn", "cache")};
+the installed package directory is only read. A refreshed copy of a bundled
+file is used until the corresponding bundled file changes in a package update.
 
 High-level mapping functions such as \code{geom_mapcn()} and \code{geom_world()}
 call \code{check_geodata()} internally, so most users do not need to invoke it
@@ -74,8 +81,8 @@ On networks that cannot reliably access \code{cdn.jsdelivr.net} or
 \code{raw.githubusercontent.com}, downloads may time out and the corresponding
 entries in the returned vector will be \code{NA}. In such cases, users may
 manually download the required files from the data repository and place them
-into a directory supplied through \code{local_dirs}, the package \code{extdata}
-directory, or the user cache directory so that downloads are skipped.
+into a directory supplied through \code{local_dirs} or the user cache
+directory so that downloads are skipped.
 
 Note: recent versions of \code{geom_world()} use the following world datasets:
 \code{world_countries.rda}, \code{world_coastlines.rda}, and
@@ -83,11 +90,8 @@ Note: recent versions of \code{geom_world()} use the following world datasets:
 used.
 }
 \examples{
-\dontshow{if (interactive() && curl::has_internet()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
-# Ensure that all default datasets are available (downloads only if needed)
-check_geodata()
-
-# Datasets used by geom_world()
+\dontshow{if (interactive() && curl::has_internet()) withAutoprint(\{ # examplesIf}
+# Retrieve only the datasets used by geom_world()
 check_geodata(c(
   "world_countries.rda",
   "world_coastlines.rda",

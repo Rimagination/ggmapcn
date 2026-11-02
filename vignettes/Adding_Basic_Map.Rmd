@@ -18,6 +18,10 @@ knitr::opts_chunk$set(
 library(ggmapcn)
 # Define Azimuthal Equidistant projection centered on China
 china_proj <- "+proj=aeqd +lat_0=35 +lon_0=105 +ellps=WGS84 +units=m +no_defs"
+data_dirs <- c(system.file("extdata", package = "ggmapcn"),
+               tools::R_user_dir("ggmapcn", "cache"),
+               tools::R_user_dir("ggmapcn", "data"))
+dem_available <- any(file.exists(file.path(data_dirs, "gebco_2024_China.tif")))
 ```
 
 ## Introduction
@@ -91,9 +95,9 @@ ggplot() +
 
 ## Example 5: basemap_dem: Elevation Map of China Layer for ggplot2
 
-The `basemap_dem` function adds a digital elevation model (DEM) raster map of China as a layer to ggplot2.
+The `basemap_dem` function adds a digital elevation model (DEM) raster map of China as a layer to ggplot2. The example is evaluated when the raster is available locally.
 
-```{r dem map, fig.alt='Elevation Map of China'}
+```{r dem map, fig.alt='Elevation Map of China', eval=dem_available}
 # Apply Azimuthal Equidistant projection centered on China
 ggplot() +
   basemap_dem(crs = china_proj, within_china = TRUE) +
