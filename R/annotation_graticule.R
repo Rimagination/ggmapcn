@@ -14,6 +14,11 @@
 #' meridians and parallels can be split at the antimeridian via
 #' `sf::st_break_antimeridian()` before being transformed, which avoids
 #' unexpected line wrapping in projections centred away from 0 degrees.
+#' For a regional window crossing 180 degrees, use a continuous longitude
+#' range such as `c(120, 190)` (190 degrees is 170 degrees W), and choose a map
+#' CRS whose discontinuity lies outside the window. Use that CRS for the
+#' basemap and `coord_sf()` as well. `xlim` here is always in longitude degrees;
+#' limits passed to `coord_sf()` are in its CRS units unless `default_crs` is set.
 #'
 #' Latitude labels at +/-90 degrees are always omitted. When drawing a full-globe
 #' longitude-latitude map with a 0 degree central meridian (that is, when `xlim` and
@@ -22,8 +27,9 @@
 #' still be drawn).
 #'
 #' @param xlim Numeric vector of length 2 giving the longitude range in degrees
-#'   as `c(xmin, xmax)` in longitude-latitude (WGS84, EPSG:4326). Longitudes are
-#'   interpreted in `[-180, 180]`. If both `xlim` and `ylim` are `NULL`
+#'   as `c(xmin, xmax)` in longitude-latitude (WGS84, EPSG:4326). A continuous
+#'   range may extend beyond `[-180, 180]` to cross the antimeridian; its span
+#'   must be at most 360 degrees. If both `xlim` and `ylim` are `NULL`
 #'   (default), the full globe `(-180, 180)` is used.
 #'
 #' @param ylim Numeric vector of length 2 giving the latitude range in degrees
@@ -59,7 +65,8 @@
 #' @param label_format Optional function to format the degree labels. If `NULL`
 #'   (default), standard degree labels with N/S/E/W suffixes are used.
 #'   If provided, it should be a function accepting a numeric vector and
-#'   returning a character vector.
+#'   returning a character vector. Longitude values outside `[-180, 180]`
+#'   are wrapped into that interval before formatting.
 #'
 #' @param label_offset Common offset applied to all labels, in the units of the
 #'   target CRS. For geographic CRSs (degrees), this is interpreted as degrees
@@ -159,6 +166,9 @@ annotation_graticule <- function(
 
   # Wrapper to dispatch format
   fmt_val <- function(v, type = c("lat", "lon")) {
+    if (type == "lon" && (v < -180 || v > 180)) {
+      v <- (v + 180) %% 360 - 180
+    }
     if (is.function(label_format)) {
       return(as.character(label_format(v)))
     }
@@ -233,11 +243,11 @@ annotation_graticule <- function(
   lon_range <- sort(lon_range)
   lat_range <- sort(lat_range)
 
-  lon_range <- pmax(pmin(lon_range, 180), -180)
   lat_range <- pmax(pmin(lat_range, 90), -90)
 
-  if (lon_range[1] >= lon_range[2] || lat_range[1] >= lat_range[2]) {
-    stop("Invalid xlim/ylim: xmin must be < xmax and ymin must be < ymax.")
+  if (lon_range[1] >= lon_range[2] || diff(lon_range) > 360 ||
+      lat_range[1] >= lat_range[2]) {
+    stop("Invalid xlim/ylim: ranges must have positive width and the longitude span must not exceed 360 degrees.")
   }
 
   ## ---- 2. Generate meridian/parallel positions within window --------------

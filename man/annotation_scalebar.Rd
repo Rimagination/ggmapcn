@@ -94,7 +94,7 @@ If \code{NULL}, an automatic, readable choice is used.}
 1-based indices.}
 
 \item{minor_tick_height}{Numeric in \verb{[0, 1]}. For \code{"segment"} style, relative
-height of minor ticks. Default: \code{0}.}
+height of minor ticks. Default: \code{0.5}.}
 
 \item{geographic_mode}{Character, for \strong{geographic CRS} only:
 \itemize{
@@ -118,7 +118,7 @@ scale bar still draws even when CRS information is limited.
 Supported styles:
 \itemize{
 \item \code{"segment"} – minimal horizontal bar with ticks and labels (default)
-\item \code{"ticks"}   – baseline with vertical ticks
+\item \code{"ticks"}   – baseline crossed by vertical ticks
 \item \code{"bar"}     – alternating black/white blocks
 }
 }

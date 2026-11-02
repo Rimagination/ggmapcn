@@ -248,6 +248,39 @@ ggplot() +
   theme_bw()
 ```
 
+### 5.4 Region crossing the antimeridian
+
+For a region from 120°E to 170°W, use the continuous longitude range
+`c(120, 190)` for `annotation_graticule()` and a CRS centred on the Pacific.
+Here the map is in metres, so the limits passed to `coord_sf()` are projected
+from geographic coordinates. Longitude breaks are supplied in the usual
+`[-180, 180]` convention so the axis displays 170°W correctly.
+
+```{r antimeridian_region, fig.alt="A regional map crossing the 180 degree meridian, with longitude labels from 120 degrees east to 170 degrees west."}
+lon_range <- c(120, 190)
+lat_range <- c(-60, -15)
+crs_pacific <- "+proj=eqc +lon_0=180 +datum=WGS84 +units=m +no_defs"
+
+corners <- sf::st_sfc(
+  sf::st_point(c(lon_range[1], lat_range[1])),
+  sf::st_point(c(lon_range[2], lat_range[2])),
+  crs = 4326
+)
+limits <- sf::st_coordinates(sf::st_transform(corners, crs_pacific))
+
+ggplot() +
+  geom_world(crs = crs_pacific) +
+  annotation_graticule(
+    xlim = lon_range, ylim = lat_range, crs = crs_pacific,
+    lon_step = 10, lat_step = 10, label_color = NA
+  ) +
+  scale_x_continuous(breaks = c(seq(120, 180, 10), -170)) +
+  coord_sf(crs = crs_pacific,
+           xlim = range(limits[, 1]), ylim = range(limits[, 2])) +
+  labs(x = "Longitude", y = "Latitude") +
+  theme_minimal()
+```
+
 ## 6. Highlighting selected countries
 
 You can create "highlight" maps by layering `geom_world()` calls. The first call draws the base (e.g., white), and the second call filters for specific countries to color them.

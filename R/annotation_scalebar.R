@@ -8,7 +8,7 @@
 #'
 #' Supported styles:
 #' * `"segment"` – minimal horizontal bar with ticks and labels (default)
-#' * `"ticks"`   – baseline with vertical ticks
+#' * `"ticks"`   – baseline crossed by vertical ticks
 #' * `"bar"`     – alternating black/white blocks
 #'
 #' @details
@@ -61,7 +61,7 @@
 #'   `"major"`, a numeric frequency (for example `2`), or a numeric vector of
 #'   1-based indices.
 #' @param minor_tick_height Numeric in `[0, 1]`. For `"segment"` style, relative
-#'   height of minor ticks. Default: `0`.
+#'   height of minor ticks. Default: `0.5`.
 #' @param geographic_mode Character, for **geographic CRS** only:
 #'   * `"approx_m"`: approximate meters/kilometers (default; warns about
 #'     approximation).
@@ -554,6 +554,7 @@ grob_scalebar <- function(params, style, location,
 
     tick_labels <- c("0", params$labeltext)
     tick_x_pos  <- grid::unit.c(origin_x, origin_x + width)
+    baseline_y  <- origin_y + height * 0.5
 
     all_tick_x <- origin_x + grid::unit(
       (seq_len(params$majordivs + 1) - 1) * params$majordivnpc,
@@ -568,14 +569,14 @@ grob_scalebar <- function(params, style, location,
     }
 
     ticks <- grid::segmentsGrob(
-      x0 = all_tick_x, y0 = origin_y,
-      x1 = all_tick_x, y1 = origin_y + all_tick_y_heights,
+      x0 = all_tick_x, y0 = baseline_y - all_tick_y_heights * 0.5,
+      x1 = all_tick_x, y1 = baseline_y + all_tick_y_heights * 0.5,
       gp = grid::gpar(lwd = line_width, col = line_col)
     )
 
     baseline <- grid::segmentsGrob(
-      x0 = origin_x, y0 = origin_y,
-      x1 = origin_x + width, y1 = origin_y,
+      x0 = origin_x, y0 = baseline_y,
+      x1 = origin_x + width, y1 = baseline_y,
       gp = grid::gpar(lwd = line_width, col = line_col)
     )
 

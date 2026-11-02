@@ -29,8 +29,9 @@ annotation_graticule(
 }
 \arguments{
 \item{xlim}{Numeric vector of length 2 giving the longitude range in degrees
-as \code{c(xmin, xmax)} in longitude-latitude (WGS84, EPSG:4326). Longitudes are
-interpreted in \verb{[-180, 180]}. If both \code{xlim} and \code{ylim} are \code{NULL}
+as \code{c(xmin, xmax)} in longitude-latitude (WGS84, EPSG:4326). A continuous
+range may extend beyond \verb{[-180, 180]} to cross the antimeridian; its span
+must be at most 360 degrees. If both \code{xlim} and \code{ylim} are \code{NULL}
 (default), the full globe \verb{(-180, 180)} is used.}
 
 \item{ylim}{Numeric vector of length 2 giving the latitude range in degrees
@@ -93,7 +94,8 @@ Default is \code{""} (system default).}
 \item{label_format}{Optional function to format the degree labels. If \code{NULL}
 (default), standard degree labels with N/S/E/W suffixes are used.
 If provided, it should be a function accepting a numeric vector and
-returning a character vector.}
+returning a character vector. Longitude values outside \verb{[-180, 180]}
+are wrapped into that interval before formatting.}
 }
 \value{
 A list of two \code{ggplot2} layers: a \code{geom_sf()} layer for graticule
@@ -113,6 +115,11 @@ When a non-zero central meridian (\code{lon_0}) is detected in the target CRS,
 meridians and parallels can be split at the antimeridian via
 \code{sf::st_break_antimeridian()} before being transformed, which avoids
 unexpected line wrapping in projections centred away from 0 degrees.
+For a regional window crossing 180 degrees, use a continuous longitude
+range such as \code{c(120, 190)} (190 degrees is 170 degrees W), and choose a map
+CRS whose discontinuity lies outside the window. Use that CRS for the
+basemap and \code{coord_sf()} as well. \code{xlim} here is always in longitude degrees;
+limits passed to \code{coord_sf()} are in its CRS units unless \code{default_crs} is set.
 
 Latitude labels at +/-90 degrees are always omitted. When drawing a full-globe
 longitude-latitude map with a 0 degree central meridian (that is, when \code{xlim} and

@@ -179,8 +179,10 @@ Provided by **Tianditu**
 Province-, prefecture-, and county-level boundaries are prepared for use in
 `ggplot2`.
 
-The accompanying manuscript identifies these administrative division vectors
-as sharing their source with the Tianditu map GS(2024)0650. Land borders,
+The accompanying manuscript associates the earlier administrative division
+data with the source of the Tianditu map GS(2024)0650. The bundled provincial
+and boundary datasets have since been updated from Tianditu; their correspondence
+to that specific source map has not been independently verified. Land borders,
 coastlines, and maritime boundaries are managed as separate layers.
 
 ## World map data

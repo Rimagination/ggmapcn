@@ -1,6 +1,6 @@
 Package: ggmapcn
 Title: Customizable China and Global Map Visualizations
-Version: 0.3.1
+Version: 0.3.1.9000
 Authors@R: 
     person("Liang", "Ren", email = "rl23@mails.tsinghua.edu.cn", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-2360-7900"))

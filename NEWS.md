@@ -1,3 +1,12 @@
+ggmapcn (development version)
+=============================
+
+- Distinguish the `"ticks"` scale-bar style by drawing ticks across its
+  baseline; the `"segment"` style retains its existing appearance.
+- Allow continuous longitude ranges across the antimeridian in
+  `annotation_graticule()`, and format the resulting longitudes as E/W.
+  Add an example using a Pacific-centred CRS and correctly labelled axes.
+
 ggmapcn 0.3.1
 =============
 

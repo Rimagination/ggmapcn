@@ -39,3 +39,33 @@ test_that("new label formatting options are applied", {
   expect_true(all(startsWith(labels$label, "value:")))
   expect_equal(unique(labels$angle), 25)
 })
+
+test_that("regional graticules cross the antimeridian and label western longitudes", {
+  crs <- "+proj=eqc +lon_0=180 +datum=WGS84 +units=m +no_defs"
+  layers <- annotation_graticule(
+    xlim = c(120, 190), ylim = c(-60, -15), crs = crs,
+    lon_step = 10, lat_step = 10, sides = "bottom", label_offset = 0
+  )
+  labels <- layers[[2]]$data
+  labels <- labels[labels$kind == "lon", ]
+
+  expect_equal(labels$label,
+               c(paste0(c(120, 130, 140, 150, 160, 170), "\u00b0E"),
+                 "180\u00b0", "170\u00b0W"))
+  expect_equal(labels$x[labels$label == "180\u00b0"], 0, tolerance = 1e-6)
+  expect_gt(labels$x[labels$label == "170\u00b0W"], 0)
+
+  custom <- annotation_graticule(
+    xlim = c(120, 190), ylim = c(-60, -15), crs = crs,
+    lon_step = 10, sides = "bottom", label_format = as.character
+  )[[2]]$data
+  expect_true("-170" %in% custom$label)
+
+  western_window <- annotation_graticule(
+    xlim = c(-190, -170), ylim = c(-60, -15), crs = crs,
+    lon_step = 10, sides = "bottom"
+  )[[2]]$data
+  expect_equal(western_window$label, c("170\u00b0E", "180\u00b0", "170\u00b0W"))
+  expect_error(annotation_graticule(xlim = c(-200, 200), ylim = c(-60, -15)),
+               "longitude span")
+})
