@@ -8,7 +8,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/Rimagination/ggmapcn/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/Rimagination/ggmapcn/blob/v0.3.1/DESCRIPTION)
 
 Ren L (2026). *ggmapcn: Customizable China and Global Map
 Visualizations*. R package version 0.3.1,
